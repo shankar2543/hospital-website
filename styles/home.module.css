@@ -1,0 +1,388 @@
+/* Home Page Styles */
+
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* hero section handles its own height */
+
+.scrollableContent {
+  flex: 1;
+}
+
+/* About Section */
+.aboutSection {
+  padding: 80px 40px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aboutContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.aboutTitle {
+  font-size: 48px;
+  font-weight: 700;
+  color: #1a5fa8;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.aboutContent {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #333;
+  margin-bottom: 40px;
+}
+
+.aboutGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-top: 50px;
+}
+
+.featureCard {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.featureCard:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.featureTitle {
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a5fa8;
+  margin-bottom: 15px;
+}
+
+.featureDescription {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Logo Section */
+.logoSection {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #d6e6f7 0%, #eaf3fb 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 80px 40px;
+}
+
+.logoContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #1a5fa8;
+}
+
+.logoText {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.logoSubtext {
+  font-size: 24px;
+  font-weight: 300;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.ctaButton {
+  display: inline-block;
+  padding: 15px 40px;
+  background: #1a5fa8;
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.ctaButton:hover {
+  background: #134a87;
+  transform: translateY(-3px);
+  box-shadow: 0 10px 30px rgba(26, 95, 168, 0.3);
+}
+
+/* Ambulance Animation */
+.ambulanceTrack {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin-top: 3rem;
+  width: 100%;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.endpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.endpointIcon {
+  font-size: 3.2rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+}
+
+.endpointLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #1a5fa8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.road {
+  flex: 1;
+  position: relative;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+
+.roadLine {
+  position: absolute;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #1a5fa8 0%, #60a5fa 50%, #1a5fa8 100%);
+  border-radius: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.roadLine::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0px,
+    transparent 12px,
+    rgba(26, 95, 168, 0.3) 12px,
+    rgba(26, 95, 168, 0.3) 24px
+  );
+}
+
+.ambulance {
+  position: absolute;
+  font-size: 2rem;
+  top: 50%;
+  transform: translateY(-60%);
+  animation: driveAmbulance 3s ease-in-out infinite alternate;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+  will-change: left;
+}
+
+@keyframes driveAmbulance {
+  0% {
+    left: 0%;
+    transform: translateY(-60%) scaleX(1);
+  }
+  48% {
+    left: calc(100% - 2rem);
+    transform: translateY(-60%) scaleX(1);
+  }
+  50% {
+    left: calc(100% - 2rem);
+    transform: translateY(-60%) scaleX(-1);
+  }
+  100% {
+    left: 0%;
+    transform: translateY(-60%) scaleX(-1);
+  }
+}
+
+/* Stats Section */
+.statsSection {
+  padding: 80px 40px;
+  background: #1a5fa8;
+  color: white;
+}
+
+.statsContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.statsTitle {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 40px;
+  text-align: center;
+}
+
+.statCard {
+  padding: 30px;
+}
+
+.statNumber {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.statLabel {
+  font-size: 18px;
+  opacity: 0.9;
+}
+
+/* Footer */
+.footer {
+  background-color: #000;
+  color: #fff;
+  padding: 60px 40px;
+  text-align: center;
+  border-top: 1px solid #333;
+  margin-top: auto;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.footerTitle {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.footerText {
+  font-size: 14px;
+  opacity: 0.8;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+.footerLinks {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.footerLink {
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  transition: opacity 0.3s ease;
+}
+
+.footerLink:hover {
+  opacity: 0.7;
+}
+
+.footerDivider {
+  border-top: 1px solid #333;
+  margin: 30px 0;
+}
+
+.footerBottom {
+  font-size: 12px;
+  opacity: 0.6;
+  padding-top: 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .aboutTitle,
+  .logoText,
+  .statsTitle {
+    font-size: 36px;
+  }
+
+  .aboutContent {
+    font-size: 16px;
+  }
+
+  .featureTitle {
+    font-size: 20px;
+  }
+
+  .logoSubtext {
+    font-size: 18px;
+  }
+
+  .statsGrid {
+    gap: 20px;
+  }
+
+  .statNumber {
+    font-size: 36px;
+  }
+
+  .aboutSection,
+  .logoSection {
+    padding: 40px 20px;
+  }
+
+  .footer {
+    padding: 40px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .aboutTitle,
+  .logoText,
+  .statsTitle {
+    font-size: 28px;
+  }
+
+  .featureCard {
+    padding: 20px;
+  }
+
+  .ctaButton {
+    padding: 12px 30px;
+    font-size: 14px;
+  }
+
+  .footerLinks {
+    gap: 15px;
+  }
+}
