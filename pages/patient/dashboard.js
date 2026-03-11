@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { FiLogOut, FiCalendar, FiUser, FiFileText, FiHome, FiActivity } from "react-icons/fi";
+import { FiLogOut, FiCalendar, FiUser, FiFileText, FiHome, FiActivity, FiMenu, FiX } from "react-icons/fi";
 import Parse from '@/lib/parseConfig';
+import styles from '@/styles/patientDashboard.module.css';
 
 function NavItem({ label, icon, active, onClick }) {
   const [hovered, setHovered] = useState(false);
@@ -60,11 +61,11 @@ function ProfileSection({ name, email, phone, setEmail, setPhone }) {
     setEditing(false);
   };
 
-  const rowStyle  = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.9rem 0", borderBottom: "1px solid #f0f4f8" };
-  const inputStyle = { padding: "0.5rem 0.8rem", borderRadius: 8, border: "1px solid #1a5fa8", fontSize: 14, outline: "none", width: 220 };
+  const rowStyle  = { display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.9rem 0", borderBottom: "1px solid #f0f4f8", gap: "0.5rem", flexWrap: "wrap" };
+  const inputStyle = { padding: "0.5rem 0.8rem", borderRadius: 8, border: "1px solid #1a5fa8", fontSize: 14, outline: "none", width: "min(220px, 100%)" };
 
   return (
-    <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "2rem", maxWidth: 500 }}>
+    <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "2rem", maxWidth: 500, width: "100%" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
         <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>My Profile</h2>
         {!editing
@@ -253,13 +254,29 @@ export default function PatientDashboard() {
 
   const upcoming  = appointments.filter(a => a.status === "Pending").length;
   const confirmed = appointments.filter(a => a.status === "Confirmed").length;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f4f8fc", fontFamily: "'Inter', sans-serif" }}>
+    <div className={styles.layout}>
+
+      {/* Overlay for mobile sidebar */}
+      <div
+        className={`${styles.overlay} ${sidebarOpen ? styles.overlayVisible : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
 
       {/* Sidebar */}
-      <aside style={{ width: 240, background: "#1a5fa8", color: "#fff", display: "flex", flexDirection: "column", alignItems: "center", padding: "2rem 0" }}>
-        <div style={{ marginBottom: 32, textAlign: "center" }}>
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
+        <div style={{ marginBottom: 32, textAlign: "center", width: "100%", paddingTop: "0.5rem" }}>
+          <div style={{ display: "flex", justifyContent: "flex-end", paddingRight: "1rem", marginBottom: "0.5rem" }}>
+            <button
+              onClick={() => setSidebarOpen(false)}
+              style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: 8, color: "#fff", cursor: "pointer", padding: "4px 8px", display: "none" }}
+              className={styles.closeSidebar}
+            >
+              <FiX size={18} />
+            </button>
+          </div>
           <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#fff", margin: "0 auto 1rem auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
             <FiUser size={36} color="#1a5fa8" />
           </div>
@@ -268,11 +285,11 @@ export default function PatientDashboard() {
         </div>
 
         <nav style={{ width: "100%", flex: 1 }}>
-          <NavItem label="Dashboard"        icon={<FiHome size={16} />}     active={activeNav === "Dashboard"}        onClick={() => setActiveNav("Dashboard")} />
-          <NavItem label="Appointments"    icon={<FiCalendar size={16} />} active={activeNav === "Appointments"}    onClick={() => setActiveNav("Appointments")} />
-          <NavItem label="Lab & Diagnostics" icon={<FiActivity size={16} />} active={activeNav === "Lab & Diagnostics"} onClick={() => setActiveNav("Lab & Diagnostics")} />
-          <NavItem label="Medical Records" icon={<FiFileText size={16} />} active={activeNav === "Medical Records"} onClick={() => setActiveNav("Medical Records")} />
-          <NavItem label="Profile"         icon={<FiUser size={16} />}     active={activeNav === "Profile"}         onClick={() => setActiveNav("Profile")} />
+          <NavItem label="Dashboard"        icon={<FiHome size={16} />}     active={activeNav === "Dashboard"}        onClick={() => { setActiveNav("Dashboard"); setSidebarOpen(false); }} />
+          <NavItem label="Appointments"    icon={<FiCalendar size={16} />} active={activeNav === "Appointments"}    onClick={() => { setActiveNav("Appointments"); setSidebarOpen(false); }} />
+          <NavItem label="Lab & Diagnostics" icon={<FiActivity size={16} />} active={activeNav === "Lab & Diagnostics"} onClick={() => { setActiveNav("Lab & Diagnostics"); setSidebarOpen(false); }} />
+          <NavItem label="Medical Records" icon={<FiFileText size={16} />} active={activeNav === "Medical Records"} onClick={() => { setActiveNav("Medical Records"); setSidebarOpen(false); }} />
+          <NavItem label="Profile"         icon={<FiUser size={16} />}     active={activeNav === "Profile"}         onClick={() => { setActiveNav("Profile"); setSidebarOpen(false); }} />
         </nav>
 
         <div style={{ width: "100%", borderTop: "1px solid rgba(255,255,255,0.2)", paddingTop: "1rem" }}>
@@ -288,16 +305,26 @@ export default function PatientDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: "2rem 2.5rem" }}>
+      <main className={styles.main}>
 
         {/* Header */}
-        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", paddingBottom: "1rem", paddingTop: "1rem", borderBottom: "1px solid #d6e6f7" }}>
+        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", paddingBottom: "1rem", paddingTop: "1rem", borderBottom: "1px solid #d6e6f7", gap: "0.5rem", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <img src="/logo.png" alt="Medicover Logo" style={{ width: 50, height: 50, objectFit: "contain" }} />
-            <div style={{ fontWeight: 800, fontSize: 28, color: "#1a5fa8" }}>Patient Portal</div>
+            {/* Hamburger — visible on mobile */}
+            <button
+              className={styles.hamburger}
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
+            >
+              <span className={styles.hamburgerLine} />
+              <span className={styles.hamburgerLine} />
+              <span className={styles.hamburgerLine} />
+            </button>
+            <img src="/logo.png" alt="Medicover Logo" style={{ width: 44, height: 44, objectFit: "contain" }} />
+            <div style={{ fontWeight: 800, fontSize: "clamp(18px, 4vw, 28px)", color: "#1a5fa8" }}>Patient Portal</div>
           </div>
           {activeNav !== "Lab & Diagnostics" && (
-            <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer" }}>
+            <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", fontSize: "clamp(12px, 3vw, 14px)" }}>
               + Book Appointment
             </button>
           )}
@@ -310,14 +337,14 @@ export default function PatientDashboard() {
               <div style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8" }}>Welcome, {name} </div>
               <div style={{ color: "#888", fontSize: 14, marginTop: 4 }}>{email}</div>
             </div>
-            <section style={{ display: "flex", gap: "1.5rem", marginBottom: "2rem" }}>
-              <div onClick={() => setActiveNav("Appointments")} style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }}>
+            <section className={styles.statsRow}>
+              <div onClick={() => setActiveNav("Appointments")} className={styles.statCard}>
                 Total Appointments<br /><span style={{ fontSize: 28, fontWeight: 700 }}>{appointments.length}</span>
               </div>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8" }}>
+              <div className={styles.statCard}>
                 Pending<br /><span style={{ fontSize: 28, fontWeight: 700 }}>{upcoming}</span>
               </div>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8" }}>
+              <div className={styles.statCard}>
                 Confirmed<br /><span style={{ fontSize: 28, fontWeight: 700 }}>{confirmed}</span>
               </div>
             </section>
@@ -327,32 +354,35 @@ export default function PatientDashboard() {
               {appointments.length === 0 ? (
                 <div style={{ textAlign: "center", color: "#aaa", padding: "3rem", fontSize: 15 }}>No appointments yet. Click "+ Book Appointment" to get started.</div>
               ) : (
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ background: "#d6e6f7" }}>
-                      {["#", "Doctor", "Date", "Time", "Status"].map(h => (
-                        <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {appointments.slice(0, 5).map((a, i) => (
-                      <tr key={a.id} style={{ borderTop: "1px solid #f0f4f8" }}>
-                        <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{a.doctor}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{a.date}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{a.time}</td>
-                        <td style={{ padding: "0.8rem 1rem" }}>
-                          <span style={{
-                            fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20,
-                            background: a.status === "Accepted" ? "#27ae60" : a.status === "Denied" ? "#e74c3c" : "#fff4e5",
-                            color:      a.status === "Accepted" ? "#fff"     : a.status === "Denied" ? "#fff"     : "#e67e22",
-                          }}>{a.status}</span>
-                        </td>
+                <div className={styles.tableWrap}>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: "#d6e6f7" }}>
+                        {["#", "Doctor", "Date", "Time", "Status"].map(h => (
+                          <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, whiteSpace: "nowrap" }}>{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {appointments.slice(0, 5).map((a, i) => (
+                        <tr key={a.id} style={{ borderTop: "1px solid #f0f4f8" }}>
+                          <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
+                          <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14, whiteSpace: "nowrap" }}>{a.doctor}</td>
+                          <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>{a.date}</td>
+                          <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>{a.time}</td>
+                          <td style={{ padding: "0.8rem 1rem" }}>
+                            <span style={{
+                              fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20,
+                              background: a.status === "Accepted" ? "#27ae60" : a.status === "Denied" ? "#e74c3c" : "#fff4e5",
+                              color:      a.status === "Accepted" ? "#fff"     : a.status === "Denied" ? "#fff"     : "#e67e22",
+                              whiteSpace: "nowrap",
+                            }}>{a.status}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               )}
             </div>
           </>
@@ -369,33 +399,36 @@ export default function PatientDashboard() {
               <div style={{ textAlign: "center", marginTop: "5rem", color: "#aaa", fontSize: 18 }}>No appointments yet.</div>
             ) : (
               <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead>
-                    <tr style={{ background: "#d6e6f7" }}>
-                      {["#", "Doctor", "Patient Name", "Date", "Time", "Status"].map(h => (
-                        <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {appointments.map((a, i) => (
-                      <tr key={a.id} style={{ borderTop: "1px solid #f0f4f8" }}>
-                        <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{a.doctor}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{a.patientName || "—"}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{a.date}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{a.time}</td>
-                        <td style={{ padding: "0.8rem 1rem" }}>
-                          <span style={{
-                            fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20,
-                            background: a.status === "Accepted" ? "#27ae60" : a.status === "Denied" ? "#e74c3c" : "#fff4e5",
-                            color:      a.status === "Accepted" ? "#fff"     : a.status === "Denied" ? "#fff"     : "#e67e22",
-                          }}>{a.status}</span>
-                        </td>
+                <div className={styles.tableWrap}>
+                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                    <thead>
+                      <tr style={{ background: "#d6e6f7" }}>
+                        {["#", "Doctor", "Patient Name", "Date", "Time", "Status"].map(h => (
+                          <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, whiteSpace: "nowrap" }}>{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {appointments.map((a, i) => (
+                        <tr key={a.id} style={{ borderTop: "1px solid #f0f4f8" }}>
+                          <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
+                          <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14, whiteSpace: "nowrap" }}>{a.doctor}</td>
+                          <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{a.patientName || "—"}</td>
+                          <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>{a.date}</td>
+                          <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>{a.time}</td>
+                          <td style={{ padding: "0.8rem 1rem" }}>
+                            <span style={{
+                              fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20,
+                              background: a.status === "Accepted" ? "#27ae60" : a.status === "Denied" ? "#e74c3c" : "#fff4e5",
+                              color:      a.status === "Accepted" ? "#fff"     : a.status === "Denied" ? "#fff"     : "#e67e22",
+                              whiteSpace: "nowrap",
+                            }}>{a.status}</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             )}
           </>
@@ -500,7 +533,7 @@ export default function PatientDashboard() {
                   </div>
                 )}
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "1.5rem" }}>
+              <div className={styles.labGrid}>
                 {LAB_CATEGORIES.map(cat => (
                   <div key={cat.title} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                     <div style={{ background: cat.color, padding: "0.9rem 1.2rem" }}>
@@ -600,29 +633,31 @@ export default function PatientDashboard() {
                               <div style={{ background: "#f4f8fc", padding: "0.6rem 1.4rem", fontWeight: 700, fontSize: 13, color: "#1a5fa8" }}>
                                 {t.name} <span style={{ fontWeight: 400, color: "#888", fontSize: 12 }}>— ₹{t.price?.toLocaleString()}</span>
                               </div>
-                              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                                <thead>
-                                  <tr style={{ background: "#d6e6f7" }}>
-                                    {["Parameter", "Result", "Reference Range", "Status"].map(h => (
-                                      <th key={h} style={{ padding: "0.5rem 1.2rem", textAlign: "left", fontSize: 12, fontWeight: 700, color: "#1a5fa8" }}>{h}</th>
-                                    ))}
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {t.results.map((row, ri) => (
-                                    <tr key={ri} style={{ borderTop: "1px solid #f0f4f8", background: ri % 2 === 0 ? "#fff" : "#fafcff" }}>
-                                      <td style={{ padding: "0.6rem 1.2rem", fontSize: 13, fontWeight: 600 }}>{row.param}</td>
-                                      <td style={{ padding: "0.6rem 1.2rem", fontSize: 13 }}>{row.value}</td>
-                                      <td style={{ padding: "0.6rem 1.2rem", fontSize: 13, color: "#888" }}>{row.range}</td>
-                                      <td style={{ padding: "0.6rem 1.2rem" }}>
-                                        <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20, background: row.status === "Normal" ? "#e6f9f0" : "#fdecea", color: row.status === "Normal" ? "#27ae60" : "#e74c3c" }}>
-                                          {row.status}
-                                        </span>
-                                      </td>
+                              <div className={styles.tableWrap}>
+                                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                                  <thead>
+                                    <tr style={{ background: "#d6e6f7" }}>
+                                      {["Parameter", "Result", "Reference Range", "Status"].map(h => (
+                                        <th key={h} style={{ padding: "0.5rem 1.2rem", textAlign: "left", fontSize: 12, fontWeight: 700, color: "#1a5fa8", whiteSpace: "nowrap" }}>{h}</th>
+                                      ))}
                                     </tr>
-                                  ))}
-                                </tbody>
-                              </table>
+                                  </thead>
+                                  <tbody>
+                                    {t.results.map((row, ri) => (
+                                      <tr key={ri} style={{ borderTop: "1px solid #f0f4f8", background: ri % 2 === 0 ? "#fff" : "#fafcff" }}>
+                                        <td style={{ padding: "0.6rem 1.2rem", fontSize: 13, fontWeight: 600 }}>{row.param}</td>
+                                        <td style={{ padding: "0.6rem 1.2rem", fontSize: 13 }}>{row.value}</td>
+                                        <td style={{ padding: "0.6rem 1.2rem", fontSize: 13, color: "#888" }}>{row.range}</td>
+                                        <td style={{ padding: "0.6rem 1.2rem" }}>
+                                          <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 20, background: row.status === "Normal" ? "#e6f9f0" : "#fdecea", color: row.status === "Normal" ? "#27ae60" : "#e74c3c", whiteSpace: "nowrap" }}>
+                                            {row.status}
+                                          </span>
+                                        </td>
+                                      </tr>
+                                    ))}
+                                  </tbody>
+                                </table>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -650,8 +685,8 @@ export default function PatientDashboard() {
 
       {/* Book Appointment Modal */}
       {showForm && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 420, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div className={styles.modal}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 20, color: "#1a5fa8", margin: 0 }}>Book Appointment</h3>
               <span style={{ cursor: "pointer", color: "#888", fontSize: 22, lineHeight: 1 }} onClick={() => { setShowForm(false); setFormError(""); setForm(EMPTY_FORM); }}>×</span>

@@ -370,7 +370,7 @@
   .aboutTitle,
   .logoText,
   .statsTitle {
-    font-size: 28px;
+    font-size: 26px;
   }
 
   .featureCard {
@@ -384,5 +384,59 @@
 
   .footerLinks {
     gap: 15px;
+  }
+
+  .aboutSection,
+  .statsSection {
+    padding: 50px 16px;
+  }
+
+  .logoSection {
+    padding: 50px 16px;
+  }
+
+  .ambulanceTrack {
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .endpointIcon {
+    font-size: 2.2rem;
+  }
+
+  .endpointLabel {
+    font-size: 0.65rem;
+  }
+
+  .statNumber {
+    font-size: 32px;
+  }
+
+  .statLabel {
+    font-size: 15px;
+  }
+
+  .footer {
+    padding: 32px 16px;
+  }
+
+  .footerTitle {
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 360px) {
+  .aboutTitle,
+  .logoText,
+  .statsTitle {
+    font-size: 22px;
+  }
+
+  .logoSubtext {
+    font-size: 15px;
+  }
+
+  .aboutContent {
+    font-size: 14px;
   }
 }

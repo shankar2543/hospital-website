@@ -1,0 +1,185 @@
+/* ===== PATIENT DASHBOARD RESPONSIVE LAYOUT ===== */
+
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f4f8fc;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+  width: 240px;
+  background: #1a5fa8;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 0;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+  z-index: 200;
+}
+
+.main {
+  flex: 1;
+  padding: 2rem 2.5rem;
+  min-width: 0;
+}
+
+/* Stats row — flex on desktop, column on small mobile */
+.statsRow {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.statCard {
+  background: #d6e6f7;
+  flex: 1;
+  border-radius: 16px;
+  padding: 1.2rem;
+  text-align: center;
+  font-weight: 600;
+  color: #1a5fa8;
+  cursor: pointer;
+  min-width: 0;
+}
+
+/* Tables — horizontal scroll on overflow */
+.tableWrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Lab grid */
+.labGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Appointment modal */
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  width: 420px;
+  max-width: calc(100vw - 2rem);
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(26, 95, 168, 0.18);
+}
+
+/* Hamburger — hidden on desktop */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.hamburger:hover {
+  background: #f0f4f8;
+}
+
+.hamburgerLine {
+  width: 22px;
+  height: 2px;
+  background: #1a5fa8;
+  border-radius: 2px;
+  display: block;
+}
+
+/* Overlay behind open sidebar */
+.overlay {
+  display: none;
+}
+
+/* ===== TABLET (≤ 900px) ===== */
+@media (max-width: 900px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.15);
+    padding-top: 1.5rem;
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 199;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+  }
+
+  .overlayVisible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .main {
+    padding: 1.2rem 1.5rem;
+  }
+}
+
+/* ===== MOBILE (≤ 600px) ===== */
+@media (max-width: 600px) {
+  .main {
+    padding: 1rem;
+  }
+
+  .statsRow {
+    gap: 0.6rem;
+  }
+
+  .statCard {
+    padding: 0.85rem 0.5rem;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .labGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal {
+    width: calc(100vw - 1.5rem);
+    padding: 1.4rem;
+    border-radius: 16px;
+  }
+}
+
+/* ===== SMALL MOBILE (≤ 420px) ===== */
+@media (max-width: 420px) {
+  .statsRow {
+    flex-wrap: wrap;
+  }
+
+  .statCard {
+    flex: 0 0 calc(50% - 0.3rem);
+  }
+
+  .statCard:last-child {
+    flex: 0 0 100%;
+  }
+}

@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useRouter } from "next/router";
-import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2 } from "react-icons/fi";
+import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu } from "react-icons/fi";
 import Parse from '@/lib/parseConfig';
+import styles from '@/styles/patientDashboard.module.css';
 
 const INITIAL_DOCTORS = [
   { id: 1,  name: "Dr. Manohar",         specialty: "Psychiatrist",        img: "https://randomuser.me/api/portraits/men/11.jpg",   exp: "12 yrs", status: "Available" },
@@ -303,8 +304,8 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
       </div>
 
       {showAdd && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, maxWidth: "calc(100vw - 2rem)", boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>Add New Patient</h3>
               <FiX size={20} style={{ cursor: "pointer", color: "#888" }} onClick={() => { setShowAdd(false); setAddError(""); setNewName(""); setNewRoom(""); }} />
@@ -331,8 +332,8 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
       )}
 
       {selectedRoom && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 340, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 340, maxWidth: "calc(100vw - 2rem)", boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>{selectedRoom}</h3>
               <FiX size={20} style={{ cursor: "pointer", color: "#888" }} onClick={() => setSelectedRoom(null)} />
@@ -574,8 +575,8 @@ function StaffSection({ title, staff, setStaff }) {
       </div>
 
       {showAdd && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, maxWidth: "calc(100vw - 2rem)", boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>Add New Member</h3>
               <FiX size={20} style={{ cursor: "pointer", color: "#888" }} onClick={() => { setShowAdd(false); setAddError(""); setNewName(""); setNewPhone(""); setNewTown(""); }} />
@@ -620,6 +621,7 @@ function StaffSection({ title, staff, setStaff }) {
 export default function AdminDashboard() {
   const router = useRouter();
   const [activeNav, setActiveNav]       = useState("Dashboard");
+  const [sidebarOpen, setSidebarOpen]   = useState(false);
   const [doctors, setDoctors]           = useState(INITIAL_DOCTORS);
   const [appointments, setAppointments]   = useState([]);
   const [patients, setPatients]           = useState([]);
@@ -966,10 +968,17 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f4f8fc" }}>
+    <div className={styles.layout}>
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+
+      {/* Overlay for mobile sidebar */}
+      <div
+        className={`${styles.overlay} ${sidebarOpen ? styles.overlayVisible : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
       {/* Sidebar */}
-      <aside style={{ width: 240, background: "#1a5fa8", color: "#fff", display: "flex", flexDirection: "column", alignItems: "center", padding: "2rem 0" }}>
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
         <div style={{ marginBottom: 32, textAlign: "center" }}>
           <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#fff", margin: "0 auto 1rem auto" }}></div>
           <div style={{ fontWeight: 700, fontSize: 18 }}>DUkEY</div>
@@ -977,7 +986,7 @@ export default function AdminDashboard() {
         </div>
         <nav style={{ width: "100%", flex: 1 }}>
           {['Dashboard','Patient','Patient History','Department','Lab & Diagnostics','Slots','Appointment','Payment','Report'].map((item) => (
-            <NavItem key={item} label={item} active={activeNav === item} onClick={() => setActiveNav(item)} />
+            <NavItem key={item} label={item} active={activeNav === item} onClick={() => { setActiveNav(item); setSidebarOpen(false); }} />
           ))}
         </nav>
         <div style={{ width: "100%", borderTop: "1px solid rgba(255,255,255,0.2)", paddingTop: "1rem" }}>
@@ -987,15 +996,24 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: "2rem 2.5rem" }}>
-        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", paddingBottom: "1rem", paddingTop: "1rem", borderBottom: "1px solid #d6e6f7" }}>
+      <main className={styles.main}>
+        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", paddingBottom: "1rem", paddingTop: "1rem", borderBottom: "1px solid #d6e6f7", gap: "0.5rem", flexWrap: "wrap" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <img src="/logo.png" alt="Medicover Logo" style={{ width: 50, height: 50, objectFit: "contain" }} />
-            <div style={{ fontWeight: 800, fontSize: 28, color: "#1a5fa8" }}>Medicover Management</div>
+            <button
+              className={styles.hamburger}
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
+            >
+              <span className={styles.hamburgerLine} />
+              <span className={styles.hamburgerLine} />
+              <span className={styles.hamburgerLine} />
+            </button>
+            <img src="/logo.png" alt="Medicover Logo" style={{ width: 44, height: 44, objectFit: "contain" }} />
+            <div style={{ fontWeight: 800, fontSize: "clamp(16px, 4vw, 28px)", color: "#1a5fa8" }}>Medicover Management</div>
           </div>
           {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Report", "Appointment"].includes(activeNav) && (
             <div>
-              <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer" }}>Make an appointment</button>
+              <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer", fontSize: "clamp(12px, 3vw, 14px)", whiteSpace: "nowrap" }}>Make an appointment</button>
             </div>
           )}
         </header>
@@ -1003,13 +1021,13 @@ export default function AdminDashboard() {
         {/* Dashboard */}
         {activeNav === "Dashboard" && (
           <>
-            <section style={{ display: "flex", gap: "1.5rem", marginBottom: "2rem" }}>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }} onClick={() => setActiveNav("Doctor")}>Doctors<br /><span style={{ fontSize: 24, fontWeight: 700 }}>10</span></div>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }} onClick={() => setActiveNav("Nurses")}>Nurses<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{nurses.length}</span></div>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }} onClick={() => setActiveNav("Patient")}>Patients<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{patients.length}</span></div>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }} onClick={() => setActiveNav("Pharmacists")}>Pharmacists<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{pharmacists.length}</span></div>
+            <section className={styles.statsRow}>
+              <div className={styles.statCard} onClick={() => setActiveNav("Doctor")}>Doctors<br /><span style={{ fontSize: 24, fontWeight: 700 }}>10</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Nurses")}>Nurses<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{nurses.length}</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Patient")}>Patients<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{patients.length}</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Pharmacists")}>Pharmacists<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{pharmacists.length}</span></div>
             </section>
-            <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", marginBottom: "2rem" }}>
+            <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
               <div onClick={() => setActiveNav("Appointment")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>Appointments<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{appointments.length}</span></div>
               <div onClick={() => setActiveNav("Patient History")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>Patient History<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{history.length}</span></div>
               <div onClick={() => setActiveNav("Slots")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>
@@ -1109,11 +1127,12 @@ export default function AdminDashboard() {
               <div style={{ textAlign: "center", marginTop: "5rem", color: "#aaa", fontSize: 18 }}>No appointments yet. Click "Make an appointment" to add one.</div>
             ) : (
               <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                <div className={styles.tableWrap}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr style={{ background: "#d6e6f7" }}>
                       {["#", "Patient Name", "Age", "Gender", "Doctor", "Date", "Time", "Status", "Action"].map(h => (
-                        <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>{h}</th>
+                        <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, whiteSpace: "nowrap" }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -1160,6 +1179,7 @@ export default function AdminDashboard() {
                     })}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </>
@@ -1205,6 +1225,7 @@ export default function AdminDashboard() {
                 <div style={{ textAlign: "center", padding: "3rem", color: "#aaa", fontSize: 16 }}>No patient found matching "{historySearch}".</div>
               ) : (
                 <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                  <div className={styles.tableWrap}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{ background: "#d6e6f7" }}>
@@ -1230,6 +1251,7 @@ export default function AdminDashboard() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               );
             })()}
@@ -1357,7 +1379,7 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "1.5rem" }}>
+              <div className={styles.labGrid}>
                 {LAB_CATEGORIES.map(cat => (
                   <div key={cat.title} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                     <div style={{ background: cat.color, padding: "0.9rem 1.2rem" }}>
@@ -1541,11 +1563,12 @@ export default function AdminDashboard() {
                               <div style={{ fontWeight: 700, fontSize: 14, color: "#1a5fa8", marginBottom: "0.5rem" }}>
                                 {t.name} <span style={{ fontWeight: 400, color: "#888", fontSize: 12 }}>— ₹{t.price?.toLocaleString()}</span>
                               </div>
+                              <div className={styles.tableWrap}>
                               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                                 <thead>
                                   <tr style={{ background: "#f0f6ff" }}>
                                     {["Parameter", "Result", "Reference Range", "Status"].map(h => (
-                                      <th key={h} style={{ padding: "6px 10px", textAlign: "left", fontWeight: 700, color: "#1a5fa8", border: "1px solid #e0e9f7" }}>{h}</th>
+                                      <th key={h} style={{ padding: "6px 10px", textAlign: "left", fontWeight: 700, color: "#1a5fa8", border: "1px solid #e0e9f7", whiteSpace: "nowrap" }}>{h}</th>
                                     ))}
                                   </tr>
                                 </thead>
@@ -1566,6 +1589,7 @@ export default function AdminDashboard() {
                                   ))}
                                 </tbody>
                               </table>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -1587,8 +1611,8 @@ export default function AdminDashboard() {
 
       {/* Appointment Form Modal */}
       {showForm && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 420, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div className={styles.modal}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 20, color: "#1a5fa8", margin: 0 }}>New Appointment</h3>
               <FiX size={22} style={{ cursor: "pointer", color: "#888" }} onClick={() => { setShowForm(false); setFormError(""); setForm(EMPTY_FORM); }} />
