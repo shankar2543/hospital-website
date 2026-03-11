@@ -158,104 +158,107 @@ const STATUS_PATIENT_COLORS = {
 };
 
 function PatientRow({ patient, index, onUpdate, onDelete, roomCounts, onRoomClick }) {
-  const [editName,   setEditName]   = useState(false);
-  const [editRoom,   setEditRoom]   = useState(false);
-  const [editStatus, setEditStatus] = useState(false);
+  const [editing,    setEditing]    = useState(false);
   const [tempName,   setTempName]   = useState(patient.name);
   const [tempRoom,   setTempRoom]   = useState(patient.room);
-
-  const saveName   = () => { if (tempName.trim()) onUpdate(patient.id, { name: tempName.trim() }); setEditName(false); };
-  const saveRoom   = () => { onUpdate(patient.id, { room: tempRoom }); setEditRoom(false); };
-  const saveStatus = (val) => { onUpdate(patient.id, { status: val }); setEditStatus(false); };
+  const [tempStatus, setTempStatus] = useState(patient.status);
 
   const sc = STATUS_PATIENT_COLORS[patient.status] || STATUS_PATIENT_COLORS["Admitted"];
 
+  const handleEdit = () => {
+    setTempName(patient.name);
+    setTempRoom(patient.room);
+    setTempStatus(patient.status);
+    setEditing(true);
+  };
+
+  const handleSave = () => {
+    if (!tempName.trim()) return;
+    onUpdate(patient.id, { name: tempName.trim(), room: tempRoom, status: tempStatus });
+    setEditing(false);
+  };
+
+  const handleCancel = () => {
+    setTempName(patient.name);
+    setTempRoom(patient.room);
+    setTempStatus(patient.status);
+    setEditing(false);
+  };
+
   return (
-    <>
-    <tr style={{ borderTop: "1px solid #f0f4f8" }}>
+    <tr style={{ borderTop: "1px solid #f0f4f8", background: editing ? "#f4f8fc" : "inherit" }}>
       <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{index + 1}</td>
 
-      {/* Editable Name */}
+      {/* Name */}
       <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-        {editName ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <input autoFocus value={tempName} onChange={e => setTempName(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") saveName(); if (e.key === "Escape") { setTempName(patient.name); setEditName(false); } }}
-              style={{ fontSize: 14, border: "1px solid #1a5fa8", borderRadius: 6, padding: "2px 8px", outline: "none", width: 150 }} />
-            <FiCheck size={15} color="#27ae60" style={{ cursor: "pointer" }} onClick={saveName} />
-            <FiX size={15} color="#e74c3c" style={{ cursor: "pointer" }} onClick={() => { setTempName(patient.name); setEditName(false); }} />
-          </div>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }} onClick={() => { setTempName(patient.name); setEditName(true); }}>
-            <span style={{ fontWeight: 600 }}>{patient.name}</span>
-            <FiEdit2 size={12} color="#1a5fa8" />
-          </div>
-        )}
+        {editing
+          ? <input autoFocus value={tempName} onChange={e => setTempName(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") handleCancel(); }}
+              style={{ fontSize: 14, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none", width: 140 }} />
+          : <span style={{ fontWeight: 600 }}>{patient.name}</span>
+        }
       </td>
 
-      {/* Editable Room */}
+      {/* Room */}
       <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-        {editRoom ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <select value={tempRoom} onChange={e => setTempRoom(e.target.value)}
-              style={{ fontSize: 14, border: "1px solid #1a5fa8", borderRadius: 6, padding: "2px 8px", outline: "none" }}>
+        {editing
+          ? <select value={tempRoom} onChange={e => setTempRoom(e.target.value)}
+              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none" }}>
               {ALL_ROOMS.map(r => (
                 <option key={r} value={r} disabled={(roomCounts[r] || 0) >= 2 && r !== patient.room}>
                   {r}{(roomCounts[r] || 0) >= 2 && r !== patient.room ? " (Full)" : (roomCounts[r] === 1 && r !== patient.room ? " (1/2)" : "")}
                 </option>
               ))}
             </select>
-            <FiCheck size={15} color="#27ae60" style={{ cursor: "pointer" }} onClick={saveRoom} />
-            <FiX size={15} color="#e74c3c" style={{ cursor: "pointer" }} onClick={() => { setTempRoom(patient.room); setEditRoom(false); }} />
-          </div>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span
-              style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
-              onClick={() => onRoomClick(patient.room)}
-            >{patient.room}</span>
-            <FiEdit2 size={12} color="#1a5fa8" style={{ cursor: "pointer" }} onClick={() => { setTempRoom(patient.room); setEditRoom(true); }} />
-          </div>
-        )}
+          : <span style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+              onClick={() => onRoomClick(patient.room)}>{patient.room}</span>
+        }
       </td>
 
       {/* Date of Admit */}
       <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{patient.admitDate}</td>
 
-      {/* Editable Status */}
+      {/* Status */}
       <td style={{ padding: "0.8rem 1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          {editStatus ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <select defaultValue={patient.status} onChange={e => saveStatus(e.target.value)}
-                style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "2px 8px", outline: "none" }}>
-                <option value="Admitted">Admitted</option>
-                <option value="Under Observation">Under Observation</option>
-                <option value="Discharged">Discharge</option>
-              </select>
-              <FiX size={15} color="#e74c3c" style={{ cursor: "pointer" }} onClick={() => setEditStatus(false)} />
-            </div>
-          ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }} onClick={() => setEditStatus(true)}>
-              <span style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20 }}>{patient.status}</span>
-              <FiEdit2 size={12} color="#1a5fa8" />
-            </div>
-          )}
-        </div>
+        {editing
+          ? <select value={tempStatus} onChange={e => setTempStatus(e.target.value)}
+              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none" }}>
+              <option value="Admitted">Admitted</option>
+              <option value="Under Observation">Under Observation</option>
+              <option value="Discharged">Discharged</option>
+            </select>
+          : <span style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 130, textAlign: "center" }}>{patient.status}</span>
+        }
       </td>
 
-      {/* Delete */}
-      <td style={{ padding: "0.8rem 1rem" }}>
-        <button
-          onClick={() => onDelete(patient.id)}
-          style={{ background: "none", border: "none", cursor: "pointer", color: "#e74c3c", padding: 4, borderRadius: 6, display: "flex", alignItems: "center" }}
-          title="Remove patient"
-        >
-          <FiTrash2 size={16} />
-        </button>
+      {/* Actions */}
+      <td style={{ padding: "0.8rem 1rem", whiteSpace: "nowrap" }}>
+        {editing ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button onClick={handleSave}
+              style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+              <FiCheck size={13} /> Save
+            </button>
+            <button onClick={handleCancel}
+              style={{ background: "#f0f4f8", color: "#555", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+              <FiX size={13} /> Cancel
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button onClick={handleEdit}
+              style={{ background: "#d6e6f7", color: "#1a5fa8", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+              <FiEdit2 size={13} /> Edit
+            </button>
+            <button onClick={() => onDelete(patient.id)}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#e74c3c", padding: 4, borderRadius: 6, display: "flex", alignItems: "center" }}
+              title="Remove patient">
+              <FiTrash2 size={16} />
+            </button>
+          </div>
+        )}
       </td>
     </tr>
-    </>
   );
 }
 
@@ -651,19 +654,50 @@ export default function AdminDashboard() {
   useEffect(() => {
     const role = localStorage.getItem("role");
     if (!role) router.push("/");
+
+    // Initial load
     fetchAppointments();
     fetchAdmittedPatients();
     fetchPatientHistory();
     fetchLabRequests();
     fetchReports();
-    const interval = setInterval(() => {
-      fetchAppointments();
-      fetchAdmittedPatients();
-      fetchPatientHistory();
-      fetchLabRequests();
-      fetchReports();
-    }, 30000);
-    return () => clearInterval(interval);
+
+    // LiveQuery — only re-fetch when Back4App actually has new/changed data
+    let apptSub, labSub, admittedSub;
+
+    (async () => {
+      try {
+        // New or updated appointments (patients booking via portal)
+        apptSub = await new Parse.Query("Appointment").subscribe();
+        apptSub.on("create", () => fetchAppointments());
+        apptSub.on("update", () => fetchAppointments());
+
+        // New lab requests from patients
+        labSub = await new Parse.Query("LabRequest").subscribe();
+        labSub.on("create", () => fetchLabRequests());
+        labSub.on("update", () => { fetchLabRequests(); fetchReports(); });
+
+        // New admitted patients
+        admittedSub = await new Parse.Query("AdmittedPatient").subscribe();
+        admittedSub.on("create", () => fetchAdmittedPatients());
+        admittedSub.on("update", () => { fetchAdmittedPatients(); fetchPatientHistory(); });
+        admittedSub.on("delete", () => { fetchAdmittedPatients(); fetchPatientHistory(); });
+      } catch (err) {
+        console.warn("LiveQuery unavailable, falling back to 60s poll:", err.message);
+        // Fallback: longer interval only if LiveQuery fails
+        const fallback = setInterval(() => {
+          fetchAppointments();
+          fetchLabRequests();
+        }, 60000);
+        return () => clearInterval(fallback);
+      }
+    })();
+
+    return () => {
+      apptSub?.unsubscribe();
+      labSub?.unsubscribe();
+      admittedSub?.unsubscribe();
+    };
   }, []);
 
   const parsePatientRow = (r) => ({
@@ -1002,7 +1036,7 @@ export default function AdminDashboard() {
       {/* Main Content */}
       <main className={styles.main}>
         <header className={styles.topbar}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flex: 1, minWidth: 0 }}>
             <button
               className={styles.hamburger}
               onClick={() => setSidebarOpen(true)}
@@ -1012,11 +1046,11 @@ export default function AdminDashboard() {
               <span className={styles.hamburgerLine} />
               <span className={styles.hamburgerLine} />
             </button>
-            <img src="/logo.png" alt="Medicover Logo" style={{ width: 44, height: 44, objectFit: "contain" }} />
-            <div style={{ fontWeight: 800, fontSize: "clamp(16px, 4vw, 24px)", color: "#1a5fa8" }}>Medicover Management</div>
+            <img src="/logo.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 44, height: 44, objectFit: "contain", flexShrink: 0 }} />
+            <div style={{ fontWeight: 800, fontSize: "clamp(13px, 3vw, 24px)", color: "#1a5fa8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>Medicover Management</div>
           </div>
           {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Report", "Appointment"].includes(activeNav) && (
-            <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer", fontSize: "clamp(12px, 3vw, 14px)", whiteSpace: "nowrap" }}>
+            <button onClick={() => setShowForm(true)} className={styles.topbarBtn}>
               Make an appointment
             </button>
           )}

@@ -140,11 +140,36 @@ export default function PatientDashboard() {
     setPhone(localStorage.getItem("phone") || "");
     fetchAppointments();
     fetchReports();
-    const interval = setInterval(() => {
-      fetchAppointments();
-      fetchReports();
-    }, 30000);
-    return () => clearInterval(interval);
+
+    // LiveQuery — refresh only when appointment status changes or a new report is added
+    let apptSub, reportSub;
+
+    (async () => {
+      try {
+        const patientEmail = localStorage.getItem("email") || "";
+
+        apptSub = await new Parse.Query("Appointment").subscribe();
+        apptSub.on("update", () => fetchAppointments());
+
+        const reportQuery = new Parse.Query("LabReport");
+        reportQuery.equalTo("patientEmail", patientEmail);
+        reportSub = await reportQuery.subscribe();
+        reportSub.on("create", () => fetchReports());
+        reportSub.on("update", () => fetchReports());
+      } catch (err) {
+        console.warn("LiveQuery unavailable, falling back to 60s poll:", err.message);
+        const fallback = setInterval(() => {
+          fetchAppointments();
+          fetchReports();
+        }, 60000);
+        return () => clearInterval(fallback);
+      }
+    })();
+
+    return () => {
+      apptSub?.unsubscribe();
+      reportSub?.unsubscribe();
+    };
   }, []);
 
   const fetchReports = async () => {
@@ -304,7 +329,7 @@ export default function PatientDashboard() {
 
         {/* Header */}
         <header className={styles.topbar}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flex: 1, minWidth: 0 }}>
             {/* Hamburger — visible on mobile */}
             <button
               className={styles.hamburger}
@@ -315,11 +340,11 @@ export default function PatientDashboard() {
               <span className={styles.hamburgerLine} />
               <span className={styles.hamburgerLine} />
             </button>
-            <img src="/logo.png" alt="Medicover Logo" style={{ width: 44, height: 44, objectFit: "contain" }} />
-            <div style={{ fontWeight: 800, fontSize: "clamp(18px, 4vw, 24px)", color: "#1a5fa8" }}>Patient Portal</div>
+            <img src="/logo.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 44, height: 44, objectFit: "contain", flexShrink: 0 }} />
+            <div style={{ fontWeight: 800, fontSize: "clamp(13px, 3vw, 24px)", color: "#1a5fa8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>Patient Portal</div>
           </div>
           {activeNav !== "Lab & Diagnostics" && (
-            <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer", whiteSpace: "nowrap", fontSize: "clamp(12px, 3vw, 14px)" }}>
+            <button onClick={() => setShowForm(true)} className={styles.topbarBtn}>
               + Book Appointment
             </button>
           )}
