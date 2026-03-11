@@ -5,6 +5,7 @@
   min-height: 100vh;
   background: #f4f8fc;
   font-family: 'Inter', sans-serif;
+  align-items: flex-start; /* required for sticky sidebar */
 }
 
 .sidebar {
@@ -16,8 +17,19 @@
   align-items: center;
   padding: 2rem 0;
   flex-shrink: 0;
+  /* Fixed sidebar on desktop */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   transition: transform 0.3s ease;
   z-index: 200;
+  scrollbar-width: none; /* Firefox */
+}
+
+.sidebar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
 }
 
 .main {
@@ -103,6 +115,10 @@
 
 /* ===== TABLET (≤ 900px) ===== */
 @media (max-width: 900px) {
+  .layout {
+    align-items: stretch;
+  }
+
   .sidebar {
     position: fixed;
     left: 0;

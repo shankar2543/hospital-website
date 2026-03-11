@@ -1084,6 +1084,71 @@ export default function AdminDashboard() {
                 </section>
               );
             })()}
+
+            {/* ── Quick Overview Cards ── */}
+            <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1.2rem", marginTop: "1.5rem" }}>
+              {[
+                { label: "OPD Today",         value: 42,   sub: "+8 from yesterday",    color: "#1a5fa8", bg: "#d6e6f7" },
+                { label: "ICU Occupied",       value: "6/8", sub: "2 beds available",   color: "#e74c3c", bg: "#fdecea" },
+                { label: "Surgeries Scheduled",value: 5,    sub: "Next at 10:30 AM",    color: "#8e44ad", bg: "#f3e8fd" },
+                { label: "Avg. Wait Time",     value: "18m", sub: "Across all counters", color: "#16a085", bg: "#e0f5f1" },
+                { label: "Lab Tests Today",    value: 78,   sub: "12 pending results",   color: "#e67e22", bg: "#fef3e2" },
+                { label: "Revenue Today",      value: "₹1.2L", sub: "vs ₹98K yesterday", color: "#27ae60", bg: "#e6f9f0" },
+              ].map(c => (
+                <div key={c.label} style={{ background: "#fff", borderRadius: 14, padding: "1.1rem 1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.07)" }}>
+                  <div style={{ fontSize: 12, color: "#888", fontWeight: 500, marginBottom: 6 }}>{c.label}</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: c.color }}>{c.value}</div>
+                  <div style={{ fontSize: 11, color: "#aaa", marginTop: 4 }}>{c.sub}</div>
+                </div>
+              ))}
+            </section>
+
+            {/* ── Recent Activity Feed ── */}
+            <section style={{ background: "#fff", borderRadius: 16, padding: "1.5rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", marginTop: "1.5rem" }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, color: "#1a5fa8", margin: "0 0 1.1rem 0" }}>
+                Recent Activity
+                <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400, marginLeft: 10 }}>Live hospital feed</span>
+              </h3>
+              {[
+                { time: "09:14 AM", icon: "🛏️",  text: "Patient Ramesh Kumar admitted — Room 204",        color: "#1a5fa8" },
+                { time: "09:02 AM", icon: "✅",  text: "Lab report for Priya Sharma marked Normal",        color: "#27ae60" },
+                { time: "08:51 AM", icon: "🔬",  text: "CBC & LFT tests requested by Dr. Aisha Khan",     color: "#8e44ad" },
+                { time: "08:40 AM", icon: "🚑",  text: "Emergency admission — Arjun Mehta, Cardiology",   color: "#e74c3c" },
+                { time: "08:22 AM", icon: "💊",  text: "Prescription issued for patient in Room 101",     color: "#e67e22" },
+                { time: "08:05 AM", icon: "🏥",  text: "Dr. Emily Watson marked Available for OPD",       color: "#16a085" },
+              ].map((a, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "0.9rem", padding: "0.7rem 0", borderBottom: i < 5 ? "1px solid #f0f4f8" : "none" }}>
+                  <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1.4 }}>{a.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>{a.text}</div>
+                    <div style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>{a.time}</div>
+                  </div>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: a.color, flexShrink: 0, marginTop: 6 }} />
+                </div>
+              ))}
+            </section>
+
+            {/* ── Department Load ── */}
+            <section style={{ background: "#fff", borderRadius: 16, padding: "1.5rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", marginTop: "1.5rem", marginBottom: "1rem" }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, color: "#1a5fa8", margin: "0 0 1.1rem 0" }}>Department Load Today</h3>
+              {[
+                { dept: "Cardiology",    load: 88, color: "#e74c3c" },
+                { dept: "Orthopedics",   load: 65, color: "#1a5fa8" },
+                { dept: "Neurology",     load: 72, color: "#8e44ad" },
+                { dept: "Pediatrics",    load: 50, color: "#27ae60" },
+                { dept: "Dermatology",   load: 40, color: "#e67e22" },
+                { dept: "Gynecology",    load: 78, color: "#16a085" },
+              ].map(d => (
+                <div key={d.dept} style={{ marginBottom: "0.85rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 500, color: "#444", marginBottom: 5 }}>
+                    <span>{d.dept}</span><span style={{ color: d.color, fontWeight: 700 }}>{d.load}%</span>
+                  </div>
+                  <div style={{ background: "#f0f4f8", borderRadius: 99, height: 8, overflow: "hidden" }}>
+                    <div style={{ width: `${d.load}%`, height: "100%", background: d.color, borderRadius: 99, transition: "width 0.6s ease" }} />
+                  </div>
+                </div>
+              ))}
+            </section>
           </>
         )}
 
