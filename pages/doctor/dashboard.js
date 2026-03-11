@@ -26,20 +26,20 @@ export default function DoctorDashboard() {
   return (
     <div className="min-h-screen bg-blue-50">
       {/* Navbar */}
-      <nav className="bg-green-700 text-white px-8 py-4 flex justify-between items-center shadow">
-        <h1 className="text-xl font-bold">🏥 Hospital Management</h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm">👨‍⚕️ {email}</span>
+      <nav className="bg-green-700 text-white px-4 sm:px-8 py-4 flex justify-between items-center shadow gap-3 flex-wrap">
+        <h1 className="text-lg sm:text-xl font-bold">🏥 Hospital Management</h1>
+        <div className="flex items-center gap-3">
+          <span className="text-xs sm:text-sm hidden sm:inline">👨‍⚕️ {email}</span>
           <button
             onClick={handleLogout}
-            className="bg-white text-green-700 px-4 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-100 transition"
+            className="bg-white text-green-700 px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-green-100 transition"
           >
             Logout
           </button>
         </div>
       </nav>
 
-      <div className="p-8">
+      <div className="p-4 sm:p-8">
         <h2 className="text-2xl font-bold text-green-700 mb-2">Doctor Dashboard</h2>
         <p className="text-gray-500 mb-8">Welcome back, Doctor</p>
 
@@ -60,9 +60,10 @@ export default function DoctorDashboard() {
         </div>
 
         {/* Appointments Table */}
-        <div className="bg-white rounded-xl shadow p-6">
+        <div className="bg-white rounded-xl shadow p-4 sm:p-6">
           <h3 className="text-lg font-semibold text-gray-700 mb-4">Today&apos;s Appointments</h3>
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="w-full text-sm min-w-[400px]">
             <thead>
               <tr className="text-left text-gray-400 border-b">
                 <th className="pb-3">#</th>
@@ -94,6 +95,7 @@ export default function DoctorDashboard() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
     </div>

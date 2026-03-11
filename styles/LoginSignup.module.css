@@ -527,4 +527,54 @@
   .loginCard {
     padding: 1.6rem;
   }
+
+  .navBrandName {
+    font-size: 1.5rem;
+  }
+
+  .navLogo {
+    width: 40px;
+    height: 40px;
+  }
+
+  .contactBtn {
+    padding: 0.55rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .heroCtas {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .primaryCta {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (max-width: 400px) {
+  .heroTitle {
+    font-size: 1.75rem;
+  }
+
+  .navbar {
+    padding: 1rem 0;
+  }
+
+  .navBrandName {
+    font-size: 1.3rem;
+  }
+
+  .statItem {
+    padding: 0 1rem;
+  }
+
+  .statNumber {
+    font-size: 1.3rem;
+  }
+
+  .statsStrip {
+    padding: 1rem 0 1.5rem;
+  }
 }

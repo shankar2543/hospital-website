@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useRouter } from "next/router";
-import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2 } from "react-icons/fi";
+import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu } from "react-icons/fi";
 import Parse from '@/lib/parseConfig';
+import styles from '@/styles/patientDashboard.module.css';
 
 const INITIAL_DOCTORS = [
   { id: 1,  name: "Dr. Manohar",         specialty: "Psychiatrist",        img: "https://randomuser.me/api/portraits/men/11.jpg",   exp: "12 yrs", status: "Available" },
@@ -157,104 +158,107 @@ const STATUS_PATIENT_COLORS = {
 };
 
 function PatientRow({ patient, index, onUpdate, onDelete, roomCounts, onRoomClick }) {
-  const [editName,   setEditName]   = useState(false);
-  const [editRoom,   setEditRoom]   = useState(false);
-  const [editStatus, setEditStatus] = useState(false);
+  const [editing,    setEditing]    = useState(false);
   const [tempName,   setTempName]   = useState(patient.name);
   const [tempRoom,   setTempRoom]   = useState(patient.room);
-
-  const saveName   = () => { if (tempName.trim()) onUpdate(patient.id, { name: tempName.trim() }); setEditName(false); };
-  const saveRoom   = () => { onUpdate(patient.id, { room: tempRoom }); setEditRoom(false); };
-  const saveStatus = (val) => { onUpdate(patient.id, { status: val }); setEditStatus(false); };
+  const [tempStatus, setTempStatus] = useState(patient.status);
 
   const sc = STATUS_PATIENT_COLORS[patient.status] || STATUS_PATIENT_COLORS["Admitted"];
 
+  const handleEdit = () => {
+    setTempName(patient.name);
+    setTempRoom(patient.room);
+    setTempStatus(patient.status);
+    setEditing(true);
+  };
+
+  const handleSave = () => {
+    if (!tempName.trim()) return;
+    onUpdate(patient.id, { name: tempName.trim(), room: tempRoom, status: tempStatus });
+    setEditing(false);
+  };
+
+  const handleCancel = () => {
+    setTempName(patient.name);
+    setTempRoom(patient.room);
+    setTempStatus(patient.status);
+    setEditing(false);
+  };
+
   return (
-    <>
-    <tr style={{ borderTop: "1px solid #f0f4f8" }}>
+    <tr style={{ borderTop: "1px solid #f0f4f8", background: editing ? "#f4f8fc" : "inherit" }}>
       <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{index + 1}</td>
 
-      {/* Editable Name */}
+      {/* Name */}
       <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-        {editName ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <input autoFocus value={tempName} onChange={e => setTempName(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") saveName(); if (e.key === "Escape") { setTempName(patient.name); setEditName(false); } }}
-              style={{ fontSize: 14, border: "1px solid #1a5fa8", borderRadius: 6, padding: "2px 8px", outline: "none", width: 150 }} />
-            <FiCheck size={15} color="#27ae60" style={{ cursor: "pointer" }} onClick={saveName} />
-            <FiX size={15} color="#e74c3c" style={{ cursor: "pointer" }} onClick={() => { setTempName(patient.name); setEditName(false); }} />
-          </div>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }} onClick={() => { setTempName(patient.name); setEditName(true); }}>
-            <span style={{ fontWeight: 600 }}>{patient.name}</span>
-            <FiEdit2 size={12} color="#1a5fa8" />
-          </div>
-        )}
+        {editing
+          ? <input autoFocus value={tempName} onChange={e => setTempName(e.target.value)}
+              onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") handleCancel(); }}
+              style={{ fontSize: 14, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none", width: 140 }} />
+          : <span style={{ fontWeight: 600 }}>{patient.name}</span>
+        }
       </td>
 
-      {/* Editable Room */}
+      {/* Room */}
       <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-        {editRoom ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-            <select value={tempRoom} onChange={e => setTempRoom(e.target.value)}
-              style={{ fontSize: 14, border: "1px solid #1a5fa8", borderRadius: 6, padding: "2px 8px", outline: "none" }}>
+        {editing
+          ? <select value={tempRoom} onChange={e => setTempRoom(e.target.value)}
+              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none" }}>
               {ALL_ROOMS.map(r => (
                 <option key={r} value={r} disabled={(roomCounts[r] || 0) >= 2 && r !== patient.room}>
                   {r}{(roomCounts[r] || 0) >= 2 && r !== patient.room ? " (Full)" : (roomCounts[r] === 1 && r !== patient.room ? " (1/2)" : "")}
                 </option>
               ))}
             </select>
-            <FiCheck size={15} color="#27ae60" style={{ cursor: "pointer" }} onClick={saveRoom} />
-            <FiX size={15} color="#e74c3c" style={{ cursor: "pointer" }} onClick={() => { setTempRoom(patient.room); setEditRoom(false); }} />
-          </div>
-        ) : (
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <span
-              style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
-              onClick={() => onRoomClick(patient.room)}
-            >{patient.room}</span>
-            <FiEdit2 size={12} color="#1a5fa8" style={{ cursor: "pointer" }} onClick={() => { setTempRoom(patient.room); setEditRoom(true); }} />
-          </div>
-        )}
+          : <span style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+              onClick={() => onRoomClick(patient.room)}>{patient.room}</span>
+        }
       </td>
 
       {/* Date of Admit */}
       <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{patient.admitDate}</td>
 
-      {/* Editable Status */}
+      {/* Status */}
       <td style={{ padding: "0.8rem 1rem" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-          {editStatus ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-              <select defaultValue={patient.status} onChange={e => saveStatus(e.target.value)}
-                style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "2px 8px", outline: "none" }}>
-                <option value="Admitted">Admitted</option>
-                <option value="Under Observation">Under Observation</option>
-                <option value="Discharged">Discharge</option>
-              </select>
-              <FiX size={15} color="#e74c3c" style={{ cursor: "pointer" }} onClick={() => setEditStatus(false)} />
-            </div>
-          ) : (
-            <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }} onClick={() => setEditStatus(true)}>
-              <span style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20 }}>{patient.status}</span>
-              <FiEdit2 size={12} color="#1a5fa8" />
-            </div>
-          )}
-        </div>
+        {editing
+          ? <select value={tempStatus} onChange={e => setTempStatus(e.target.value)}
+              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none" }}>
+              <option value="Admitted">Admitted</option>
+              <option value="Under Observation">Under Observation</option>
+              <option value="Discharged">Discharged</option>
+            </select>
+          : <span style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 130, textAlign: "center" }}>{patient.status}</span>
+        }
       </td>
 
-      {/* Delete */}
-      <td style={{ padding: "0.8rem 1rem" }}>
-        <button
-          onClick={() => onDelete(patient.id)}
-          style={{ background: "none", border: "none", cursor: "pointer", color: "#e74c3c", padding: 4, borderRadius: 6, display: "flex", alignItems: "center" }}
-          title="Remove patient"
-        >
-          <FiTrash2 size={16} />
-        </button>
+      {/* Actions */}
+      <td style={{ padding: "0.8rem 1rem", whiteSpace: "nowrap" }}>
+        {editing ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button onClick={handleSave}
+              style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+              <FiCheck size={13} /> Save
+            </button>
+            <button onClick={handleCancel}
+              style={{ background: "#f0f4f8", color: "#555", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+              <FiX size={13} /> Cancel
+            </button>
+          </div>
+        ) : (
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button onClick={handleEdit}
+              style={{ background: "#d6e6f7", color: "#1a5fa8", border: "none", borderRadius: 6, padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 4 }}>
+              <FiEdit2 size={13} /> Edit
+            </button>
+            <button onClick={() => onDelete(patient.id)}
+              style={{ background: "none", border: "none", cursor: "pointer", color: "#e74c3c", padding: 4, borderRadius: 6, display: "flex", alignItems: "center" }}
+              title="Remove patient">
+              <FiTrash2 size={16} />
+            </button>
+          </div>
+        )}
       </td>
     </tr>
-    </>
   );
 }
 
@@ -303,8 +307,8 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
       </div>
 
       {showAdd && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, maxWidth: "calc(100vw - 2rem)", boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>Add New Patient</h3>
               <FiX size={20} style={{ cursor: "pointer", color: "#888" }} onClick={() => { setShowAdd(false); setAddError(""); setNewName(""); setNewRoom(""); }} />
@@ -331,8 +335,8 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
       )}
 
       {selectedRoom && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 340, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 340, maxWidth: "calc(100vw - 2rem)", boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>{selectedRoom}</h3>
               <FiX size={20} style={{ cursor: "pointer", color: "#888" }} onClick={() => setSelectedRoom(null)} />
@@ -574,8 +578,8 @@ function StaffSection({ title, staff, setStaff }) {
       </div>
 
       {showAdd && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, maxWidth: "calc(100vw - 2rem)", boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>Add New Member</h3>
               <FiX size={20} style={{ cursor: "pointer", color: "#888" }} onClick={() => { setShowAdd(false); setAddError(""); setNewName(""); setNewPhone(""); setNewTown(""); }} />
@@ -620,6 +624,7 @@ function StaffSection({ title, staff, setStaff }) {
 export default function AdminDashboard() {
   const router = useRouter();
   const [activeNav, setActiveNav]       = useState("Dashboard");
+  const [sidebarOpen, setSidebarOpen]   = useState(false);
   const [doctors, setDoctors]           = useState(INITIAL_DOCTORS);
   const [appointments, setAppointments]   = useState([]);
   const [patients, setPatients]           = useState([]);
@@ -649,19 +654,50 @@ export default function AdminDashboard() {
   useEffect(() => {
     const role = localStorage.getItem("role");
     if (!role) router.push("/");
+
+    // Initial load
     fetchAppointments();
     fetchAdmittedPatients();
     fetchPatientHistory();
     fetchLabRequests();
     fetchReports();
-    const interval = setInterval(() => {
-      fetchAppointments();
-      fetchAdmittedPatients();
-      fetchPatientHistory();
-      fetchLabRequests();
-      fetchReports();
-    }, 30000);
-    return () => clearInterval(interval);
+
+    // LiveQuery — only re-fetch when Back4App actually has new/changed data
+    let apptSub, labSub, admittedSub;
+
+    (async () => {
+      try {
+        // New or updated appointments (patients booking via portal)
+        apptSub = await new Parse.Query("Appointment").subscribe();
+        apptSub.on("create", () => fetchAppointments());
+        apptSub.on("update", () => fetchAppointments());
+
+        // New lab requests from patients
+        labSub = await new Parse.Query("LabRequest").subscribe();
+        labSub.on("create", () => fetchLabRequests());
+        labSub.on("update", () => { fetchLabRequests(); fetchReports(); });
+
+        // New admitted patients
+        admittedSub = await new Parse.Query("AdmittedPatient").subscribe();
+        admittedSub.on("create", () => fetchAdmittedPatients());
+        admittedSub.on("update", () => { fetchAdmittedPatients(); fetchPatientHistory(); });
+        admittedSub.on("delete", () => { fetchAdmittedPatients(); fetchPatientHistory(); });
+      } catch (err) {
+        console.warn("LiveQuery unavailable, falling back to 60s poll:", err.message);
+        // Fallback: longer interval only if LiveQuery fails
+        const fallback = setInterval(() => {
+          fetchAppointments();
+          fetchLabRequests();
+        }, 60000);
+        return () => clearInterval(fallback);
+      }
+    })();
+
+    return () => {
+      apptSub?.unsubscribe();
+      labSub?.unsubscribe();
+      admittedSub?.unsubscribe();
+    };
   }, []);
 
   const parsePatientRow = (r) => ({
@@ -966,18 +1002,29 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", background: "#f4f8fc" }}>
+    <div className={styles.layout}>
       <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+
+      {/* Overlay for mobile sidebar */}
+      <div
+        className={`${styles.overlay} ${sidebarOpen ? styles.overlayVisible : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
+
       {/* Sidebar */}
-      <aside style={{ width: 240, background: "#1a5fa8", color: "#fff", display: "flex", flexDirection: "column", alignItems: "center", padding: "2rem 0" }}>
-        <div style={{ marginBottom: 32, textAlign: "center" }}>
-          <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#fff", margin: "0 auto 1rem auto" }}></div>
-          <div style={{ fontWeight: 700, fontSize: 18 }}>DUkEY</div>
-          <div style={{ fontSize: 14, opacity: 0.8 }}>Admin</div>
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
+        <div style={{ marginBottom: 32, width: "100%", padding: "0.5rem 1.5rem 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#fff", flexShrink: 0 }}></div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 16, lineHeight: 1.2 }}>DUkEY</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>Admin</div>
+            </div>
+          </div>
         </div>
         <nav style={{ width: "100%", flex: 1 }}>
           {['Dashboard','Patient','Patient History','Department','Lab & Diagnostics','Slots','Appointment','Payment','Report'].map((item) => (
-            <NavItem key={item} label={item} active={activeNav === item} onClick={() => setActiveNav(item)} />
+            <NavItem key={item} label={item} active={activeNav === item} onClick={() => { setActiveNav(item); setSidebarOpen(false); }} />
           ))}
         </nav>
         <div style={{ width: "100%", borderTop: "1px solid rgba(255,255,255,0.2)", paddingTop: "1rem" }}>
@@ -987,29 +1034,38 @@ export default function AdminDashboard() {
       </aside>
 
       {/* Main Content */}
-      <main style={{ flex: 1, padding: "2rem 2.5rem" }}>
-        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", paddingBottom: "1rem", paddingTop: "1rem", borderBottom: "1px solid #d6e6f7" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <img src="/logo.png" alt="Medicover Logo" style={{ width: 50, height: 50, objectFit: "contain" }} />
-            <div style={{ fontWeight: 800, fontSize: 28, color: "#1a5fa8" }}>Medicover Management</div>
+      <main className={styles.main}>
+        <header className={styles.topbar}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flex: 1, minWidth: 0 }}>
+            <button
+              className={styles.hamburger}
+              onClick={() => setSidebarOpen(true)}
+              aria-label="Open menu"
+            >
+              <span className={styles.hamburgerLine} />
+              <span className={styles.hamburgerLine} />
+              <span className={styles.hamburgerLine} />
+            </button>
+            <img src="/logo.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 44, height: 44, objectFit: "contain", flexShrink: 0 }} />
+            <div style={{ fontWeight: 800, fontSize: "clamp(13px, 3vw, 24px)", color: "#1a5fa8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>Medicover Management</div>
           </div>
           {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Report", "Appointment"].includes(activeNav) && (
-            <div>
-              <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer" }}>Make an appointment</button>
-            </div>
+            <button onClick={() => setShowForm(true)} className={styles.topbarBtn}>
+              Make an appointment
+            </button>
           )}
         </header>
 
         {/* Dashboard */}
         {activeNav === "Dashboard" && (
           <>
-            <section style={{ display: "flex", gap: "1.5rem", marginBottom: "2rem" }}>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }} onClick={() => setActiveNav("Doctor")}>Doctors<br /><span style={{ fontSize: 24, fontWeight: 700 }}>10</span></div>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }} onClick={() => setActiveNav("Nurses")}>Nurses<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{nurses.length}</span></div>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }} onClick={() => setActiveNav("Patient")}>Patients<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{patients.length}</span></div>
-              <div style={{ background: "#d6e6f7", flex: 1, borderRadius: 16, padding: "1.2rem", textAlign: "center", fontWeight: 600, color: "#1a5fa8", cursor: "pointer" }} onClick={() => setActiveNav("Pharmacists")}>Pharmacists<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{pharmacists.length}</span></div>
+            <section className={styles.statsRow}>
+              <div className={styles.statCard} onClick={() => setActiveNav("Doctor")}>Doctors<br /><span style={{ fontSize: 24, fontWeight: 700 }}>10</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Nurses")}>Nurses<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{nurses.length}</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Patient")}>Patients<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{patients.length}</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Pharmacists")}>Pharmacists<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{pharmacists.length}</span></div>
             </section>
-            <section style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", marginBottom: "2rem" }}>
+            <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
               <div onClick={() => setActiveNav("Appointment")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>Appointments<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{appointments.length}</span></div>
               <div onClick={() => setActiveNav("Patient History")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>Patient History<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{history.length}</span></div>
               <div onClick={() => setActiveNav("Slots")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>
@@ -1062,6 +1118,71 @@ export default function AdminDashboard() {
                 </section>
               );
             })()}
+
+            {/* ── Quick Overview Cards ── */}
+            <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1.2rem", marginTop: "1.5rem" }}>
+              {[
+                { label: "OPD Today",         value: 42,   sub: "+8 from yesterday",    color: "#1a5fa8", bg: "#d6e6f7" },
+                { label: "ICU Occupied",       value: "6/8", sub: "2 beds available",   color: "#e74c3c", bg: "#fdecea" },
+                { label: "Surgeries Scheduled",value: 5,    sub: "Next at 10:30 AM",    color: "#8e44ad", bg: "#f3e8fd" },
+                { label: "Avg. Wait Time",     value: "18m", sub: "Across all counters", color: "#16a085", bg: "#e0f5f1" },
+                { label: "Lab Tests Today",    value: 78,   sub: "12 pending results",   color: "#e67e22", bg: "#fef3e2" },
+                { label: "Revenue Today",      value: "₹1.2L", sub: "vs ₹98K yesterday", color: "#27ae60", bg: "#e6f9f0" },
+              ].map(c => (
+                <div key={c.label} style={{ background: "#fff", borderRadius: 14, padding: "1.1rem 1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.07)" }}>
+                  <div style={{ fontSize: 12, color: "#888", fontWeight: 500, marginBottom: 6 }}>{c.label}</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: c.color }}>{c.value}</div>
+                  <div style={{ fontSize: 11, color: "#aaa", marginTop: 4 }}>{c.sub}</div>
+                </div>
+              ))}
+            </section>
+
+            {/* ── Recent Activity Feed ── */}
+            <section style={{ background: "#fff", borderRadius: 16, padding: "1.5rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", marginTop: "1.5rem" }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, color: "#1a5fa8", margin: "0 0 1.1rem 0" }}>
+                Recent Activity
+                <span style={{ fontSize: 12, color: "#aaa", fontWeight: 400, marginLeft: 10 }}>Live hospital feed</span>
+              </h3>
+              {[
+                { time: "09:14 AM", icon: "🛏️",  text: "Patient Ramesh Kumar admitted — Room 204",        color: "#1a5fa8" },
+                { time: "09:02 AM", icon: "✅",  text: "Lab report for Priya Sharma marked Normal",        color: "#27ae60" },
+                { time: "08:51 AM", icon: "🔬",  text: "CBC & LFT tests requested by Dr. Aisha Khan",     color: "#8e44ad" },
+                { time: "08:40 AM", icon: "🚑",  text: "Emergency admission — Arjun Mehta, Cardiology",   color: "#e74c3c" },
+                { time: "08:22 AM", icon: "💊",  text: "Prescription issued for patient in Room 101",     color: "#e67e22" },
+                { time: "08:05 AM", icon: "🏥",  text: "Dr. Emily Watson marked Available for OPD",       color: "#16a085" },
+              ].map((a, i) => (
+                <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "0.9rem", padding: "0.7rem 0", borderBottom: i < 5 ? "1px solid #f0f4f8" : "none" }}>
+                  <span style={{ fontSize: 20, flexShrink: 0, lineHeight: 1.4 }}>{a.icon}</span>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, color: "#333", fontWeight: 500 }}>{a.text}</div>
+                    <div style={{ fontSize: 11, color: "#aaa", marginTop: 2 }}>{a.time}</div>
+                  </div>
+                  <div style={{ width: 8, height: 8, borderRadius: "50%", background: a.color, flexShrink: 0, marginTop: 6 }} />
+                </div>
+              ))}
+            </section>
+
+            {/* ── Department Load ── */}
+            <section style={{ background: "#fff", borderRadius: 16, padding: "1.5rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", marginTop: "1.5rem", marginBottom: "1rem" }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, color: "#1a5fa8", margin: "0 0 1.1rem 0" }}>Department Load Today</h3>
+              {[
+                { dept: "Cardiology",    load: 88, color: "#e74c3c" },
+                { dept: "Orthopedics",   load: 65, color: "#1a5fa8" },
+                { dept: "Neurology",     load: 72, color: "#8e44ad" },
+                { dept: "Pediatrics",    load: 50, color: "#27ae60" },
+                { dept: "Dermatology",   load: 40, color: "#e67e22" },
+                { dept: "Gynecology",    load: 78, color: "#16a085" },
+              ].map(d => (
+                <div key={d.dept} style={{ marginBottom: "0.85rem" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13, fontWeight: 500, color: "#444", marginBottom: 5 }}>
+                    <span>{d.dept}</span><span style={{ color: d.color, fontWeight: 700 }}>{d.load}%</span>
+                  </div>
+                  <div style={{ background: "#f0f4f8", borderRadius: 99, height: 8, overflow: "hidden" }}>
+                    <div style={{ width: `${d.load}%`, height: "100%", background: d.color, borderRadius: 99, transition: "width 0.6s ease" }} />
+                  </div>
+                </div>
+              ))}
+            </section>
           </>
         )}
 
@@ -1109,11 +1230,12 @@ export default function AdminDashboard() {
               <div style={{ textAlign: "center", marginTop: "5rem", color: "#aaa", fontSize: 18 }}>No appointments yet. Click "Make an appointment" to add one.</div>
             ) : (
               <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                <div className={styles.tableWrap}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr style={{ background: "#d6e6f7" }}>
                       {["#", "Patient Name", "Age", "Gender", "Doctor", "Date", "Time", "Status", "Action"].map(h => (
-                        <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>{h}</th>
+                        <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, whiteSpace: "nowrap" }}>{h}</th>
                       ))}
                     </tr>
                   </thead>
@@ -1160,6 +1282,7 @@ export default function AdminDashboard() {
                     })}
                   </tbody>
                 </table>
+                </div>
               </div>
             )}
           </>
@@ -1205,6 +1328,7 @@ export default function AdminDashboard() {
                 <div style={{ textAlign: "center", padding: "3rem", color: "#aaa", fontSize: 16 }}>No patient found matching "{historySearch}".</div>
               ) : (
                 <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                  <div className={styles.tableWrap}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{ background: "#d6e6f7" }}>
@@ -1230,6 +1354,7 @@ export default function AdminDashboard() {
                       ))}
                     </tbody>
                   </table>
+                  </div>
                 </div>
               );
             })()}
@@ -1357,7 +1482,7 @@ export default function AdminDashboard() {
                 </div>
               )}
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(340px, 1fr))", gap: "1.5rem" }}>
+              <div className={styles.labGrid}>
                 {LAB_CATEGORIES.map(cat => (
                   <div key={cat.title} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                     <div style={{ background: cat.color, padding: "0.9rem 1.2rem" }}>
@@ -1541,11 +1666,12 @@ export default function AdminDashboard() {
                               <div style={{ fontWeight: 700, fontSize: 14, color: "#1a5fa8", marginBottom: "0.5rem" }}>
                                 {t.name} <span style={{ fontWeight: 400, color: "#888", fontSize: 12 }}>— ₹{t.price?.toLocaleString()}</span>
                               </div>
+                              <div className={styles.tableWrap}>
                               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                                 <thead>
                                   <tr style={{ background: "#f0f6ff" }}>
                                     {["Parameter", "Result", "Reference Range", "Status"].map(h => (
-                                      <th key={h} style={{ padding: "6px 10px", textAlign: "left", fontWeight: 700, color: "#1a5fa8", border: "1px solid #e0e9f7" }}>{h}</th>
+                                      <th key={h} style={{ padding: "6px 10px", textAlign: "left", fontWeight: 700, color: "#1a5fa8", border: "1px solid #e0e9f7", whiteSpace: "nowrap" }}>{h}</th>
                                     ))}
                                   </tr>
                                 </thead>
@@ -1566,6 +1692,7 @@ export default function AdminDashboard() {
                                   ))}
                                 </tbody>
                               </table>
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -1587,8 +1714,8 @@ export default function AdminDashboard() {
 
       {/* Appointment Form Modal */}
       {showForm && (
-        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000 }}>
-          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 420, boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div className={styles.modal}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
               <h3 style={{ fontWeight: 700, fontSize: 20, color: "#1a5fa8", margin: 0 }}>New Appointment</h3>
               <FiX size={22} style={{ cursor: "pointer", color: "#888" }} onClick={() => { setShowForm(false); setFormError(""); setForm(EMPTY_FORM); }} />
