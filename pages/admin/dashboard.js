@@ -979,10 +979,14 @@ export default function AdminDashboard() {
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
-        <div style={{ marginBottom: 32, textAlign: "center" }}>
-          <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#fff", margin: "0 auto 1rem auto" }}></div>
-          <div style={{ fontWeight: 700, fontSize: 18 }}>DUkEY</div>
-          <div style={{ fontSize: 14, opacity: 0.8 }}>Admin</div>
+        <div style={{ marginBottom: 32, width: "100%", padding: "0.5rem 1.5rem 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#fff", flexShrink: 0 }}></div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 16, lineHeight: 1.2 }}>DUkEY</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>Admin</div>
+            </div>
+          </div>
         </div>
         <nav style={{ width: "100%", flex: 1 }}>
           {['Dashboard','Patient','Patient History','Department','Lab & Diagnostics','Slots','Appointment','Payment','Report'].map((item) => (

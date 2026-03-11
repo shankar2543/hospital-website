@@ -267,21 +267,16 @@ export default function PatientDashboard() {
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
-        <div style={{ marginBottom: 32, textAlign: "center", width: "100%", paddingTop: "0.5rem" }}>
-          <div style={{ display: "flex", justifyContent: "flex-end", paddingRight: "1rem", marginBottom: "0.5rem" }}>
-            <button
-              onClick={() => setSidebarOpen(false)}
-              style={{ background: "rgba(255,255,255,0.15)", border: "none", borderRadius: 8, color: "#fff", cursor: "pointer", padding: "4px 8px", display: "none" }}
-              className={styles.closeSidebar}
-            >
-              <FiX size={18} />
-            </button>
+        <div style={{ marginBottom: 32, width: "100%", padding: "0.5rem 1.5rem 0" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <FiUser size={24} color="#1a5fa8" />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 16, lineHeight: 1.2 }}>{name || "Patient"}</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>Patient</div>
+            </div>
           </div>
-          <div style={{ width: 80, height: 80, borderRadius: "50%", background: "#fff", margin: "0 auto 1rem auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <FiUser size={36} color="#1a5fa8" />
-          </div>
-          <div style={{ fontWeight: 700, fontSize: 18 }}>{name || "Patient"}</div>
-          <div style={{ fontSize: 14, opacity: 0.8 }}>Patient</div>
         </div>
 
         <nav style={{ width: "100%", flex: 1 }}>
