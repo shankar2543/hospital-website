@@ -43,8 +43,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: #1a5fa8;
-  color: #fff;
+  background: #d6e6f7;
+  color: #1a5fa8;
   padding: 1rem 2.5rem;
   margin: 0 -2.5rem 2rem; /* bleed to edges of .main padding */
   display: flex;
@@ -52,7 +52,7 @@
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
-  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 2px 12px rgba(26, 95, 168, 0.12);
 }
 
 /* Stats row — flex on desktop, column on small mobile */
@@ -114,13 +114,13 @@
 }
 
 .hamburger:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(26, 95, 168, 0.12);
 }
 
 .hamburgerLine {
   width: 22px;
   height: 2px;
-  background: #fff;
+  background: #1a5fa8;
   border-radius: 2px;
   display: block;
 }
