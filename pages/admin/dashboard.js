@@ -1001,7 +1001,7 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <main className={styles.main}>
-        <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem", paddingBottom: "1rem", paddingTop: "1rem", borderBottom: "1px solid #d6e6f7", gap: "0.5rem", flexWrap: "wrap" }}>
+        <header className={styles.topbar}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <button
               className={styles.hamburger}
@@ -1013,12 +1013,12 @@ export default function AdminDashboard() {
               <span className={styles.hamburgerLine} />
             </button>
             <img src="/logo.png" alt="Medicover Logo" style={{ width: 44, height: 44, objectFit: "contain" }} />
-            <div style={{ fontWeight: 800, fontSize: "clamp(16px, 4vw, 28px)", color: "#1a5fa8" }}>Medicover Management</div>
+            <div style={{ fontWeight: 800, fontSize: "clamp(16px, 4vw, 24px)", color: "#fff" }}>Medicover Management</div>
           </div>
           {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Report", "Appointment"].includes(activeNav) && (
-            <div>
-              <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer", fontSize: "clamp(12px, 3vw, 14px)", whiteSpace: "nowrap" }}>Make an appointment</button>
-            </div>
+            <button onClick={() => setShowForm(true)} style={{ background: "rgba(255,255,255,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.35)", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer", fontSize: "clamp(12px, 3vw, 14px)", whiteSpace: "nowrap" }}>
+              Make an appointment
+            </button>
           )}
         </header>
 
