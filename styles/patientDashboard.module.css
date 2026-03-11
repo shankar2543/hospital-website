@@ -264,3 +264,90 @@
     flex: 0 0 calc(50% - 0.3rem);
   }
 }
+
+/* ===== RESPONSIVE PATIENT TABLE ===== */
+.patientTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Hide index column on all sizes — not needed */
+.patientIdx {
+  display: none;
+}
+
+/* Desktop: show full header, hide short version */
+.thFull  { display: inline; }
+.thShort { display: none; }
+
+/* Compact table on mobile — fixed layout so columns never overflow */
+@media (max-width: 700px) {
+  /* Swap header labels on mobile */
+  .thFull  { display: none; }
+  .thShort { display: inline; }
+
+  .patientTable {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  /* Name 30% | Rm 11% | Date 21% | Status 38% */
+  .patientTable th:nth-child(1),
+  .patientTable td:nth-child(2) { width: 30%; }
+
+  .patientTable th:nth-child(2),
+  .patientTable td:nth-child(3) { width: 11%; padding-left: 0; padding-right: 0.1rem; }
+
+  .patientTable th:nth-child(3),
+  .patientTable td:nth-child(4) { width: 21%; }
+
+  .patientTable th:nth-child(4),
+  .patientTable td:nth-child(5) { width: 38%; }
+
+  .patientTable th,
+  .patientTable td {
+    padding: 0.5rem 0.3rem;
+    font-size: 11px;
+    overflow: hidden;
+  }
+
+  .patientTable th {
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  /* Room number badge — compact on mobile */
+  .roomBadge {
+    padding: 2px 4px !important;
+    font-size: 11px !important;
+  }
+
+  /* Truncate long patient names */
+  .patientTable td:nth-child(2) {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* Shrink status badge to fit */
+  .statusBadge {
+    min-width: 0 !important;
+    padding: 3px 5px !important;
+    font-size: 10px !important;
+    white-space: nowrap;
+    display: inline-block !important;
+  }
+
+  /* Compact edit icon */
+  .editIconBtn {
+    padding: 2px !important;
+  }
+
+  /* Compact inputs in edit mode */
+  .patientTable input,
+  .patientTable select {
+    font-size: 11px;
+    padding: 3px 4px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
