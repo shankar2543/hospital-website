@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/LoginSignup.module.css';
 import homeStyles from '../styles/home.module.css';
@@ -22,6 +22,23 @@ export default function Home() {
   const [form, setForm] = useState({ name: '', gender: '', email: '', phone: '', password: '' });
   const [showPw, setShowPw]       = useState(false);
   const [showAdminPw, setShowAdminPw] = useState(false);
+
+  // Carousel
+  const carouselRef = useRef(null);
+  const [carouselIdx, setCarouselIdx] = useState(0);
+  const CARD_COUNT = 6;
+
+  const handleCarouselScroll = () => {
+    if (!carouselRef.current) return;
+    const el = carouselRef.current;
+    setCarouselIdx(Math.min(Math.round(el.scrollLeft / el.offsetWidth), CARD_COUNT - 1));
+  };
+
+  const goToCard = (i) => {
+    if (!carouselRef.current) return;
+    carouselRef.current.scrollTo({ left: i * carouselRef.current.offsetWidth, behavior: 'smooth' });
+    setCarouselIdx(i);
+  };
 
   const switchMode = (toSignup) => {
     setIsSignup(toSignup);
@@ -373,31 +390,54 @@ export default function Home() {
               </p>
             </div>
 
-            <div className={homeStyles.aboutGrid}>
-              <div className={homeStyles.featureCard}>
-                <h3 className={homeStyles.featureTitle}>Expert Doctors</h3>
-                <p className={homeStyles.featureDescription}>Our team consists of experienced specialists across multiple disciplines, dedicated to your health and well-being.</p>
+            <div className={homeStyles.aboutGrid} ref={carouselRef} onScroll={handleCarouselScroll}>
+              <div className={homeStyles.carouselSlide}>
+                <div className={homeStyles.featureCard}>
+                  <h3 className={homeStyles.featureTitle}>Expert Doctors</h3>
+                  <p className={homeStyles.featureDescription}>Our team consists of experienced specialists across multiple disciplines, dedicated to your health and well-being.</p>
+                </div>
               </div>
-              <div className={homeStyles.featureCard}>
-                <h3 className={homeStyles.featureTitle}>Modern Facilities</h3>
-                <p className={homeStyles.featureDescription}>State-of-the-art medical equipment and technology for accurate diagnosis and effective treatment.</p>
+              <div className={homeStyles.carouselSlide}>
+                <div className={homeStyles.featureCard}>
+                  <h3 className={homeStyles.featureTitle}>Modern Facilities</h3>
+                  <p className={homeStyles.featureDescription}>State-of-the-art medical equipment and technology for accurate diagnosis and effective treatment.</p>
+                </div>
               </div>
-              <div className={homeStyles.featureCard}>
-                <h3 className={homeStyles.featureTitle}>24/7 Support</h3>
-                <p className={homeStyles.featureDescription}>Round-the-clock medical support and emergency services to ensure you&apos;re never alone in your healthcare journey.</p>
+              <div className={homeStyles.carouselSlide}>
+                <div className={homeStyles.featureCard}>
+                  <h3 className={homeStyles.featureTitle}>24/7 Support</h3>
+                  <p className={homeStyles.featureDescription}>Round-the-clock medical support and emergency services to ensure you&apos;re never alone in your healthcare journey.</p>
+                </div>
               </div>
-              <div className={homeStyles.featureCard}>
-                <h3 className={homeStyles.featureTitle}>Patient Care</h3>
-                <p className={homeStyles.featureDescription}>Personalized treatment plans and compassionate care that puts your health and comfort first.</p>
+              <div className={homeStyles.carouselSlide}>
+                <div className={homeStyles.featureCard}>
+                  <h3 className={homeStyles.featureTitle}>Patient Care</h3>
+                  <p className={homeStyles.featureDescription}>Personalized treatment plans and compassionate care that puts your health and comfort first.</p>
+                </div>
               </div>
-              <div className={homeStyles.featureCard}>
-                <h3 className={homeStyles.featureTitle}>Affordable Pricing</h3>
-                <p className={homeStyles.featureDescription}>Transparent and competitive pricing, making quality healthcare accessible to everyone.</p>
+              <div className={homeStyles.carouselSlide}>
+                <div className={homeStyles.featureCard}>
+                  <h3 className={homeStyles.featureTitle}>Affordable Pricing</h3>
+                  <p className={homeStyles.featureDescription}>Transparent and competitive pricing, making quality healthcare accessible to everyone.</p>
+                </div>
               </div>
-              <div className={homeStyles.featureCard}>
-                <h3 className={homeStyles.featureTitle}>Cleanliness</h3>
-                <p className={homeStyles.featureDescription}>Strict hygiene standards and infection control protocols to ensure a safe environment.</p>
+              <div className={homeStyles.carouselSlide}>
+                <div className={homeStyles.featureCard}>
+                  <h3 className={homeStyles.featureTitle}>Cleanliness</h3>
+                  <p className={homeStyles.featureDescription}>Strict hygiene standards and infection control protocols to ensure a safe environment.</p>
+                </div>
               </div>
+            </div>
+
+            <div className={homeStyles.carouselDots}>
+              {Array.from({ length: CARD_COUNT }).map((_, i) => (
+                <button
+                  key={i}
+                  className={`${homeStyles.carouselDot}${carouselIdx === i ? ' ' + homeStyles.carouselDotActive : ''}`}
+                  onClick={() => goToCard(i)}
+                  aria-label={`Go to card ${i + 1}`}
+                />
+              ))}
             </div>
           </div>
         </section>
@@ -451,6 +491,12 @@ export default function Home() {
                 <div className={homeStyles.statLabel}>Satisfaction Rate</div>
               </div>
             </div>
+
+            <p className={homeStyles.whyStatement}>
+              At Medicover, patients choose us because we combine cutting-edge medical technology with genuine human care.
+              Our experienced doctors, transparent pricing, and round-the-clock support make us the most trusted name in healthcare —
+              because your health deserves nothing less than the best.
+            </p>
           </div>
         </section>
 
