@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import styles from '../styles/LoginSignup.module.css';
 import homeStyles from '../styles/home.module.css';
 import Parse from '@/lib/parseConfig';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export default function Home() {
   const router = useRouter();
@@ -20,6 +21,7 @@ export default function Home() {
   // signup fields
   const [form, setForm] = useState({ name: '', gender: '', email: '', phone: '', password: '' });
   const [showPw, setShowPw]       = useState(false);
+  const [showAdminPw, setShowAdminPw] = useState(false);
 
   const switchMode = (toSignup) => {
     setIsSignup(toSignup);
@@ -259,13 +261,18 @@ export default function Home() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                   />
-                  <input
-                    type="password"
-                    placeholder="Password"
-                    className={styles.input}
-                    value={password}
-                    onChange={e => setPassword(e.target.value)}
-                  />
+                  <div className={styles.passwordRow}>
+                    <input
+                      type={showAdminPw ? 'text' : 'password'}
+                      placeholder="Password"
+                      className={styles.input}
+                      value={password}
+                      onChange={e => setPassword(e.target.value)}
+                    />
+                    <span className={styles.eyeIcon} onClick={() => setShowAdminPw(!showAdminPw)}>
+                      {showAdminPw ? <FiEyeOff size={18} color="#fff" /> : <FiEye size={18} color="#fff" />}
+                    </span>
+                  </div>
                   <button type="submit" className={styles.signInBtn} disabled={loading}>
                     {loading ? 'Signing in...' : 'Sign In'}
                   </button>
@@ -321,7 +328,7 @@ export default function Home() {
                       style={{ paddingRight: '3rem' }}
                     />
                     <span className={styles.eyeIcon} onClick={() => setShowPw(!showPw)}>
-                      {showPw ? '🙈' : '👁️'}
+                      {showPw ? <FiEyeOff size={18} color="#fff" /> : <FiEye size={18} color="#fff" />}
                     </span>
                   </div>
                   <button type="submit" className={styles.signInBtn} disabled={loading}>
