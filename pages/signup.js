@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { useRouter } from 'next/router';
 import styles from '../styles/LoginSignup.module.css';
 import Parse from '@/lib/parseConfig';
@@ -170,7 +171,7 @@ export default function SignupPage() {
               className={styles.input}
             />
             <span className={styles.eyeIcon} onClick={() => setShowPw(!showPw)}>
-              {showPw ? '🙈' : '👁️'}
+              {showPw ? <FiEyeOff size={18} color="#000" /> : <FiEye size={18} color="#000" />}
             </span>
           </div>
           <button type="submit" className={styles.signInBtn} disabled={loading}>
