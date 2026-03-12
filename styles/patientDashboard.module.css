@@ -147,19 +147,18 @@
     border-radius: 12px;
     margin-bottom: 0.75rem;
     padding: 0.75rem 1rem;
-    border: none !important;
   }
 
   .historyTable tr:nth-child(odd) {
-    background: #f0f6ff;
-    box-shadow: 0 2px 8px rgba(26, 95, 168, 0.10);
-    border-left: 3px solid #1a5fa8;
+    background: #fff;
+    border: 2px solid #1a5fa8 !important;
+    box-shadow: 0 3px 10px rgba(26, 95, 168, 0.15);
   }
 
   .historyTable tr:nth-child(even) {
-    background: #f0fdf6;
-    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.10);
-    border-left: 3px solid #27ae60;
+    background: #fff;
+    border: 2px solid #27ae60 !important;
+    box-shadow: 0 3px 10px rgba(39, 174, 96, 0.15);
   }
 
   .historyTable td {
@@ -431,19 +430,18 @@
     border-radius: 12px;
     margin-bottom: 0.75rem;
     padding: 0.75rem 1rem;
-    border: none !important;
   }
 
   .patientTable tr:nth-child(odd) {
-    background: #f0f6ff;
-    box-shadow: 0 2px 8px rgba(26, 95, 168, 0.10);
-    border-left: 3px solid #1a5fa8;
+    background: #fff;
+    border: 2px solid #1a5fa8 !important;
+    box-shadow: 0 3px 10px rgba(26, 95, 168, 0.15);
   }
 
   .patientTable tr:nth-child(even) {
-    background: #f0fdf6;
-    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.10);
-    border-left: 3px solid #27ae60;
+    background: #fff;
+    border: 2px solid #27ae60 !important;
+    box-shadow: 0 3px 10px rgba(39, 174, 96, 0.15);
   }
 
   /* Each cell: label on left, value on right */
