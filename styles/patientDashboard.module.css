@@ -348,14 +348,6 @@
     display: none;
   }
 
-  /* Show inline serial number beside the name */
-  .mobileIdx {
-    display: inline;
-    font-weight: 700;
-    color: #1a5fa8;
-    font-size: 13px;
-    margin-right: 6px;
-  }
 
   /* Status badge full width on mobile */
   .statusBadge {
