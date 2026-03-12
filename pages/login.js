@@ -152,7 +152,7 @@ export default function Login() {
       <div className={styles.leftPanel}>
         <div className={styles.headerRow}>
           <span className={styles.appName}>Medicover Hospital</span>
-          <img src="/logo.png" alt="Medicover Logo" className={styles.headerLogo} />
+          <img src="/Logo-medicover.png" alt="Medicover Logo" className={styles.headerLogo} />
         </div>
         <h1 className={styles.titleSmall}>Login to Your Account</h1>
         <p className={styles.subtitle}>Login using social networks</p>

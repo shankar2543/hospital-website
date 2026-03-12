@@ -56,8 +56,14 @@
 }
 
 .navLogo {
-  width: 56px;
-  height: 56px;
+  width: 67px;
+  height: 67px;
+  object-fit: contain;
+}
+
+.headerLogo {
+  width: 67px;
+  height: 67px;
   object-fit: contain;
 }
 
@@ -293,8 +299,8 @@
 }
 
 .cardLogoImg {
-  width: 38px;
-  height: 38px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
 }
 
@@ -533,8 +539,8 @@
   }
 
   .navLogo {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
   }
 
   .contactBtn {

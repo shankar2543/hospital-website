@@ -340,7 +340,7 @@ export default function PatientDashboard() {
               <span className={styles.hamburgerLine} />
               <span className={styles.hamburgerLine} />
             </button>
-            <img src="/logo.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 44, height: 44, objectFit: "contain", flexShrink: 0 }} />
+            <img src="/Logo-medicover.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 53, height: 53, objectFit: "contain", flexShrink: 0 }} />
             <div style={{ fontWeight: 800, fontSize: "clamp(13px, 3vw, 24px)", color: "#1a5fa8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>Patient Portal</div>
           </div>
           {activeNav !== "Lab & Diagnostics" && (

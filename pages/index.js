@@ -179,7 +179,7 @@ export default function Home() {
         {/* Navbar */}
         <nav className={styles.navbar}>
           <div className={styles.navBrand}>
-            <img src="/logo.png" alt="Medicover" className={styles.navLogo} />
+            <img src="/Logo-medicover.png" alt="Medicover" className={styles.navLogo} />
             <span className={styles.navBrandName}>Medicover</span>
           </div>
 
@@ -238,7 +238,7 @@ export default function Home() {
 
               {/* Card header */}
               <div className={styles.cardHeader}>
-                <img src="/logo.png" alt="Medicover" className={styles.cardLogoImg} />
+                <img src="/Logo-medicover.png" alt="Medicover" className={styles.cardLogoImg} />
                 <span className={styles.cardLogoText}>Medicover Hospital</span>
               </div>
 

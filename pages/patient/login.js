@@ -57,7 +57,7 @@ export default function PatientLogin() {
       <div style={{ flex: 1.4, background: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '3rem 5vw' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
-          <img src="/logo.png" alt="Medicover Logo" style={{ width: 80, height: 80, objectFit: 'contain' }} />
+          <img src="/Logo-medicover.png" alt="Medicover Logo" style={{ width: 96, height: 96, objectFit: 'contain' }} />
           <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#1a5fa8' }}>Medicover Hospital</span>
         </div>
 
