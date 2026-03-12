@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useRouter } from "next/router";
-import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu } from "react-icons/fi";
+import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import Parse from '@/lib/parseConfig';
 import styles from '@/styles/patientDashboard.module.css';
 
@@ -164,97 +164,141 @@ const STATUS_PATIENT_COLORS = {
   "Observation":   { bg: "#f97316", color: "#fff" },
 };
 
-function PatientRow({ patient, index, onUpdate, onDelete, roomCounts, onRoomClick }) {
-  const [editing,    setEditing]    = useState(false);
-  const [tempName,   setTempName]   = useState(patient.name);
-  const [tempRoom,   setTempRoom]   = useState(patient.room);
-  const [tempStatus, setTempStatus] = useState(patient.status);
+function PatientRow({ patient, index, onDelete, onRoomClick, onEdit }) {
+  const [hoverEdit,   setHoverEdit]   = useState(false);
+  const [hoverDelete, setHoverDelete] = useState(false);
 
   const sc = STATUS_PATIENT_COLORS[patient.status] || STATUS_PATIENT_COLORS["Admitted"];
 
-  const handleEdit = () => {
-    setTempName(patient.name);
-    setTempRoom(patient.room);
-    setTempStatus(patient.status);
-    setEditing(true);
-  };
-
-  const handleSave = () => {
-    if (!tempName.trim()) return;
-    onUpdate(patient.id, { name: tempName.trim(), room: tempRoom, status: tempStatus });
-    setEditing(false);
-  };
-
-  const handleCancel = () => {
-    setTempName(patient.name);
-    setTempRoom(patient.room);
-    setTempStatus(patient.status);
-    setEditing(false);
-  };
-
   return (
-    <tr style={{ borderTop: "1px solid #f0f4f8", background: editing ? "#f4f8fc" : "inherit" }}>
+    <tr style={{ borderTop: "1px solid #f0f4f8" }}>
       <td className={styles.patientIdx} style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{index + 1}</td>
 
-      {/* Name — first visible column */}
       <td data-label="Name" style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-        {editing
-          ? <input autoFocus value={tempName} onChange={e => setTempName(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") handleCancel(); }}
-              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none", width: "100%", maxWidth: 160 }} />
-          : <span style={{ fontWeight: 600 }}>{patient.name}</span>
-        }
+        <span className={styles.mobileIdx}>{index + 1}.</span>
+        <span style={{ fontWeight: 600 }}>{patient.name}</span>
       </td>
 
-      {/* Room — show number only */}
       <td data-label="Room" style={{ padding: "0.8rem 1rem", fontSize: 14, whiteSpace: "nowrap" }}>
-        {editing
-          ? <select value={tempRoom} onChange={e => setTempRoom(e.target.value)}
-              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none" }}>
-              {ALL_ROOMS.map(r => (
-                <option key={r} value={r} disabled={(roomCounts[r] || 0) >= 2 && r !== patient.room}>
-                  {r}{(roomCounts[r] || 0) >= 2 && r !== patient.room ? " (Full)" : (roomCounts[r] === 1 && r !== patient.room ? " (1/2)" : "")}
-                </option>
-              ))}
-            </select>
-          : <span className={styles.roomBadge} style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
-              onClick={() => onRoomClick(patient.room)}>{patient.room.replace("Room ", "")}</span>
-        }
+        <span className={styles.roomBadge} style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+          onClick={() => onRoomClick(patient.room)}>{patient.room.replace("Room ", "")}</span>
       </td>
 
-      {/* Date of Admit */}
       <td data-label="Admitted" style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>{shortDate(patient.admitDate)}</td>
 
-      {/* Status — edit icon sits right on the badge; in edit mode shows dropdown + save/cancel icons */}
       <td data-label="Status" style={{ padding: "0.8rem 1rem" }}>
-        {editing ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <select value={tempStatus} onChange={e => setTempStatus(e.target.value)}
-              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none" }}>
-              <option value="Admitted">Admitted</option>
-              <option value="Observation">Observation</option>
-              <option value="Discharged">Discharged</option>
-            </select>
-            <button onClick={handleSave} title="Save"
-              style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 6, padding: "4px 7px", cursor: "pointer", display: "flex", alignItems: "center" }}>
-              <FiCheck size={14} />
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+          <span className={styles.statusBadge} style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 130, textAlign: "center" }}>
+            {patient.status}
+          </span>
+          <div style={{ width: 1, height: 22, background: "#dde3ea", borderRadius: 2, flexShrink: 0 }} />
+          <button
+            onClick={() => onEdit(patient)} title="Edit"
+            onMouseEnter={() => setHoverEdit(true)}
+            onMouseLeave={() => setHoverEdit(false)}
+            style={{
+              background: hoverEdit ? "#e8fdf0" : "#f4f6f8",
+              border: "none", cursor: "pointer", borderRadius: "50%",
+              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+              color: hoverEdit ? "#27ae60" : "#9aa5b4",
+              boxShadow: hoverEdit ? "0 0 0 3px #b6f0ce, 0 2px 8px rgba(39,174,96,0.25)" : "none",
+              transition: "all 0.18s ease",
+            }}>
+            <FiEdit2 size={15} />
+          </button>
+          <button
+            onClick={() => onDelete(patient.id)} title="Delete"
+            onMouseEnter={() => setHoverDelete(true)}
+            onMouseLeave={() => setHoverDelete(false)}
+            style={{
+              background: hoverDelete ? "#fff0f0" : "#f4f6f8",
+              border: "none", cursor: "pointer", borderRadius: "50%",
+              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+              color: hoverDelete ? "#e74c3c" : "#9aa5b4",
+              boxShadow: hoverDelete ? "0 0 0 3px #ffc2c2, 0 2px 8px rgba(231,76,60,0.25)" : "none",
+              transition: "all 0.18s ease",
+            }}>
+            <FiTrash2 size={15} />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+function AppointmentRow({ apt, i, onStatusChange, styles }) {
+  const [expanded, setExpanded] = useState(false);
+  const statusStyle =
+    apt.status === "Accepted" ? { background: "#27ae60", color: "#fff" } :
+    apt.status === "Denied"   ? { background: "#e74c3c", color: "#fff" } :
+                                { background: "#fff4e5", color: "#e67e22" };
+  return (
+    <tr key={apt.id} className={styles.dataRow} style={{ borderTop: "1px solid #f0f4f8" }}>
+      <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
+      <td data-label="Name" style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{apt.name}</td>
+      <td data-label="Status" style={{ padding: "0.8rem 1rem" }}>
+        <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20, ...statusStyle }}>{apt.status}</span>
+      </td>
+      <td data-label="Age"    className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.age}</td>
+      <td data-label="Gender" className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.gender}</td>
+      <td data-label="Doctor" className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.doctor}</td>
+      <td data-label="Date"   className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#888" }}>{apt.date}</td>
+      <td data-label="Time"   className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#888" }}>{apt.time}</td>
+      <td data-label="Action" className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", whiteSpace: "nowrap" }}>
+        {apt.status === "Pending" && (
+          <>
+            <button onClick={() => onStatusChange(apt.id, "Accepted")}
+              style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer", marginRight: 6 }}>
+              Accept
             </button>
-            <button onClick={handleCancel} title="Cancel"
-              style={{ background: "#f0f4f8", color: "#555", border: "none", borderRadius: 6, padding: "4px 7px", cursor: "pointer", display: "flex", alignItems: "center" }}>
-              <FiX size={14} />
+            <button onClick={() => onStatusChange(apt.id, "Denied")}
+              style={{ background: "#e74c3c", color: "#fff", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+              Deny
             </button>
-          </div>
-        ) : (
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-            <span className={styles.statusBadge} style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 130, textAlign: "center" }}>
-              {patient.status}
-            </span>
-            <button className={styles.editIconBtn} onClick={handleEdit} title="Edit"
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#1a5fa8", padding: 3, borderRadius: 6, display: "flex", alignItems: "center", opacity: 0.7 }}>
-              <FiEdit2 size={14} />
-            </button>
-          </div>
+          </>
         )}
+        {apt.status !== "Pending" && (
+          <button onClick={() => onStatusChange(apt.id, "Pending")}
+            style={{ background: "#d6e6f7", color: "#1a5fa8", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+            Reset
+          </button>
+        )}
+      </td>
+      <td className={styles.aptExpandBtn}>
+        <button onClick={() => setExpanded(!expanded)} style={{
+          background: expanded ? "#d6e6f7" : "#f4f6f8", border: "none", borderRadius: 20,
+          padding: "4px 12px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+          fontSize: 12, fontWeight: 600, color: "#1a5fa8",
+        }}>
+          {expanded ? <><FiChevronUp size={13} /> Less</> : <><FiChevronDown size={13} /> More</>}
+        </button>
+      </td>
+    </tr>
+  );
+}
+
+function HistoryRow({ h, i, styles }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <tr style={{ borderTop: "1px solid #f0f4f8" }}>
+      <td className={styles.historyIdx} style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
+      <td data-label="Name" style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{h.name}</td>
+      <td data-label="Room" style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
+        <span style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13 }}>{h.room}</span>
+      </td>
+      <td data-label="Admitted" className={`${styles.historyExtra} ${expanded ? styles.historyExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{h.admitDate}</td>
+      <td data-label="Discharged" className={`${styles.historyExtra} ${expanded ? styles.historyExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{h.dischargeDate}</td>
+      <td data-label="Time" className={`${styles.historyExtra} ${expanded ? styles.historyExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
+        <span style={{ background: "#e6f9f0", color: "#27ae60", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13 }}>{h.dischargeTime}</span>
+      </td>
+      <td className={styles.historyExpandBtn}>
+        <button onClick={() => setExpanded(!expanded)} style={{
+          background: expanded ? "#d6e6f7" : "#f4f6f8", border: "none", borderRadius: 20,
+          padding: "4px 12px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+          fontSize: 12, fontWeight: 600, color: "#1a5fa8",
+        }}>
+          {expanded ? <><FiChevronUp size={13} /> Less</> : <><FiChevronDown size={13} /> More</>}
+        </button>
       </td>
     </tr>
   );
@@ -263,14 +307,45 @@ function PatientRow({ patient, index, onUpdate, onDelete, roomCounts, onRoomClic
 function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loading, error, labRequests }) {
   const roomCounts = patients.reduce((acc, p) => { acc[p.room] = (acc[p.room] || 0) + 1; return acc; }, {});
   const occupiedBeds = patients.length;
-  const [activeTab, setActiveTab] = useState("Admitted");
   const freeRooms = ALL_ROOMS.filter(r => !roomCounts[r]).length;
-  const [showAdd, setShowAdd]   = useState(false);
-  const [newName, setNewName]   = useState("");
-  const [newRoom, setNewRoom]   = useState("");
-  const [addError, setAddError] = useState("");
+  const [showAdd, setShowAdd]       = useState(false);
+  const [newName, setNewName]       = useState("");
+  const [newRoom, setNewRoom]       = useState("");
+  const [addError, setAddError]     = useState("");
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving]         = useState(false);
+
+  const [editPatient, setEditPatient]   = useState(null);
+  const [editName, setEditName]         = useState("");
+  const [editRoom, setEditRoom]         = useState("");
+  const [editStatus, setEditStatus]     = useState("");
+  const [editError, setEditError]       = useState("");
+  const [editSaving, setEditSaving]     = useState(false);
+
+  const openEdit = (patient) => {
+    setEditPatient(patient);
+    setEditName(patient.name);
+    setEditRoom(patient.room);
+    setEditStatus(patient.status);
+    setEditError("");
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editName.trim() || !editRoom) { setEditError("Please fill in all fields."); return; }
+    const targetRoomCount = roomCounts[editRoom] || 0;
+    const isRoomChange = editRoom !== editPatient.room;
+    if (isRoomChange && targetRoomCount >= 2) { setEditError("This room is already full (2 patients)."); return; }
+    setEditSaving(true);
+    try {
+      await onUpdate(editPatient.id, { name: editName.trim(), room: editRoom, status: editStatus });
+      setEditPatient(null);
+    } catch {
+      setEditError("Failed to save. Please try again.");
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -289,18 +364,6 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
 
   return (
     <>
-      {/* Sub-tabs */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
-        {["Admitted", "Lab"].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} style={{
-            padding: "0.45rem 1.2rem", borderRadius: 8, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
-            background: activeTab === tab ? "#1a5fa8" : "#d6e6f7",
-            color: activeTab === tab ? "#fff" : "#1a5fa8",
-          }}>{tab}</button>
-        ))}
-      </div>
-
-      {activeTab === "Admitted" && <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
         {/* Title + subtitle */}
         <div>
@@ -323,6 +386,40 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
           </button>
         </div>
       </div>
+
+      {editPatient && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, maxWidth: "calc(100vw - 2rem)", boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>Edit Patient</h3>
+              <FiX size={20} style={{ cursor: "pointer", color: "#888" }} onClick={() => setEditPatient(null)} />
+            </div>
+            <form onSubmit={handleEditSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {editError && <p style={{ color: "#e74c3c", fontSize: 13, margin: 0 }}>{editError}</p>}
+              <input placeholder="Patient Name" value={editName} onChange={e => setEditName(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none" }} />
+              <select value={editRoom} onChange={e => setEditRoom(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none", background: "#fff" }}>
+                <option value="" disabled>Select Room</option>
+                {ALL_ROOMS.map(r => (
+                  <option key={r} value={r} disabled={(roomCounts[r] || 0) >= 2 && r !== editPatient.room}>
+                    {r}{(roomCounts[r] || 0) >= 2 && r !== editPatient.room ? " (Full)" : (roomCounts[r] === 1 && r !== editPatient.room ? " (1/2)" : "")}
+                  </option>
+                ))}
+              </select>
+              <select value={editStatus} onChange={e => setEditStatus(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none", background: "#fff" }}>
+                <option value="Admitted">Admitted</option>
+                <option value="Observation">Observation</option>
+                <option value="Discharged">Discharged</option>
+              </select>
+              <button type="submit" disabled={editSaving} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.75rem", fontWeight: 700, fontSize: 15, cursor: editSaving ? "not-allowed" : "pointer", opacity: editSaving ? 0.7 : 1 }}>
+                {editSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {showAdd && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
@@ -398,6 +495,7 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
         <table className={styles.patientTable} style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "#d6e6f7" }}>
+              <th style={{ padding: "0.9rem 1rem", textAlign: "center", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: 40 }}>#</th>
               {[
                 { full: "Name",     short: "Name" },
                 { full: "Room",     short: "Rm"   },
@@ -420,47 +518,12 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
               <tr><td colSpan={4} style={{ textAlign: "center", padding: "2rem", color: "#aaa" }}>No admitted patients. Click "+ Add Patient" to admit one.</td></tr>
             ) : (
               [...patients].sort((a, b) => parseInt(a.room.replace("Room ", "")) - parseInt(b.room.replace("Room ", ""))).map((p, i) => (
-                <PatientRow key={p.id} index={i} patient={p} onUpdate={onUpdate} onDelete={onDelete} roomCounts={roomCounts} onRoomClick={setSelectedRoom} />
+                <PatientRow key={p.id} index={i} patient={p} onDelete={onDelete} roomCounts={roomCounts} onRoomClick={setSelectedRoom} onEdit={openEdit} />
               ))
             )}
           </tbody>
         </table>
       </div>
-      </>}
-
-      {activeTab === "Lab" && (
-        <div>
-          <h2 style={{ fontWeight: 700, fontSize: "clamp(16px, 4vw, 22px)", color: "#1a5fa8", margin: "0 0 1rem 0" }}>
-            Lab Requests
-          </h2>
-          {!labRequests || labRequests.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "#aaa", fontSize: 15 }}>No lab requests yet.</div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {labRequests.map(req => (
-                <div key={req.id} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "1rem 1.2rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>{req.patientName}</div>
-                      {req.patientPhone && <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>📞 {req.patientPhone}</div>}
-                    </div>
-                    <span style={{
-                      fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20,
-                      background: req.status === "Accepted" ? "#e6f9f0" : req.status === "Denied" ? "#ffeaea" : "#fff4e5",
-                      color:      req.status === "Accepted" ? "#27ae60" : req.status === "Denied" ? "#e74c3c" : "#e67e22",
-                    }}>{req.status}</span>
-                  </div>
-                  <div style={{ marginTop: "0.6rem", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                    {req.tests.map(t => (
-                      <span key={t.name} style={{ background: "#d6e6f7", color: "#1a5fa8", fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20 }}>{t.name}</span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </>
   );
 }
@@ -559,7 +622,7 @@ function StaffRow({ member, index, onUpdate, onRemove }) {
   const inputStyle = { fontSize: 14, border: "1px solid #1a5fa8", borderRadius: 6, padding: "3px 8px", outline: "none", width: "100%" };
 
   return (
-    <tr style={{ borderTop: "1px solid #f0f4f8", background: editing ? "#f7faff" : "transparent" }}>
+    <tr className={styles.dataRow} style={{ borderTop: "1px solid #f0f4f8", background: editing ? "#f7faff" : "transparent" }}>
       <td style={{ ...cellStyle, color: "#888" }}>{index + 1}</td>
       <td style={cellStyle}>
         {editing ? <input value={temp.name} onChange={e => setTemp(p => ({ ...p, name: e.target.value }))} style={inputStyle} /> :
@@ -684,7 +747,7 @@ function StaffSection({ title, staff, setStaff }) {
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [activeNav, setActiveNav]       = useState("Dashboard");
+  const [activeNav, setActiveNav]       = useState(() => (typeof window !== "undefined" ? localStorage.getItem("adminActiveNav") || "Dashboard" : "Dashboard"));
   const [sidebarOpen, setSidebarOpen]   = useState(false);
   const [doctors, setDoctors]           = useState(INITIAL_DOCTORS);
   const [appointments, setAppointments]   = useState([]);
@@ -711,6 +774,10 @@ export default function AdminDashboard() {
   const [showForm, setShowForm]         = useState(false);
   const [form, setForm]                 = useState(EMPTY_FORM);
   const [formError, setFormError]       = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("adminActiveNav", activeNav);
+  }, [activeNav]);
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -966,7 +1033,7 @@ export default function AdminDashboard() {
         hist.set("room",          patient.room);
         hist.set("admitDate",     patient.admitDate);
         hist.set("dischargeDate", now.toISOString().slice(0, 10));
-        hist.set("dischargeTime", now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+        hist.set("dischargeTime", now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true }));
         await hist.save();
         await obj.destroy();
         setPatients(prev => prev.filter(p => p.id !== id));
@@ -1074,6 +1141,9 @@ export default function AdminDashboard() {
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
+        {/* X close button — mobile only */}
+        <button className={styles.sidebarCloseBtn} onClick={() => setSidebarOpen(false)} aria-label="Close menu">✕</button>
+
         <div style={{ marginBottom: 32, width: "100%", padding: "0.5rem 1.5rem 0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
             <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#fff", flexShrink: 0 }}></div>
@@ -1107,7 +1177,7 @@ export default function AdminDashboard() {
               <span className={styles.hamburgerLine} />
               <span className={styles.hamburgerLine} />
             </button>
-            <img src="/logo.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 44, height: 44, objectFit: "contain", flexShrink: 0 }} />
+            <img src="/Logo-medicover.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 53, height: 53, objectFit: "contain", flexShrink: 0 }} />
             <div style={{ fontWeight: 800, fontSize: "clamp(13px, 3vw, 24px)", color: "#1a5fa8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>Medicover Management</div>
           </div>
           {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Report", "Appointment"].includes(activeNav) && (
@@ -1293,55 +1363,19 @@ export default function AdminDashboard() {
             ) : (
               <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                 <div className={styles.tableWrap}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <table className={styles.appointmentTable} style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr style={{ background: "#d6e6f7" }}>
-                      {["#", "Patient Name", "Age", "Gender", "Doctor", "Date", "Time", "Status", "Action"].map(h => (
+                      {["#", "Patient Name", "Status", "Age", "Gender", "Doctor", "Date", "Time", "Action"].map(h => (
                         <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, whiteSpace: "nowrap" }}>{h}</th>
                       ))}
+                      <th className={styles.aptExpandBtn} />
                     </tr>
                   </thead>
                   <tbody>
-                    {appointments.map((apt, i) => {
-                      const statusStyle =
-                        apt.status === "Accepted" ? { background: "#27ae60", color: "#fff" } :
-                        apt.status === "Denied"   ? { background: "#e74c3c", color: "#fff" } :
-                                                    { background: "#fff4e5", color: "#e67e22" };
-                      return (
-                      <tr key={apt.id} style={{ borderTop: "1px solid #f0f4f8" }}>
-                        <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{apt.name}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.age}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.gender}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.doctor}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#888" }}>{apt.date}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#888" }}>{apt.time}</td>
-                        <td style={{ padding: "0.8rem 1rem" }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20, ...statusStyle }}>{apt.status}</span>
-                        </td>
-                        <td style={{ padding: "0.8rem 1rem", whiteSpace: "nowrap" }}>
-                          {apt.status === "Pending" && (
-                            <>
-                              <button onClick={() => handleStatusChange(apt.id, "Accepted")}
-                                style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer", marginRight: 6 }}>
-                                Accept
-                              </button>
-                              <button onClick={() => handleStatusChange(apt.id, "Denied")}
-                                style={{ background: "#e74c3c", color: "#fff", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                                Deny
-                              </button>
-                            </>
-                          )}
-                          {apt.status !== "Pending" && (
-                            <button onClick={() => handleStatusChange(apt.id, "Pending")}
-                              style={{ background: "#d6e6f7", color: "#1a5fa8", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                              Reset
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                      );
-                    })}
+                    {appointments.map((apt, i) => (
+                      <AppointmentRow key={apt.id} apt={apt} i={i} onStatusChange={handleStatusChange} styles={styles} />
+                    ))}
                   </tbody>
                 </table>
                 </div>
@@ -1363,12 +1397,12 @@ export default function AdminDashboard() {
         {/* Patient History */}
         {activeNav === "Patient History" && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>
-                Patient History
-                <span style={{ fontSize: 13, color: "#888", fontWeight: 400, marginLeft: 12 }}>Patients automatically move here when discharged</span>
-              </h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div className={styles.historyHeader}>
+              <div>
+                <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: "0 0 2px 0" }}>Patient History</h2>
+                <p style={{ fontSize: 13, color: "#888", margin: 0 }}>Patients automatically move here when discharged</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
                 <input
                   placeholder="Search by name..."
                   value={historySearch}
@@ -1391,28 +1425,18 @@ export default function AdminDashboard() {
               ) : (
                 <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                   <div className={styles.tableWrap}>
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <table className={styles.historyTable} style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{ background: "#d6e6f7" }}>
                         {["#", "Patient Name", "Room", "Admitted On", "Discharged On", "Discharge Time"].map(h => (
                           <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>{h}</th>
                         ))}
+                        <th className={styles.historyExpandBtn} />
                       </tr>
                     </thead>
                     <tbody>
                       {filtered.map((h, i) => (
-                        <tr key={h.id} style={{ borderTop: "1px solid #f0f4f8" }}>
-                          <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
-                          <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{h.name}</td>
-                          <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-                            <span style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13 }}>{h.room}</span>
-                          </td>
-                          <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{h.admitDate}</td>
-                          <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{h.dischargeDate}</td>
-                          <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-                            <span style={{ background: "#e6f9f0", color: "#27ae60", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13 }}>{h.dischargeTime}</span>
-                          </td>
-                        </tr>
+                        <HistoryRow key={h.id} h={h} i={i} styles={styles} />
                       ))}
                     </tbody>
                   </table>
@@ -1621,7 +1645,7 @@ export default function AdminDashboard() {
                   r.patientName.toLowerCase().includes(slotsSearch.toLowerCase()) ||
                   r.patientPhone.toLowerCase().includes(slotsSearch.toLowerCase())
                 ).map((req) => (
-                  <div key={req.id} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "1.2rem 1.5rem" }}>
+                  <div key={req.id} className={styles.slotCard} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "1.2rem 1.5rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 15, color: "#1a5fa8" }}>{req.patientName}</div>
@@ -1693,10 +1717,11 @@ export default function AdminDashboard() {
                 {reports.filter(r => r.patientName.toLowerCase().includes(reportSearch.toLowerCase())).map((rep) => {
                   const expanded = !!expandedReports[rep.id];
                   return (
-                    <div key={rep.id} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                    <div key={rep.id} className={styles.reportCard} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                       {/* Summary row — always visible, click to expand */}
                       <div
                         onClick={() => setExpandedReports(prev => ({ ...prev, [rep.id]: !prev[rep.id] }))}
+                        className={!expanded ? styles.reportSummaryRow : ""}
                         style={{ padding: "1rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", background: expanded ? "#1a5fa8" : "#fff", transition: "background 0.2s" }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "1.2rem", flexWrap: "wrap" }}>
@@ -1739,7 +1764,7 @@ export default function AdminDashboard() {
                                 </thead>
                                 <tbody>
                                   {t.results.map((row, ri) => (
-                                    <tr key={ri} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                                    <tr key={ri} className={styles.dataRow} style={{ borderBottom: "1px solid #f0f0f0" }}>
                                       <td style={{ padding: "6px 10px", border: "1px solid #f0f0f0", fontWeight: 600 }}>{row.param}</td>
                                       <td style={{ padding: "6px 10px", border: "1px solid #f0f0f0" }}>{row.value}</td>
                                       <td style={{ padding: "6px 10px", border: "1px solid #f0f0f0", color: "#888" }}>{row.range}</td>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import Parse from '@/lib/parseConfig';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export default function PatientLogin() {
   const router = useRouter();
@@ -8,6 +9,7 @@ export default function PatientLogin() {
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
   const [loading, setLoading]   = useState(false);
+  const [showPw, setShowPw]     = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -57,7 +59,7 @@ export default function PatientLogin() {
       <div style={{ flex: 1.4, background: '#fff', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '3rem 5vw' }}>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
-          <img src="/logo.png" alt="Medicover Logo" style={{ width: 80, height: 80, objectFit: 'contain' }} />
+          <img src="/Logo-medicover.png" alt="Medicover Logo" style={{ width: 96, height: 96, objectFit: 'contain' }} />
           <span style={{ fontSize: '2.2rem', fontWeight: 800, color: '#1a5fa8' }}>Medicover Hospital</span>
         </div>
 
@@ -77,13 +79,18 @@ export default function PatientLogin() {
             onChange={e => setEmail(e.target.value)}
             style={{ padding: '0.85rem 1.1rem', borderRadius: 10, border: '1.5px solid #d6e6f7', fontSize: 14, outline: 'none', background: '#f7faff' }}
           />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            style={{ padding: '0.85rem 1.1rem', borderRadius: 10, border: '1.5px solid #d6e6f7', fontSize: 14, outline: 'none', background: '#f7faff' }}
-          />
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+            <input
+              type={showPw ? 'text' : 'password'}
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              style={{ width: '100%', padding: '0.85rem 2.8rem 0.85rem 1.1rem', borderRadius: 10, border: '1.5px solid #d6e6f7', fontSize: 14, outline: 'none', background: '#f7faff', boxSizing: 'border-box' }}
+            />
+            <span onClick={() => setShowPw(!showPw)} style={{ position: 'absolute', right: '0.9rem', cursor: 'pointer', display: 'flex', alignItems: 'center', color: '#555' }}>
+              {showPw ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+            </span>
+          </div>
           <button
             type="submit"
             disabled={loading}

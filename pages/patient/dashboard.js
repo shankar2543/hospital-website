@@ -116,7 +116,7 @@ function ProfileSection({ name, email, phone, setEmail, setPhone }) {
 
 export default function PatientDashboard() {
   const router = useRouter();
-  const [activeNav, setActiveNav]       = useState("Dashboard");
+  const [activeNav, setActiveNav]       = useState(() => (typeof window !== "undefined" ? localStorage.getItem("patientActiveNav") || "Dashboard" : "Dashboard"));
   const [name, setName]                 = useState("");
   const [email, setEmail]               = useState("");
   const [phone, setPhone]               = useState("");
@@ -131,6 +131,10 @@ export default function PatientDashboard() {
   const [reports, setReports]             = useState([]);
   const [reportsLoading, setReportsLoading] = useState(false);
   const [expandedReports, setExpandedReports] = useState({});
+
+  useEffect(() => {
+    localStorage.setItem("patientActiveNav", activeNav);
+  }, [activeNav]);
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -292,6 +296,9 @@ export default function PatientDashboard() {
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
+        {/* X close button — mobile only */}
+        <button className={styles.sidebarCloseBtn} onClick={() => setSidebarOpen(false)} aria-label="Close menu">✕</button>
+
         <div style={{ marginBottom: 32, width: "100%", padding: "0.5rem 1.5rem 0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
             <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -340,7 +347,7 @@ export default function PatientDashboard() {
               <span className={styles.hamburgerLine} />
               <span className={styles.hamburgerLine} />
             </button>
-            <img src="/logo.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 44, height: 44, objectFit: "contain", flexShrink: 0 }} />
+            <img src="/Logo-medicover.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 53, height: 53, objectFit: "contain", flexShrink: 0 }} />
             <div style={{ fontWeight: 800, fontSize: "clamp(13px, 3vw, 24px)", color: "#1a5fa8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>Patient Portal</div>
           </div>
           {activeNav !== "Lab & Diagnostics" && (
@@ -621,10 +628,11 @@ export default function PatientDashboard() {
                 {reports.map(rep => {
                   const expanded = !!expandedReports[rep.id];
                   return (
-                    <div key={rep.id} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                    <div key={rep.id} className={styles.reportCard} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                       {/* Summary row — click to expand */}
                       <div
                         onClick={() => setExpandedReports(prev => ({ ...prev, [rep.id]: !prev[rep.id] }))}
+                        className={!expanded ? styles.reportSummaryRow : ""}
                         style={{ padding: "1rem 1.4rem", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", background: expanded ? "#1a5fa8" : "#fff", transition: "background 0.2s" }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "1.2rem", flexWrap: "wrap" }}>
@@ -664,7 +672,7 @@ export default function PatientDashboard() {
                                   </thead>
                                   <tbody>
                                     {t.results.map((row, ri) => (
-                                      <tr key={ri} style={{ borderTop: "1px solid #f0f4f8", background: ri % 2 === 0 ? "#fff" : "#fafcff" }}>
+                                      <tr key={ri} className={styles.dataRow} style={{ borderTop: "1px solid #f0f4f8", background: ri % 2 === 0 ? "#fff" : "#fafcff" }}>
                                         <td style={{ padding: "0.6rem 1.2rem", fontSize: 13, fontWeight: 600 }}>{row.param}</td>
                                         <td style={{ padding: "0.6rem 1.2rem", fontSize: 13 }}>{row.value}</td>
                                         <td style={{ padding: "0.6rem 1.2rem", fontSize: 13, color: "#888" }}>{row.range}</td>

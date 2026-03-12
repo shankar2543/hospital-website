@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/router';
 import styles from '../styles/LoginSignup.module.css';
 import Parse from '@/lib/parseConfig';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export default function Login() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -152,7 +154,7 @@ export default function Login() {
       <div className={styles.leftPanel}>
         <div className={styles.headerRow}>
           <span className={styles.appName}>Medicover Hospital</span>
-          <img src="/logo.png" alt="Medicover Logo" className={styles.headerLogo} />
+          <img src="/Logo-medicover.png" alt="Medicover Logo" className={styles.headerLogo} />
         </div>
         <h1 className={styles.titleSmall}>Login to Your Account</h1>
         <p className={styles.subtitle}>Login using social networks</p>
@@ -174,14 +176,17 @@ export default function Login() {
             className={styles.input + ' ' + styles.inputMedium} 
           />
           <div className={styles.passwordRow}>
-            <input 
-              type="password" 
+            <input
+              type={showPw ? 'text' : 'password'}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className={styles.input + ' ' + styles.inputMedium} 
+              className={styles.input + ' ' + styles.inputMedium}
             />
+            <span className={styles.eyeIcon} onClick={() => setShowPw(!showPw)}>
+              {showPw ? <FiEyeOff size={18} color="#fff" /> : <FiEye size={18} color="#fff" />}
+            </span>
           </div>
           <button 
             type="submit" 

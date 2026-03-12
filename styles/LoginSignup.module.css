@@ -56,8 +56,14 @@
 }
 
 .navLogo {
-  width: 56px;
-  height: 56px;
+  width: 67px;
+  height: 67px;
+  object-fit: contain;
+}
+
+.headerLogo {
+  width: 67px;
+  height: 67px;
   object-fit: contain;
 }
 
@@ -293,8 +299,8 @@
 }
 
 .cardLogoImg {
-  width: 38px;
-  height: 38px;
+  width: 46px;
+  height: 46px;
   object-fit: contain;
 }
 
@@ -389,14 +395,23 @@
   position: relative;
   display: flex;
   align-items: center;
+  width: 100%;
+}
+
+.passwordRow input {
+  padding-right: 2.8rem !important;
+  width: 100%;
 }
 
 .eyeIcon {
   position: absolute;
-  right: 1rem;
+  right: 0.9rem;
   cursor: pointer;
-  font-size: 1rem;
   user-select: none;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  color: #000;
 }
 
 .signInBtn {
@@ -533,8 +548,8 @@
   }
 
   .navLogo {
-    width: 40px;
-    height: 40px;
+    width: 48px;
+    height: 48px;
   }
 
   .contactBtn {

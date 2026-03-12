@@ -52,6 +52,109 @@
   margin-top: 50px;
 }
 
+/* Slide — invisible pass-through on desktop */
+.carouselSlide {
+  display: contents;
+}
+
+/* Dots — hidden on desktop */
+.carouselDots {
+  display: none;
+}
+
+.carouselDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: #b0bec5;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.25s ease;
+}
+
+.carouselDotActive {
+  background: #1a5fa8;
+  width: 22px;
+  border-radius: 4px;
+}
+
+@media (max-width: 640px) {
+  .aboutSection {
+    padding: 40px 20px;
+    min-height: unset;
+    align-items: flex-start;
+  }
+
+  .aboutContainer {
+    width: 100%;
+    text-align: center;
+  }
+
+  .aboutTitle {
+    font-size: 28px;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  .aboutContent {
+    text-align: center;
+    font-size: 15px;
+    line-height: 1.7;
+    margin-bottom: 0;
+    padding: 0 4px;
+  }
+
+  .aboutGrid {
+    display: flex;
+    overflow-x: scroll;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    gap: 0;
+    margin-top: 20px;
+    padding: 8px 0;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .aboutGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carouselSlide {
+    display: flex;
+    flex: 0 0 100%;
+    justify-content: center;
+    align-items: center;
+    scroll-snap-align: center;
+    padding: 12px 0;
+  }
+
+  .featureCard {
+    flex: none;
+    width: 72vw;
+    height: 72vw;
+    max-width: 280px;
+    max-height: 280px;
+    scroll-snap-align: unset;
+    padding: 24px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .carouselDots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-top: 18px;
+  }
+}
+
 .featureCard {
   background: white;
   padding: 30px;
@@ -270,6 +373,17 @@
   opacity: 0.9;
 }
 
+.whyStatement {
+  margin-top: 40px;
+  font-size: 1rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.82);
+  max-width: 780px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
 /* Footer */
 .footer {
   background-color: #000;
@@ -373,6 +487,14 @@
     font-size: 26px;
   }
 
+  .statsTitle {
+    margin-bottom: 10px;
+  }
+
+  .whyStatement {
+    margin-top: 80px;
+  }
+
   .featureCard {
     padding: 20px;
   }
@@ -408,12 +530,21 @@
     font-size: 0.65rem;
   }
 
+  .statsGrid {
+    gap: 8px;
+  }
+
+  .statCard {
+    padding: 12px 8px;
+  }
+
   .statNumber {
-    font-size: 32px;
+    font-size: 28px;
+    margin-bottom: 2px;
   }
 
   .statLabel {
-    font-size: 15px;
+    font-size: 13px;
   }
 
   .footer {
