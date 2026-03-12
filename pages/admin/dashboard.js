@@ -571,7 +571,7 @@ function StaffRow({ member, index, onUpdate, onRemove }) {
   const inputStyle = { fontSize: 14, border: "1px solid #1a5fa8", borderRadius: 6, padding: "3px 8px", outline: "none", width: "100%" };
 
   return (
-    <tr style={{ borderTop: "1px solid #f0f4f8", background: editing ? "#f7faff" : "transparent" }}>
+    <tr className={styles.dataRow} style={{ borderTop: "1px solid #f0f4f8", background: editing ? "#f7faff" : "transparent" }}>
       <td style={{ ...cellStyle, color: "#888" }}>{index + 1}</td>
       <td style={cellStyle}>
         {editing ? <input value={temp.name} onChange={e => setTemp(p => ({ ...p, name: e.target.value }))} style={inputStyle} /> :
@@ -1324,7 +1324,7 @@ export default function AdminDashboard() {
                         apt.status === "Denied"   ? { background: "#e74c3c", color: "#fff" } :
                                                     { background: "#fff4e5", color: "#e67e22" };
                       return (
-                      <tr key={apt.id} style={{ borderTop: "1px solid #f0f4f8" }}>
+                      <tr key={apt.id} className={styles.dataRow} style={{ borderTop: "1px solid #f0f4f8" }}>
                         <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
                         <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{apt.name}</td>
                         <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.age}</td>

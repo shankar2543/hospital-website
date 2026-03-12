@@ -271,6 +271,36 @@
   display: none;
 }
 
+/* ===== ROW / CARD HOVER HIGHLIGHTS ===== */
+.dataRow {
+  transition: background 0.15s ease;
+}
+.dataRow:hover {
+  background: #c8dff7 !important;
+}
+
+.patientTable tbody tr {
+  transition: background 0.15s ease;
+}
+.patientTable tbody tr:hover {
+  background: #c8dff7 !important;
+}
+
+.historyTable tbody tr {
+  transition: background 0.15s ease;
+}
+.historyTable tbody tr:hover {
+  background: #c8dff7 !important;
+}
+
+.slotCard {
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+.slotCard:hover {
+  background: #c8dff7 !important;
+  box-shadow: 0 4px 16px rgba(26, 95, 168, 0.18) !important;
+}
+
 /* ===== TABLET (≤ 900px) ===== */
 @media (max-width: 900px) {
   .layout {
