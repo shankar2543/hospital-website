@@ -164,124 +164,62 @@ const STATUS_PATIENT_COLORS = {
   "Observation":   { bg: "#f97316", color: "#fff" },
 };
 
-function PatientRow({ patient, index, onUpdate, onDelete, roomCounts, onRoomClick }) {
-  const [editing,      setEditing]      = useState(false);
-  const [tempName,     setTempName]     = useState(patient.name);
-  const [tempRoom,     setTempRoom]     = useState(patient.room);
-  const [tempStatus,   setTempStatus]   = useState(patient.status);
-  const [hoverEdit,    setHoverEdit]    = useState(false);
-  const [hoverDelete,  setHoverDelete]  = useState(false);
+function PatientRow({ patient, index, onDelete, onRoomClick, onEdit }) {
+  const [hoverEdit,   setHoverEdit]   = useState(false);
+  const [hoverDelete, setHoverDelete] = useState(false);
 
   const sc = STATUS_PATIENT_COLORS[patient.status] || STATUS_PATIENT_COLORS["Admitted"];
 
-  const handleEdit = () => {
-    setTempName(patient.name);
-    setTempRoom(patient.room);
-    setTempStatus(patient.status);
-    setEditing(true);
-  };
-
-  const handleSave = () => {
-    if (!tempName.trim()) return;
-    onUpdate(patient.id, { name: tempName.trim(), room: tempRoom, status: tempStatus });
-    setEditing(false);
-  };
-
-  const handleCancel = () => {
-    setTempName(patient.name);
-    setTempRoom(patient.room);
-    setTempStatus(patient.status);
-    setEditing(false);
-  };
-
   return (
-    <tr style={{ borderTop: "1px solid #f0f4f8", background: editing ? "#f4f8fc" : "inherit" }}>
+    <tr style={{ borderTop: "1px solid #f0f4f8" }}>
       <td className={styles.patientIdx} style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{index + 1}</td>
 
-      {/* Name — first visible column */}
       <td data-label="Name" style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-        {editing
-          ? <input autoFocus value={tempName} onChange={e => setTempName(e.target.value)}
-              onKeyDown={e => { if (e.key === "Enter") handleSave(); if (e.key === "Escape") handleCancel(); }}
-              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none", width: "100%", maxWidth: 160 }} />
-          : <span style={{ fontWeight: 600 }}>{patient.name}</span>
-        }
+        <span style={{ fontWeight: 600 }}>{patient.name}</span>
       </td>
 
-      {/* Room — show number only */}
       <td data-label="Room" style={{ padding: "0.8rem 1rem", fontSize: 14, whiteSpace: "nowrap" }}>
-        {editing
-          ? <select value={tempRoom} onChange={e => setTempRoom(e.target.value)}
-              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none" }}>
-              {ALL_ROOMS.map(r => (
-                <option key={r} value={r} disabled={(roomCounts[r] || 0) >= 2 && r !== patient.room}>
-                  {r}{(roomCounts[r] || 0) >= 2 && r !== patient.room ? " (Full)" : (roomCounts[r] === 1 && r !== patient.room ? " (1/2)" : "")}
-                </option>
-              ))}
-            </select>
-          : <span className={styles.roomBadge} style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
-              onClick={() => onRoomClick(patient.room)}>{patient.room.replace("Room ", "")}</span>
-        }
+        <span className={styles.roomBadge} style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
+          onClick={() => onRoomClick(patient.room)}>{patient.room.replace("Room ", "")}</span>
       </td>
 
-      {/* Date of Admit */}
       <td data-label="Admitted" style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555", whiteSpace: "nowrap" }}>{shortDate(patient.admitDate)}</td>
 
-      {/* Status — edit icon sits right on the badge; in edit mode shows dropdown + save/cancel icons */}
       <td data-label="Status" style={{ padding: "0.8rem 1rem" }}>
-        {editing ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-            <select value={tempStatus} onChange={e => setTempStatus(e.target.value)}
-              style={{ fontSize: 13, border: "1px solid #1a5fa8", borderRadius: 6, padding: "4px 8px", outline: "none" }}>
-              <option value="Admitted">Admitted</option>
-              <option value="Observation">Observation</option>
-              <option value="Discharged">Discharged</option>
-            </select>
-            <button onClick={handleSave} title="Save"
-              style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 6, padding: "4px 7px", cursor: "pointer", display: "flex", alignItems: "center" }}>
-              <FiCheck size={14} />
-            </button>
-            <button onClick={handleCancel} title="Cancel"
-              style={{ background: "#f0f4f8", color: "#555", border: "none", borderRadius: 6, padding: "4px 7px", cursor: "pointer", display: "flex", alignItems: "center" }}>
-              <FiX size={14} />
-            </button>
-          </div>
-        ) : (
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
-            <span className={styles.statusBadge} style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 130, textAlign: "center" }}>
-              {patient.status}
-            </span>
-            <div style={{ width: 1, height: 22, background: "#dde3ea", borderRadius: 2, flexShrink: 0 }} />
-            <button
-              onClick={handleEdit} title="Edit"
-              onMouseEnter={() => setHoverEdit(true)}
-              onMouseLeave={() => setHoverEdit(false)}
-              style={{
-                background: hoverEdit ? "#e8fdf0" : "#f4f6f8",
-                border: "none", cursor: "pointer", borderRadius: "50%",
-                width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
-                color: hoverEdit ? "#27ae60" : "#9aa5b4",
-                boxShadow: hoverEdit ? "0 0 0 3px #b6f0ce, 0 2px 8px rgba(39,174,96,0.25)" : "none",
-                transition: "all 0.18s ease",
-              }}>
-              <FiEdit2 size={15} />
-            </button>
-            <button
-              onClick={() => onDelete(patient.id)} title="Delete"
-              onMouseEnter={() => setHoverDelete(true)}
-              onMouseLeave={() => setHoverDelete(false)}
-              style={{
-                background: hoverDelete ? "#fff0f0" : "#f4f6f8",
-                border: "none", cursor: "pointer", borderRadius: "50%",
-                width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
-                color: hoverDelete ? "#e74c3c" : "#9aa5b4",
-                boxShadow: hoverDelete ? "0 0 0 3px #ffc2c2, 0 2px 8px rgba(231,76,60,0.25)" : "none",
-                transition: "all 0.18s ease",
-              }}>
-              <FiTrash2 size={15} />
-            </button>
-          </div>
-        )}
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
+          <span className={styles.statusBadge} style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 130, textAlign: "center" }}>
+            {patient.status}
+          </span>
+          <div style={{ width: 1, height: 22, background: "#dde3ea", borderRadius: 2, flexShrink: 0 }} />
+          <button
+            onClick={() => onEdit(patient)} title="Edit"
+            onMouseEnter={() => setHoverEdit(true)}
+            onMouseLeave={() => setHoverEdit(false)}
+            style={{
+              background: hoverEdit ? "#e8fdf0" : "#f4f6f8",
+              border: "none", cursor: "pointer", borderRadius: "50%",
+              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+              color: hoverEdit ? "#27ae60" : "#9aa5b4",
+              boxShadow: hoverEdit ? "0 0 0 3px #b6f0ce, 0 2px 8px rgba(39,174,96,0.25)" : "none",
+              transition: "all 0.18s ease",
+            }}>
+            <FiEdit2 size={15} />
+          </button>
+          <button
+            onClick={() => onDelete(patient.id)} title="Delete"
+            onMouseEnter={() => setHoverDelete(true)}
+            onMouseLeave={() => setHoverDelete(false)}
+            style={{
+              background: hoverDelete ? "#fff0f0" : "#f4f6f8",
+              border: "none", cursor: "pointer", borderRadius: "50%",
+              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+              color: hoverDelete ? "#e74c3c" : "#9aa5b4",
+              boxShadow: hoverDelete ? "0 0 0 3px #ffc2c2, 0 2px 8px rgba(231,76,60,0.25)" : "none",
+              transition: "all 0.18s ease",
+            }}>
+            <FiTrash2 size={15} />
+          </button>
+        </div>
       </td>
     </tr>
   );
@@ -291,12 +229,44 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
   const roomCounts = patients.reduce((acc, p) => { acc[p.room] = (acc[p.room] || 0) + 1; return acc; }, {});
   const occupiedBeds = patients.length;
   const freeRooms = ALL_ROOMS.filter(r => !roomCounts[r]).length;
-  const [showAdd, setShowAdd]   = useState(false);
-  const [newName, setNewName]   = useState("");
-  const [newRoom, setNewRoom]   = useState("");
-  const [addError, setAddError] = useState("");
+  const [showAdd, setShowAdd]       = useState(false);
+  const [newName, setNewName]       = useState("");
+  const [newRoom, setNewRoom]       = useState("");
+  const [addError, setAddError]     = useState("");
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [saving, setSaving] = useState(false);
+  const [saving, setSaving]         = useState(false);
+
+  const [editPatient, setEditPatient]   = useState(null);
+  const [editName, setEditName]         = useState("");
+  const [editRoom, setEditRoom]         = useState("");
+  const [editStatus, setEditStatus]     = useState("");
+  const [editError, setEditError]       = useState("");
+  const [editSaving, setEditSaving]     = useState(false);
+
+  const openEdit = (patient) => {
+    setEditPatient(patient);
+    setEditName(patient.name);
+    setEditRoom(patient.room);
+    setEditStatus(patient.status);
+    setEditError("");
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editName.trim() || !editRoom) { setEditError("Please fill in all fields."); return; }
+    const targetRoomCount = roomCounts[editRoom] || 0;
+    const isRoomChange = editRoom !== editPatient.room;
+    if (isRoomChange && targetRoomCount >= 2) { setEditError("This room is already full (2 patients)."); return; }
+    setEditSaving(true);
+    try {
+      await onUpdate(editPatient.id, { name: editName.trim(), room: editRoom, status: editStatus });
+      setEditPatient(null);
+    } catch {
+      setEditError("Failed to save. Please try again.");
+    } finally {
+      setEditSaving(false);
+    }
+  };
 
   const handleAdd = async (e) => {
     e.preventDefault();
@@ -337,6 +307,40 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
           </button>
         </div>
       </div>
+
+      {editPatient && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
+          <div style={{ background: "#fff", borderRadius: 16, padding: "2rem", width: 380, maxWidth: "calc(100vw - 2rem)", boxShadow: "0 8px 32px rgba(26,95,168,0.18)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
+              <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>Edit Patient</h3>
+              <FiX size={20} style={{ cursor: "pointer", color: "#888" }} onClick={() => setEditPatient(null)} />
+            </div>
+            <form onSubmit={handleEditSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              {editError && <p style={{ color: "#e74c3c", fontSize: 13, margin: 0 }}>{editError}</p>}
+              <input placeholder="Patient Name" value={editName} onChange={e => setEditName(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none" }} />
+              <select value={editRoom} onChange={e => setEditRoom(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none", background: "#fff" }}>
+                <option value="" disabled>Select Room</option>
+                {ALL_ROOMS.map(r => (
+                  <option key={r} value={r} disabled={(roomCounts[r] || 0) >= 2 && r !== editPatient.room}>
+                    {r}{(roomCounts[r] || 0) >= 2 && r !== editPatient.room ? " (Full)" : (roomCounts[r] === 1 && r !== editPatient.room ? " (1/2)" : "")}
+                  </option>
+                ))}
+              </select>
+              <select value={editStatus} onChange={e => setEditStatus(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none", background: "#fff" }}>
+                <option value="Admitted">Admitted</option>
+                <option value="Observation">Observation</option>
+                <option value="Discharged">Discharged</option>
+              </select>
+              <button type="submit" disabled={editSaving} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.75rem", fontWeight: 700, fontSize: 15, cursor: editSaving ? "not-allowed" : "pointer", opacity: editSaving ? 0.7 : 1 }}>
+                {editSaving ? "Saving..." : "Save Changes"}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       {showAdd && (
         <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 1000, padding: "1rem" }}>
@@ -434,7 +438,7 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
               <tr><td colSpan={4} style={{ textAlign: "center", padding: "2rem", color: "#aaa" }}>No admitted patients. Click "+ Add Patient" to admit one.</td></tr>
             ) : (
               [...patients].sort((a, b) => parseInt(a.room.replace("Room ", "")) - parseInt(b.room.replace("Room ", ""))).map((p, i) => (
-                <PatientRow key={p.id} index={i} patient={p} onUpdate={onUpdate} onDelete={onDelete} roomCounts={roomCounts} onRoomClick={setSelectedRoom} />
+                <PatientRow key={p.id} index={i} patient={p} onDelete={onDelete} roomCounts={roomCounts} onRoomClick={setSelectedRoom} onEdit={openEdit} />
               ))
             )}
           </tbody>
