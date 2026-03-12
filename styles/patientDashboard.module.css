@@ -32,6 +32,11 @@
   display: none; /* Chrome/Safari */
 }
 
+/* Hidden on desktop, shown inside mobile media query */
+.sidebarCloseBtn {
+  display: none;
+}
+
 .main {
   flex: 1;
   padding: 0 2.5rem 2rem; /* no top padding — topbar handles it */
@@ -434,6 +439,29 @@
 
   .sidebarOpen {
     transform: translateX(0);
+  }
+
+  .sidebarCloseBtn {
+    display: flex;
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background 0.2s;
+  }
+
+  .sidebarCloseBtn:hover {
+    background: rgba(255, 255, 255, 0.32);
   }
 
   .overlay {
