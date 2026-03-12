@@ -165,10 +165,12 @@ const STATUS_PATIENT_COLORS = {
 };
 
 function PatientRow({ patient, index, onUpdate, onDelete, roomCounts, onRoomClick }) {
-  const [editing,    setEditing]    = useState(false);
-  const [tempName,   setTempName]   = useState(patient.name);
-  const [tempRoom,   setTempRoom]   = useState(patient.room);
-  const [tempStatus, setTempStatus] = useState(patient.status);
+  const [editing,      setEditing]      = useState(false);
+  const [tempName,     setTempName]     = useState(patient.name);
+  const [tempRoom,     setTempRoom]     = useState(patient.room);
+  const [tempStatus,   setTempStatus]   = useState(patient.status);
+  const [hoverEdit,    setHoverEdit]    = useState(false);
+  const [hoverDelete,  setHoverDelete]  = useState(false);
 
   const sc = STATUS_PATIENT_COLORS[patient.status] || STATUS_PATIENT_COLORS["Admitted"];
 
@@ -245,13 +247,38 @@ function PatientRow({ patient, index, onUpdate, onDelete, roomCounts, onRoomClic
             </button>
           </div>
         ) : (
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <div style={{ display: "inline-flex", alignItems: "center", gap: 10 }}>
             <span className={styles.statusBadge} style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 130, textAlign: "center" }}>
               {patient.status}
             </span>
-            <button className={styles.editIconBtn} onClick={handleEdit} title="Edit"
-              style={{ background: "none", border: "none", cursor: "pointer", color: "#1a5fa8", padding: 3, borderRadius: 6, display: "flex", alignItems: "center", opacity: 0.7 }}>
-              <FiEdit2 size={14} />
+            <div style={{ width: 1, height: 22, background: "#dde3ea", borderRadius: 2, flexShrink: 0 }} />
+            <button
+              onClick={handleEdit} title="Edit"
+              onMouseEnter={() => setHoverEdit(true)}
+              onMouseLeave={() => setHoverEdit(false)}
+              style={{
+                background: hoverEdit ? "#e8fdf0" : "#f4f6f8",
+                border: "none", cursor: "pointer", borderRadius: "50%",
+                width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+                color: hoverEdit ? "#27ae60" : "#9aa5b4",
+                boxShadow: hoverEdit ? "0 0 0 3px #b6f0ce, 0 2px 8px rgba(39,174,96,0.25)" : "none",
+                transition: "all 0.18s ease",
+              }}>
+              <FiEdit2 size={15} />
+            </button>
+            <button
+              onClick={() => onDelete(patient.id)} title="Delete"
+              onMouseEnter={() => setHoverDelete(true)}
+              onMouseLeave={() => setHoverDelete(false)}
+              style={{
+                background: hoverDelete ? "#fff0f0" : "#f4f6f8",
+                border: "none", cursor: "pointer", borderRadius: "50%",
+                width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
+                color: hoverDelete ? "#e74c3c" : "#9aa5b4",
+                boxShadow: hoverDelete ? "0 0 0 3px #ffc2c2, 0 2px 8px rgba(231,76,60,0.25)" : "none",
+                transition: "all 0.18s ease",
+              }}>
+              <FiTrash2 size={15} />
             </button>
           </div>
         )}
@@ -263,7 +290,6 @@ function PatientRow({ patient, index, onUpdate, onDelete, roomCounts, onRoomClic
 function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loading, error, labRequests }) {
   const roomCounts = patients.reduce((acc, p) => { acc[p.room] = (acc[p.room] || 0) + 1; return acc; }, {});
   const occupiedBeds = patients.length;
-  const [activeTab, setActiveTab] = useState("Admitted");
   const freeRooms = ALL_ROOMS.filter(r => !roomCounts[r]).length;
   const [showAdd, setShowAdd]   = useState(false);
   const [newName, setNewName]   = useState("");
@@ -289,18 +315,6 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
 
   return (
     <>
-      {/* Sub-tabs */}
-      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1.5rem" }}>
-        {["Admitted", "Lab"].map(tab => (
-          <button key={tab} onClick={() => setActiveTab(tab)} style={{
-            padding: "0.45rem 1.2rem", borderRadius: 8, border: "none", cursor: "pointer", fontWeight: 600, fontSize: 14,
-            background: activeTab === tab ? "#1a5fa8" : "#d6e6f7",
-            color: activeTab === tab ? "#fff" : "#1a5fa8",
-          }}>{tab}</button>
-        ))}
-      </div>
-
-      {activeTab === "Admitted" && <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
         {/* Title + subtitle */}
         <div>
@@ -426,41 +440,6 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
           </tbody>
         </table>
       </div>
-      </>}
-
-      {activeTab === "Lab" && (
-        <div>
-          <h2 style={{ fontWeight: 700, fontSize: "clamp(16px, 4vw, 22px)", color: "#1a5fa8", margin: "0 0 1rem 0" }}>
-            Lab Requests
-          </h2>
-          {!labRequests || labRequests.length === 0 ? (
-            <div style={{ textAlign: "center", padding: "3rem", color: "#aaa", fontSize: 15 }}>No lab requests yet.</div>
-          ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-              {labRequests.map(req => (
-                <div key={req.id} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "1rem 1.2rem" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.5rem" }}>
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>{req.patientName}</div>
-                      {req.patientPhone && <div style={{ fontSize: 12, color: "#888", marginTop: 2 }}>📞 {req.patientPhone}</div>}
-                    </div>
-                    <span style={{
-                      fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20,
-                      background: req.status === "Accepted" ? "#e6f9f0" : req.status === "Denied" ? "#ffeaea" : "#fff4e5",
-                      color:      req.status === "Accepted" ? "#27ae60" : req.status === "Denied" ? "#e74c3c" : "#e67e22",
-                    }}>{req.status}</span>
-                  </div>
-                  <div style={{ marginTop: "0.6rem", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                    {req.tests.map(t => (
-                      <span key={t.name} style={{ background: "#d6e6f7", color: "#1a5fa8", fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 20 }}>{t.name}</span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </>
   );
 }
