@@ -226,6 +226,57 @@ function PatientRow({ patient, index, onDelete, onRoomClick, onEdit }) {
   );
 }
 
+function AppointmentRow({ apt, i, onStatusChange, styles }) {
+  const [expanded, setExpanded] = useState(false);
+  const statusStyle =
+    apt.status === "Accepted" ? { background: "#27ae60", color: "#fff" } :
+    apt.status === "Denied"   ? { background: "#e74c3c", color: "#fff" } :
+                                { background: "#fff4e5", color: "#e67e22" };
+  return (
+    <tr key={apt.id} className={styles.dataRow} style={{ borderTop: "1px solid #f0f4f8" }}>
+      <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
+      <td data-label="Name" style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{apt.name}</td>
+      <td data-label="Status" style={{ padding: "0.8rem 1rem" }}>
+        <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20, ...statusStyle }}>{apt.status}</span>
+      </td>
+      <td data-label="Age"    className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.age}</td>
+      <td data-label="Gender" className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.gender}</td>
+      <td data-label="Doctor" className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.doctor}</td>
+      <td data-label="Date"   className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#888" }}>{apt.date}</td>
+      <td data-label="Time"   className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#888" }}>{apt.time}</td>
+      <td data-label="Action" className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", whiteSpace: "nowrap" }}>
+        {apt.status === "Pending" && (
+          <>
+            <button onClick={() => onStatusChange(apt.id, "Accepted")}
+              style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer", marginRight: 6 }}>
+              Accept
+            </button>
+            <button onClick={() => onStatusChange(apt.id, "Denied")}
+              style={{ background: "#e74c3c", color: "#fff", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+              Deny
+            </button>
+          </>
+        )}
+        {apt.status !== "Pending" && (
+          <button onClick={() => onStatusChange(apt.id, "Pending")}
+            style={{ background: "#d6e6f7", color: "#1a5fa8", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
+            Reset
+          </button>
+        )}
+      </td>
+      <td className={styles.aptExpandBtn}>
+        <button onClick={() => setExpanded(!expanded)} style={{
+          background: expanded ? "#d6e6f7" : "#f4f6f8", border: "none", borderRadius: 20,
+          padding: "4px 12px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+          fontSize: 12, fontWeight: 600, color: "#1a5fa8",
+        }}>
+          {expanded ? <><FiChevronUp size={13} /> Less</> : <><FiChevronDown size={13} /> More</>}
+        </button>
+      </td>
+    </tr>
+  );
+}
+
 function HistoryRow({ h, i, styles }) {
   const [expanded, setExpanded] = useState(false);
   return (
@@ -1309,55 +1360,19 @@ export default function AdminDashboard() {
             ) : (
               <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                 <div className={styles.tableWrap}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                <table className={styles.appointmentTable} style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead>
                     <tr style={{ background: "#d6e6f7" }}>
-                      {["#", "Patient Name", "Age", "Gender", "Doctor", "Date", "Time", "Status", "Action"].map(h => (
+                      {["#", "Patient Name", "Status", "Age", "Gender", "Doctor", "Date", "Time", "Action"].map(h => (
                         <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, whiteSpace: "nowrap" }}>{h}</th>
                       ))}
+                      <th className={styles.aptExpandBtn} />
                     </tr>
                   </thead>
                   <tbody>
-                    {appointments.map((apt, i) => {
-                      const statusStyle =
-                        apt.status === "Accepted" ? { background: "#27ae60", color: "#fff" } :
-                        apt.status === "Denied"   ? { background: "#e74c3c", color: "#fff" } :
-                                                    { background: "#fff4e5", color: "#e67e22" };
-                      return (
-                      <tr key={apt.id} className={styles.dataRow} style={{ borderTop: "1px solid #f0f4f8" }}>
-                        <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{apt.name}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.age}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.gender}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.doctor}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#888" }}>{apt.date}</td>
-                        <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#888" }}>{apt.time}</td>
-                        <td style={{ padding: "0.8rem 1rem" }}>
-                          <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20, ...statusStyle }}>{apt.status}</span>
-                        </td>
-                        <td style={{ padding: "0.8rem 1rem", whiteSpace: "nowrap" }}>
-                          {apt.status === "Pending" && (
-                            <>
-                              <button onClick={() => handleStatusChange(apt.id, "Accepted")}
-                                style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer", marginRight: 6 }}>
-                                Accept
-                              </button>
-                              <button onClick={() => handleStatusChange(apt.id, "Denied")}
-                                style={{ background: "#e74c3c", color: "#fff", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                                Deny
-                              </button>
-                            </>
-                          )}
-                          {apt.status !== "Pending" && (
-                            <button onClick={() => handleStatusChange(apt.id, "Pending")}
-                              style={{ background: "#d6e6f7", color: "#1a5fa8", border: "none", borderRadius: 6, padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer" }}>
-                              Reset
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                      );
-                    })}
+                    {appointments.map((apt, i) => (
+                      <AppointmentRow key={apt.id} apt={apt} i={i} onStatusChange={handleStatusChange} styles={styles} />
+                    ))}
                   </tbody>
                 </table>
                 </div>

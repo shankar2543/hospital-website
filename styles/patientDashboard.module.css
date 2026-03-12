@@ -301,6 +301,92 @@
   box-shadow: 0 4px 16px rgba(26, 95, 168, 0.18) !important;
 }
 
+/* Expand button hidden on desktop */
+.aptExpandBtn {
+  display: none;
+}
+
+/* Extra columns always visible on desktop */
+.aptExtra {
+  display: table-cell;
+}
+
+@media (max-width: 700px) {
+  .appointmentTable thead {
+    display: none;
+  }
+
+  .appointmentTable,
+  .appointmentTable tbody,
+  .appointmentTable tr,
+  .appointmentTable td {
+    display: block;
+    width: 100%;
+  }
+
+  .appointmentTable tr {
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #fff;
+    border: 2px solid #b0b8c1 !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  }
+
+  .appointmentTable td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.2rem 0;
+    font-size: 13px;
+    border: none;
+    border-bottom: 1px solid #f0f4f8;
+  }
+
+  .appointmentTable td:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .appointmentTable td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #1a5fa8;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+  }
+
+  /* Hide serial number on mobile */
+  .appointmentTable td:first-child {
+    display: none !important;
+  }
+
+  /* Hide extra fields by default */
+  .aptExtra {
+    display: none !important;
+  }
+
+  /* Show extra fields when expanded */
+  .aptExtraVisible {
+    display: flex !important;
+  }
+
+  /* Show expand button on mobile */
+  .aptExpandBtn {
+    display: flex !important;
+    justify-content: flex-end;
+    border-bottom: none !important;
+    padding-top: 0.4rem !important;
+  }
+
+  .aptExpandBtn::before {
+    content: none !important;
+  }
+}
+
 /* ===== TABLET (≤ 900px) ===== */
 @media (max-width: 900px) {
   .layout {
