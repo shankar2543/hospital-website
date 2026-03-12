@@ -345,7 +345,7 @@
 
   /* Hide the separate serial number cell on mobile */
   .patientIdx {
-    display: none;
+    display: none !important;
   }
 
 
