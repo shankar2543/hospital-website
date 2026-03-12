@@ -280,73 +280,83 @@
 .thFull  { display: inline; }
 .thShort { display: none; }
 
-/* Compact table on mobile — fixed layout so columns never overflow */
+/* Mobile — card layout: each row becomes its own stacked card */
 @media (max-width: 700px) {
-  /* Swap header labels on mobile */
   .thFull  { display: none; }
-  .thShort { display: inline; }
+  .thShort { display: none; }
 
-  .patientTable {
-    table-layout: fixed;
+  /* Hide the entire thead on mobile */
+  .patientTable thead {
+    display: none;
+  }
+
+  .patientTable,
+  .patientTable tbody,
+  .patientTable tr,
+  .patientTable td {
+    display: block;
     width: 100%;
   }
 
-  /* Name 30% | Rm 11% | Date 21% | Status 38% */
-  .patientTable th:nth-child(1),
-  .patientTable td:nth-child(2) { width: 30%; }
+  /* Each row becomes a card */
+  .patientTable tr {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(26, 95, 168, 0.08);
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: none !important;
+  }
 
-  .patientTable th:nth-child(2),
-  .patientTable td:nth-child(3) { width: 11%; padding-left: 0; padding-right: 0.1rem; }
-
-  .patientTable th:nth-child(3),
-  .patientTable td:nth-child(4) { width: 21%; }
-
-  .patientTable th:nth-child(4),
-  .patientTable td:nth-child(5) { width: 38%; }
-
-  .patientTable th,
+  /* Each cell: label on left, value on right */
   .patientTable td {
-    padding: 0.5rem 0.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.45rem 0;
+    font-size: 13px;
+    border: none;
+    border-bottom: 1px solid #f0f4f8;
+  }
+
+  .patientTable td:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  /* Show data-label as the left-side label */
+  .patientTable td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #1a5fa8;
     font-size: 11px;
-    overflow: hidden;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    margin-right: 0.75rem;
   }
 
-  .patientTable th {
-    font-size: 10px;
-    white-space: nowrap;
+  /* Hide index column */
+  .patientTable td:first-child {
+    display: none;
   }
 
-  /* Room number badge — compact on mobile */
-  .roomBadge {
-    padding: 2px 4px !important;
-    font-size: 11px !important;
-  }
-
-  /* Truncate long patient names */
-  .patientTable td:nth-child(2) {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-
-  /* Shrink status badge to fit */
+  /* Status badge full width on mobile */
   .statusBadge {
-    min-width: 0 !important;
-    padding: 3px 5px !important;
-    font-size: 10px !important;
-    white-space: nowrap;
-    display: inline-block !important;
+    min-width: 90px !important;
+    font-size: 12px !important;
   }
 
-  /* Compact edit icon */
-  .editIconBtn {
-    padding: 2px !important;
+  /* Room badge */
+  .roomBadge {
+    font-size: 12px !important;
   }
 
-  /* Compact inputs in edit mode */
+  /* Inputs in edit mode */
   .patientTable input,
   .patientTable select {
-    font-size: 11px;
-    padding: 3px 4px;
+    font-size: 13px;
+    padding: 4px 6px;
     width: 100%;
     box-sizing: border-box;
   }
