@@ -101,6 +101,127 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.historyHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.historyIdx {
+  width: 40px;
+  text-align: center;
+}
+
+/* Expand button hidden on desktop */
+.historyExpandBtn {
+  display: none;
+}
+
+/* Extra columns always visible on desktop */
+.historyExtra {
+  display: table-cell;
+}
+
+@media (max-width: 700px) {
+  .historyHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .historyTable thead {
+    display: none;
+  }
+
+  .historyTable,
+  .historyTable tbody,
+  .historyTable tr,
+  .historyTable td {
+    display: block;
+    width: 100%;
+  }
+
+  .historyTable tr {
+    border-radius: 12px;
+    margin-bottom: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: none !important;
+  }
+
+  .historyTable tr:nth-child(odd) {
+    background: #f0f6ff;
+    box-shadow: 0 2px 8px rgba(26, 95, 168, 0.10);
+    border-left: 3px solid #1a5fa8;
+  }
+
+  .historyTable tr:nth-child(even) {
+    background: #f0fdf6;
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.10);
+    border-left: 3px solid #27ae60;
+  }
+
+  .historyTable td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.2rem 0;
+    font-size: 13px;
+    border: none;
+    border-bottom: 1px solid #f0f4f8;
+  }
+
+  .historyTable td:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .historyTable td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: #1a5fa8;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+  }
+
+  /* Hide serial number on mobile */
+  .historyIdx {
+    display: none !important;
+  }
+
+  /* Hide extra fields by default on mobile */
+  .historyExtra {
+    display: none !important;
+  }
+
+  /* Show extra fields when expanded */
+  .historyExtraVisible {
+    display: flex !important;
+  }
+
+  /* Show expand button on mobile */
+  .historyExpandBtn {
+    display: flex !important;
+    justify-content: flex-end;
+    border-bottom: none !important;
+    padding-top: 0.4rem !important;
+  }
+
+  .historyExpandBtn::before {
+    content: none !important;
+  }
+
+  /* Make search input full width on mobile */
+  .historyHeader input {
+    width: 100% !important;
+    box-sizing: border-box;
+  }
+}
+
 /* Lab grid */
 .labGrid {
   display: grid;
@@ -307,12 +428,22 @@
 
   /* Each row becomes a card */
   .patientTable tr {
-    background: #fff;
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(26, 95, 168, 0.08);
     margin-bottom: 0.75rem;
     padding: 0.75rem 1rem;
     border: none !important;
+  }
+
+  .patientTable tr:nth-child(odd) {
+    background: #f0f6ff;
+    box-shadow: 0 2px 8px rgba(26, 95, 168, 0.10);
+    border-left: 3px solid #1a5fa8;
+  }
+
+  .patientTable tr:nth-child(even) {
+    background: #f0fdf6;
+    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.10);
+    border-left: 3px solid #27ae60;
   }
 
   /* Each cell: label on left, value on right */
