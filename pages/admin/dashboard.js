@@ -416,6 +416,7 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
         <table className={styles.patientTable} style={{ borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ background: "#d6e6f7" }}>
+              <th style={{ padding: "0.9rem 1rem", textAlign: "center", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: 40 }}>#</th>
               {[
                 { full: "Name",     short: "Name" },
                 { full: "Room",     short: "Rm"   },
