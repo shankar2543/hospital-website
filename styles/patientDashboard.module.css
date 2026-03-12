@@ -32,6 +32,30 @@
   display: none; /* Chrome/Safari */
 }
 
+.overviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.overviewCard {
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: background 0.18s, transform 0.15s;
+}
+
+.overviewCard:hover {
+  background: #e8f2fd !important;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .overviewCard {
+    border: 1.5px solid #b0b8c1;
+  }
+}
+
 /* Hidden on desktop, shown inside mobile media query */
 .sidebarCloseBtn {
   display: none;

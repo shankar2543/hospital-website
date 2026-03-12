@@ -17,16 +17,15 @@ export default function Document() {
         <meta property="og:title" content="Medicover Hospital | Advanced Healthcare Management Platform" />
         <meta property="og:description" content="Medicover Hospital offers expert doctors, 24/7 support, and modern facilities. Book appointments, track your health, and manage your care — all in one platform." />
         <meta property="og:url" content="https://hospital-website-delta-eight.vercel.app" />
-        <meta property="og:image" content="https://hospital-website-delta-eight.vercel.app/og-banner.svg" />
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
+        <meta property="og:image" content="https://hospital-website-delta-eight.vercel.app/logo.jpg" />
+        <meta property="og:image:type" content="image/jpeg" />
         <meta property="og:image:alt" content="Medicover Hospital — Your Health, Our Priority" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Medicover Hospital | Advanced Healthcare Management Platform" />
         <meta name="twitter:description" content="Medicover Hospital offers expert doctors, 24/7 support, and modern facilities. Book appointments, track your health, and manage your care — all in one platform." />
-        <meta name="twitter:image" content="https://hospital-website-delta-eight.vercel.app/og-banner.svg" />
+        <meta name="twitter:image" content="https://hospital-website-delta-eight.vercel.app/logo.jpg" />
       </Head>
       <body className="antialiased">
         <Main />

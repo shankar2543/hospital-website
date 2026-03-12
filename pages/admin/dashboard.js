@@ -749,6 +749,13 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [activeNav, setActiveNav]       = useState(() => (typeof window !== "undefined" ? localStorage.getItem("adminActiveNav") || "Dashboard" : "Dashboard"));
   const [sidebarOpen, setSidebarOpen]   = useState(false);
+  const [isMobile, setIsMobile]         = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
   const [doctors, setDoctors]           = useState(INITIAL_DOCTORS);
   const [appointments, setAppointments]   = useState([]);
   const [patients, setPatients]           = useState([]);
@@ -1233,13 +1240,15 @@ export default function AdminDashboard() {
                     <span style={{ fontSize: 13, color: "#888", fontWeight: 400, marginLeft: 10 }}>Last 6 days</span>
                   </h3>
                   <ResponsiveContainer width="100%" height={280}>
-                    <BarChart data={barData} barCategoryGap="30%" barGap={4}>
+                    <BarChart data={barData} barCategoryGap="30%" barGap={4} margin={{ left: isMobile ? -28 : 0, right: 0, top: 0, bottom: 0 }}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f4f8" vertical={false} />
-                      <XAxis dataKey="day" tick={{ fontSize: 13, fill: "#555" }} axisLine={false} tickLine={false} />
-                      <YAxis allowDecimals={false} tick={{ fontSize: 13, fill: "#888" }} axisLine={false} tickLine={false} />
+                      <XAxis dataKey="day" tick={{ fontSize: isMobile ? 11 : 13, fill: "#555" }} axisLine={false} tickLine={false} />
+                      <YAxis allowDecimals={false} tick={{ fontSize: isMobile ? 11 : 13, fill: "#888" }} axisLine={false} tickLine={false} width={isMobile ? 28 : 40} />
                       <Tooltip
                         contentStyle={{ borderRadius: 10, border: "1px solid #d6e6f7", fontSize: 13 }}
                         formatter={(value, name) => [`${value} patient${value !== 1 ? "s" : ""}`, name]}
+                        allowEscapeViewBox={{ x: false, y: false }}
+                        position={{ y: 0 }}
                       />
                       <Legend wrapperStyle={{ fontSize: 13, paddingTop: 12 }} />
                       <Bar dataKey="Admitted"   fill="#1a5fa8" radius={[6, 6, 0, 0]} />
@@ -1251,19 +1260,27 @@ export default function AdminDashboard() {
             })()}
 
             {/* ── Quick Overview Cards ── */}
-            <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1.2rem", marginTop: "1.5rem" }}>
+            <section style={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+              gap: isMobile ? "0.6rem" : "1.2rem",
+              marginTop: "1.5rem"
+            }}>
               {[
-                { label: "OPD Today",         value: 42,   sub: "+8 from yesterday",    color: "#1a5fa8", bg: "#d6e6f7" },
-                { label: "ICU Occupied",       value: "6/8", sub: "2 beds available",   color: "#e74c3c", bg: "#fdecea" },
-                { label: "Surgeries Scheduled",value: 5,    sub: "Next at 10:30 AM",    color: "#8e44ad", bg: "#f3e8fd" },
-                { label: "Avg. Wait Time",     value: "18m", sub: "Across all counters", color: "#16a085", bg: "#e0f5f1" },
-                { label: "Lab Tests Today",    value: 78,   sub: "12 pending results",   color: "#e67e22", bg: "#fef3e2" },
-                { label: "Revenue Today",      value: "₹1.2L", sub: "vs ₹98K yesterday", color: "#27ae60", bg: "#e6f9f0" },
+                { label: "OPD Today",          value: 42,      sub: "+8 from yesterday",    color: "#1a5fa8" },
+                { label: "ICU Occupied",        value: "6/8",   sub: "2 beds available",     color: "#e74c3c" },
+                { label: "Surgeries",           value: 5,       sub: "Next at 10:30 AM",     color: "#8e44ad" },
+                { label: "Revenue Today",       value: "₹1.2L", sub: "vs ₹98K yesterday",   color: "#27ae60" },
               ].map(c => (
-                <div key={c.label} style={{ background: "#fff", borderRadius: 14, padding: "1.1rem 1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.07)" }}>
-                  <div style={{ fontSize: 12, color: "#888", fontWeight: 500, marginBottom: 6 }}>{c.label}</div>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: c.color }}>{c.value}</div>
-                  <div style={{ fontSize: 11, color: "#aaa", marginTop: 4 }}>{c.sub}</div>
+                <div key={c.label} className={styles.overviewCard} style={{
+                  background: "#fff", borderRadius: isMobile ? 10 : 14,
+                  padding: isMobile ? "0.75rem 0.8rem" : "1.1rem 1.2rem",
+                  boxShadow: "0 2px 8px rgba(26,95,168,0.07)",
+                  boxSizing: "border-box"
+                }}>
+                  <div style={{ fontSize: isMobile ? 10 : 12, color: "#888", fontWeight: 500, marginBottom: 4 }}>{c.label}</div>
+                  <div style={{ fontSize: isMobile ? 18 : 24, fontWeight: 800, color: c.color }}>{c.value}</div>
+                  <div style={{ fontSize: isMobile ? 10 : 11, color: "#aaa", marginTop: 3 }}>{c.sub}</div>
                 </div>
               ))}
             </section>
