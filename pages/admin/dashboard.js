@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useRouter } from "next/router";
-import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu } from "react-icons/fi";
+import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu, FiChevronDown, FiChevronUp } from "react-icons/fi";
 import Parse from '@/lib/parseConfig';
 import styles from '@/styles/patientDashboard.module.css';
 
@@ -221,6 +221,33 @@ function PatientRow({ patient, index, onDelete, onRoomClick, onEdit }) {
             <FiTrash2 size={15} />
           </button>
         </div>
+      </td>
+    </tr>
+  );
+}
+
+function HistoryRow({ h, i, styles }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <tr style={{ borderTop: "1px solid #f0f4f8" }}>
+      <td className={styles.historyIdx} style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
+      <td data-label="Name" style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{h.name}</td>
+      <td data-label="Room" style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
+        <span style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13 }}>{h.room}</span>
+      </td>
+      <td data-label="Admitted" className={`${styles.historyExtra} ${expanded ? styles.historyExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{h.admitDate}</td>
+      <td data-label="Discharged" className={`${styles.historyExtra} ${expanded ? styles.historyExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{h.dischargeDate}</td>
+      <td data-label="Time" className={`${styles.historyExtra} ${expanded ? styles.historyExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
+        <span style={{ background: "#e6f9f0", color: "#27ae60", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13 }}>{h.dischargeTime}</span>
+      </td>
+      <td className={styles.historyExpandBtn}>
+        <button onClick={() => setExpanded(!expanded)} style={{
+          background: expanded ? "#d6e6f7" : "#f4f6f8", border: "none", borderRadius: 20,
+          padding: "4px 12px", cursor: "pointer", display: "flex", alignItems: "center", gap: 4,
+          fontSize: 12, fontWeight: 600, color: "#1a5fa8",
+        }}>
+          {expanded ? <><FiChevronUp size={13} /> Less</> : <><FiChevronDown size={13} /> More</>}
+        </button>
       </td>
     </tr>
   );
@@ -669,7 +696,7 @@ function StaffSection({ title, staff, setStaff }) {
 
 export default function AdminDashboard() {
   const router = useRouter();
-  const [activeNav, setActiveNav]       = useState("Dashboard");
+  const [activeNav, setActiveNav]       = useState(() => (typeof window !== "undefined" ? localStorage.getItem("adminActiveNav") || "Dashboard" : "Dashboard"));
   const [sidebarOpen, setSidebarOpen]   = useState(false);
   const [doctors, setDoctors]           = useState(INITIAL_DOCTORS);
   const [appointments, setAppointments]   = useState([]);
@@ -696,6 +723,10 @@ export default function AdminDashboard() {
   const [showForm, setShowForm]         = useState(false);
   const [form, setForm]                 = useState(EMPTY_FORM);
   const [formError, setFormError]       = useState("");
+
+  useEffect(() => {
+    localStorage.setItem("adminActiveNav", activeNav);
+  }, [activeNav]);
 
   useEffect(() => {
     const role = localStorage.getItem("role");
@@ -951,7 +982,7 @@ export default function AdminDashboard() {
         hist.set("room",          patient.room);
         hist.set("admitDate",     patient.admitDate);
         hist.set("dischargeDate", now.toISOString().slice(0, 10));
-        hist.set("dischargeTime", now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+        hist.set("dischargeTime", now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: true }));
         await hist.save();
         await obj.destroy();
         setPatients(prev => prev.filter(p => p.id !== id));
@@ -1348,12 +1379,12 @@ export default function AdminDashboard() {
         {/* Patient History */}
         {activeNav === "Patient History" && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>
-                Patient History
-                <span style={{ fontSize: 13, color: "#888", fontWeight: 400, marginLeft: 12 }}>Patients automatically move here when discharged</span>
-              </h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div className={styles.historyHeader}>
+              <div>
+                <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: "0 0 2px 0" }}>Patient History</h2>
+                <p style={{ fontSize: 13, color: "#888", margin: 0 }}>Patients automatically move here when discharged</p>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
                 <input
                   placeholder="Search by name..."
                   value={historySearch}
@@ -1376,28 +1407,18 @@ export default function AdminDashboard() {
               ) : (
                 <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                   <div className={styles.tableWrap}>
-                  <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                  <table className={styles.historyTable} style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
                       <tr style={{ background: "#d6e6f7" }}>
                         {["#", "Patient Name", "Room", "Admitted On", "Discharged On", "Discharge Time"].map(h => (
                           <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>{h}</th>
                         ))}
+                        <th className={styles.historyExpandBtn} />
                       </tr>
                     </thead>
                     <tbody>
                       {filtered.map((h, i) => (
-                        <tr key={h.id} style={{ borderTop: "1px solid #f0f4f8" }}>
-                          <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
-                          <td style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{h.name}</td>
-                          <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-                            <span style={{ background: "#d6e6f7", color: "#1a5fa8", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13 }}>{h.room}</span>
-                          </td>
-                          <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{h.admitDate}</td>
-                          <td style={{ padding: "0.8rem 1rem", fontSize: 14, color: "#555" }}>{h.dischargeDate}</td>
-                          <td style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
-                            <span style={{ background: "#e6f9f0", color: "#27ae60", padding: "2px 10px", borderRadius: 12, fontWeight: 600, fontSize: 13 }}>{h.dischargeTime}</span>
-                          </td>
-                        </tr>
+                        <HistoryRow key={h.id} h={h} i={i} styles={styles} />
                       ))}
                     </tbody>
                   </table>

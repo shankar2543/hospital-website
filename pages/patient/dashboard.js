@@ -116,7 +116,7 @@ function ProfileSection({ name, email, phone, setEmail, setPhone }) {
 
 export default function PatientDashboard() {
   const router = useRouter();
-  const [activeNav, setActiveNav]       = useState("Dashboard");
+  const [activeNav, setActiveNav]       = useState(() => (typeof window !== "undefined" ? localStorage.getItem("patientActiveNav") || "Dashboard" : "Dashboard"));
   const [name, setName]                 = useState("");
   const [email, setEmail]               = useState("");
   const [phone, setPhone]               = useState("");
@@ -131,6 +131,10 @@ export default function PatientDashboard() {
   const [reports, setReports]             = useState([]);
   const [reportsLoading, setReportsLoading] = useState(false);
   const [expandedReports, setExpandedReports] = useState({});
+
+  useEffect(() => {
+    localStorage.setItem("patientActiveNav", activeNav);
+  }, [activeNav]);
 
   useEffect(() => {
     const role = localStorage.getItem("role");
