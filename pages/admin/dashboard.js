@@ -175,6 +175,7 @@ function PatientRow({ patient, index, onDelete, onRoomClick, onEdit }) {
       <td className={styles.patientIdx} style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{index + 1}</td>
 
       <td data-label="Name" style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
+        <span className={styles.mobileIdx}>{index + 1}.</span>
         <span style={{ fontWeight: 600 }}>{patient.name}</span>
       </td>
 

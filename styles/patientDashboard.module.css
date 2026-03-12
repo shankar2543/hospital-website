@@ -278,6 +278,11 @@
   color: #9aa5b4;
 }
 
+/* Serial number shown inline with name on mobile, hidden on desktop */
+.mobileIdx {
+  display: none;
+}
+
 /* Desktop: show full header, hide short version */
 .thFull  { display: inline; }
 .thShort { display: none; }
@@ -338,9 +343,18 @@
     margin-right: 0.75rem;
   }
 
-  /* Hide serial number on mobile cards */
+  /* Hide the separate serial number cell on mobile */
   .patientIdx {
     display: none;
+  }
+
+  /* Show inline serial number beside the name */
+  .mobileIdx {
+    display: inline;
+    font-weight: 700;
+    color: #1a5fa8;
+    font-size: 13px;
+    margin-right: 6px;
   }
 
   /* Status badge full width on mobile */
