@@ -1714,10 +1714,11 @@ export default function AdminDashboard() {
                 {reports.filter(r => r.patientName.toLowerCase().includes(reportSearch.toLowerCase())).map((rep) => {
                   const expanded = !!expandedReports[rep.id];
                   return (
-                    <div key={rep.id} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                    <div key={rep.id} className={styles.reportCard} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
                       {/* Summary row — always visible, click to expand */}
                       <div
                         onClick={() => setExpandedReports(prev => ({ ...prev, [rep.id]: !prev[rep.id] }))}
+                        className={!expanded ? styles.reportSummaryRow : ""}
                         style={{ padding: "1rem 1.5rem", display: "flex", justifyContent: "space-between", alignItems: "center", cursor: "pointer", background: expanded ? "#1a5fa8" : "#fff", transition: "background 0.2s" }}
                       >
                         <div style={{ display: "flex", alignItems: "center", gap: "1.2rem", flexWrap: "wrap" }}>
@@ -1760,7 +1761,7 @@ export default function AdminDashboard() {
                                 </thead>
                                 <tbody>
                                   {t.results.map((row, ri) => (
-                                    <tr key={ri} style={{ borderBottom: "1px solid #f0f0f0" }}>
+                                    <tr key={ri} className={styles.dataRow} style={{ borderBottom: "1px solid #f0f0f0" }}>
                                       <td style={{ padding: "6px 10px", border: "1px solid #f0f0f0", fontWeight: 600 }}>{row.param}</td>
                                       <td style={{ padding: "6px 10px", border: "1px solid #f0f0f0" }}>{row.value}</td>
                                       <td style={{ padding: "6px 10px", border: "1px solid #f0f0f0", color: "#888" }}>{row.range}</td>
