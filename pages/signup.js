@@ -171,7 +171,7 @@ export default function SignupPage() {
               className={styles.input}
             />
             <span className={styles.eyeIcon} onClick={() => setShowPw(!showPw)}>
-              {showPw ? <FiEyeOff size={18} color="#000" /> : <FiEye size={18} color="#000" />}
+              {showPw ? <FiEyeOff size={18} color="#fff" /> : <FiEye size={18} color="#fff" />}
             </span>
           </div>
           <button type="submit" className={styles.signInBtn} disabled={loading}>

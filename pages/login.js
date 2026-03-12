@@ -185,7 +185,7 @@ export default function Login() {
               className={styles.input + ' ' + styles.inputMedium}
             />
             <span className={styles.eyeIcon} onClick={() => setShowPw(!showPw)}>
-              {showPw ? <FiEyeOff size={18} color="#000" /> : <FiEye size={18} color="#000" />}
+              {showPw ? <FiEyeOff size={18} color="#fff" /> : <FiEye size={18} color="#fff" />}
             </span>
           </div>
           <button 
