@@ -1153,7 +1153,14 @@ export default function AdminDashboard() {
 
         <div style={{ marginBottom: 32, width: "100%", padding: "0.5rem 1.5rem 0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-            <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#fff", flexShrink: 0 }}></div>
+            <div style={{
+              width: 52, height: 52, borderRadius: "50%",
+              background: "linear-gradient(135deg, #e8f2fd, #b3d1f5)",
+              flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center",
+              border: "2px solid rgba(255,255,255,0.5)",
+              fontSize: 20, fontWeight: 800, color: "#1a5fa8", letterSpacing: 1,
+              userSelect: "none"
+            }}>DU</div>
             <div>
               <div style={{ fontWeight: 700, fontSize: 16, lineHeight: 1.2 }}>DUkEY</div>
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>Admin</div>
@@ -1260,12 +1267,7 @@ export default function AdminDashboard() {
             })()}
 
             {/* ── Quick Overview Cards ── */}
-            <section style={{
-              display: "grid",
-              gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
-              gap: isMobile ? "0.6rem" : "1.2rem",
-              marginTop: "1.5rem"
-            }}>
+            <section className={styles.quickStats}>
               {[
                 { label: "OPD Today",          value: 42,      sub: "+8 from yesterday",    color: "#1a5fa8" },
                 { label: "ICU Occupied",        value: "6/8",   sub: "2 beds available",     color: "#e74c3c" },
@@ -1273,14 +1275,14 @@ export default function AdminDashboard() {
                 { label: "Revenue Today",       value: "₹1.2L", sub: "vs ₹98K yesterday",   color: "#27ae60" },
               ].map(c => (
                 <div key={c.label} className={styles.overviewCard} style={{
-                  background: "#fff", borderRadius: isMobile ? 10 : 14,
-                  padding: isMobile ? "0.75rem 0.8rem" : "1.1rem 1.2rem",
+                  background: "#fff", borderRadius: 14,
+                  padding: "1.1rem 1.2rem",
                   boxShadow: "0 2px 8px rgba(26,95,168,0.07)",
                   boxSizing: "border-box"
                 }}>
-                  <div style={{ fontSize: isMobile ? 10 : 12, color: "#888", fontWeight: 500, marginBottom: 4 }}>{c.label}</div>
-                  <div style={{ fontSize: isMobile ? 18 : 24, fontWeight: 800, color: c.color }}>{c.value}</div>
-                  <div style={{ fontSize: isMobile ? 10 : 11, color: "#aaa", marginTop: 3 }}>{c.sub}</div>
+                  <div style={{ fontSize: 12, color: "#888", fontWeight: 500, marginBottom: 4 }}>{c.label}</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: c.color }}>{c.value}</div>
+                  <div style={{ fontSize: 11, color: "#aaa", marginTop: 3 }}>{c.sub}</div>
                 </div>
               ))}
             </section>
