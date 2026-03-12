@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <!-- White background -->
+  <rect width="1200" height="630" fill="#ffffff"/>
+
+  <!-- Top blue bar -->
+  <rect width="1200" height="10" fill="#1a5fa8"/>
+
+  <!-- Bottom blue bar -->
+  <rect y="620" width="1200" height="10" fill="#1a5fa8"/>
+
+  <!-- Left blue accent -->
+  <rect x="80" y="80" width="6" height="470" fill="#1a5fa8" rx="3"/>
+
+  <!-- Hospital cross circle -->
+  <circle cx="210" cy="230" r="80" fill="#1a5fa8"/>
+  <rect x="162" y="213" width="96" height="34" rx="7" fill="#ffffff"/>
+  <rect x="193" y="182" width="34" height="96" rx="7" fill="#ffffff"/>
+
+  <!-- Medicover Hospital title -->
+  <text x="330" y="210" font-family="Arial, sans-serif" font-size="78" font-weight="800" fill="#1a5fa8">Medicover</text>
+  <text x="330" y="295" font-family="Arial, sans-serif" font-size="78" font-weight="800" fill="#222222">Hospital</text>
+
+  <!-- Divider -->
+  <rect x="110" y="345" width="980" height="2" fill="#dce8f7"/>
+
+  <!-- Tagline -->
+  <text x="600" y="415" font-family="Arial, sans-serif" font-size="38" fill="#444444" text-anchor="middle">Your Health, Our Priority — Book. Track. Recover.</text>
+
+  <!-- Feature pills -->
+  <rect x="112" y="460" width="210" height="46" rx="23" fill="#e8f0fb"/>
+  <text x="217" y="489" font-family="Arial, sans-serif" font-size="21" fill="#1a5fa8" text-anchor="middle" font-weight="600">Expert Doctors</text>
+
+  <rect x="342" y="460" width="210" height="46" rx="23" fill="#e8f0fb"/>
+  <text x="447" y="489" font-family="Arial, sans-serif" font-size="21" fill="#1a5fa8" text-anchor="middle" font-weight="600">24/7 Support</text>
+
+  <rect x="572" y="460" width="210" height="46" rx="23" fill="#e8f0fb"/>
+  <text x="677" y="489" font-family="Arial, sans-serif" font-size="21" fill="#1a5fa8" text-anchor="middle" font-weight="600">Patient Care</text>
+
+  <rect x="802" y="460" width="250" height="46" rx="23" fill="#e8f0fb"/>
+  <text x="927" y="489" font-family="Arial, sans-serif" font-size="21" fill="#1a5fa8" text-anchor="middle" font-weight="600">Modern Facilities</text>
+
+  <!-- URL -->
+  <text x="600" y="585" font-family="Arial, sans-serif" font-size="22" fill="#aaaaaa" text-anchor="middle">hospital-website-delta-eight.vercel.app</text>
+</svg>
