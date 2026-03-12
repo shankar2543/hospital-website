@@ -497,4 +497,9 @@
     width: 100%;
     box-sizing: border-box;
   }
+
+  .slotCard {
+    border: 2px solid #b0b8c1 !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+  }
 }

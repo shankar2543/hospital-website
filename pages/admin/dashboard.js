@@ -1627,7 +1627,7 @@ export default function AdminDashboard() {
                   r.patientName.toLowerCase().includes(slotsSearch.toLowerCase()) ||
                   r.patientPhone.toLowerCase().includes(slotsSearch.toLowerCase())
                 ).map((req) => (
-                  <div key={req.id} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "1.2rem 1.5rem" }}>
+                  <div key={req.id} className={styles.slotCard} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "1.2rem 1.5rem" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: 15, color: "#1a5fa8" }}>{req.patientName}</div>
