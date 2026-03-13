@@ -564,46 +564,44 @@ const DUMMY_RESULTS = {
 };
 
 const HOMETOWNS = ["Chennai","Mumbai","Delhi","Kolkata","Bangalore","Hyderabad","Pune","Jaipur","Lucknow","Ahmedabad","Surat","Kochi","Chandigarh","Indore","Bhopal","Nagpur","Vadodara","Coimbatore","Visakhapatnam","Patna"];
-const CONTACTS  = () => "9" + Array.from({length:9}, () => Math.floor(Math.random()*10)).join("");
-
 const INITIAL_NURSES = [
-  { id:1,  name:"Ananya Rao",       contact: CONTACTS(), hometown:"Chennai"       },
-  { id:2,  name:"Meena Pillai",     contact: CONTACTS(), hometown:"Kochi"         },
-  { id:3,  name:"Ritu Sharma",      contact: CONTACTS(), hometown:"Delhi"         },
-  { id:4,  name:"Lakshmi Devi",     contact: CONTACTS(), hometown:"Bangalore"     },
-  { id:5,  name:"Sushma Patel",     contact: CONTACTS(), hometown:"Ahmedabad"     },
-  { id:6,  name:"Preethi Nair",     contact: CONTACTS(), hometown:"Kochi"         },
-  { id:7,  name:"Kavitha Menon",    contact: CONTACTS(), hometown:"Coimbatore"    },
-  { id:8,  name:"Nithya Kumar",     contact: CONTACTS(), hometown:"Chennai"       },
-  { id:9,  name:"Saranya Rajan",    contact: CONTACTS(), hometown:"Pune"          },
-  { id:10, name:"Deepa Iyer",       contact: CONTACTS(), hometown:"Hyderabad"     },
-  { id:11, name:"Usha Bhatt",       contact: CONTACTS(), hometown:"Jaipur"        },
-  { id:12, name:"Radha Krishnan",   contact: CONTACTS(), hometown:"Mumbai"        },
-  { id:13, name:"Sindhu Varma",     contact: CONTACTS(), hometown:"Visakhapatnam" },
-  { id:14, name:"Gayathri Das",     contact: CONTACTS(), hometown:"Kolkata"       },
-  { id:15, name:"Hema Latha",       contact: CONTACTS(), hometown:"Indore"        },
-  { id:16, name:"Jyothi Reddy",     contact: CONTACTS(), hometown:"Hyderabad"     },
-  { id:17, name:"Kamala Srinivas",  contact: CONTACTS(), hometown:"Bangalore"     },
-  { id:18, name:"Nalini Mohan",     contact: CONTACTS(), hometown:"Chennai"       },
-  { id:19, name:"Padma Suresh",     contact: CONTACTS(), hometown:"Patna"         },
-  { id:20, name:"Rekha Gopal",      contact: CONTACTS(), hometown:"Bhopal"        },
-  { id:21, name:"Savitha Prasad",   contact: CONTACTS(), hometown:"Vadodara"      },
-  { id:22, name:"Tara Nambiar",     contact: CONTACTS(), hometown:"Kochi"         },
-  { id:23, name:"Vimala Rajesh",    contact: CONTACTS(), hometown:"Surat"         },
-  { id:24, name:"Yamini Chandra",   contact: CONTACTS(), hometown:"Lucknow"       },
-  { id:25, name:"Ambika Shetty",    contact: CONTACTS(), hometown:"Mumbai"        },
-  { id:26, name:"Bhavani Pillai",   contact: CONTACTS(), hometown:"Chandigarh"    },
-  { id:27, name:"Chitra Venkat",    contact: CONTACTS(), hometown:"Nagpur"        },
-  { id:28, name:"Durga Murugan",    contact: CONTACTS(), hometown:"Coimbatore"    },
-  { id:29, name:"Indira Ravi",      contact: CONTACTS(), hometown:"Delhi"         },
-  { id:30, name:"Janaki Balaji",    contact: CONTACTS(), hometown:"Jaipur"        },
+  { id:1,  name:"Ananya Rao",       contact:"9876543210", hometown:"Chennai"       },
+  { id:2,  name:"Meena Pillai",     contact:"9865432109", hometown:"Kochi"         },
+  { id:3,  name:"Ritu Sharma",      contact:"9754321098", hometown:"Delhi"         },
+  { id:4,  name:"Lakshmi Devi",     contact:"9643210987", hometown:"Bangalore"     },
+  { id:5,  name:"Sushma Patel",     contact:"9532109876", hometown:"Ahmedabad"     },
+  { id:6,  name:"Preethi Nair",     contact:"9421098765", hometown:"Kochi"         },
+  { id:7,  name:"Kavitha Menon",    contact:"9310987654", hometown:"Coimbatore"    },
+  { id:8,  name:"Nithya Kumar",     contact:"9209876543", hometown:"Chennai"       },
+  { id:9,  name:"Saranya Rajan",    contact:"9108765432", hometown:"Pune"          },
+  { id:10, name:"Deepa Iyer",       contact:"9007654321", hometown:"Hyderabad"     },
+  { id:11, name:"Usha Bhatt",       contact:"9876012345", hometown:"Jaipur"        },
+  { id:12, name:"Radha Krishnan",   contact:"9765012345", hometown:"Mumbai"        },
+  { id:13, name:"Sindhu Varma",     contact:"9654012345", hometown:"Visakhapatnam" },
+  { id:14, name:"Gayathri Das",     contact:"9543012345", hometown:"Kolkata"       },
+  { id:15, name:"Hema Latha",       contact:"9432012345", hometown:"Indore"        },
+  { id:16, name:"Jyothi Reddy",     contact:"9321012345", hometown:"Hyderabad"     },
+  { id:17, name:"Kamala Srinivas",  contact:"9210012345", hometown:"Bangalore"     },
+  { id:18, name:"Nalini Mohan",     contact:"9109012345", hometown:"Chennai"       },
+  { id:19, name:"Padma Suresh",     contact:"9008012345", hometown:"Patna"         },
+  { id:20, name:"Rekha Gopal",      contact:"9876501234", hometown:"Bhopal"        },
+  { id:21, name:"Savitha Prasad",   contact:"9765501234", hometown:"Vadodara"      },
+  { id:22, name:"Tara Nambiar",     contact:"9654501234", hometown:"Kochi"         },
+  { id:23, name:"Vimala Rajesh",    contact:"9543501234", hometown:"Surat"         },
+  { id:24, name:"Yamini Chandra",   contact:"9432501234", hometown:"Lucknow"       },
+  { id:25, name:"Ambika Shetty",    contact:"9321501234", hometown:"Mumbai"        },
+  { id:26, name:"Bhavani Pillai",   contact:"9210501234", hometown:"Chandigarh"    },
+  { id:27, name:"Chitra Venkat",    contact:"9109501234", hometown:"Nagpur"        },
+  { id:28, name:"Durga Murugan",    contact:"9008501234", hometown:"Coimbatore"    },
+  { id:29, name:"Indira Ravi",      contact:"9876540123", hometown:"Delhi"         },
+  { id:30, name:"Janaki Balaji",    contact:"9765540123", hometown:"Jaipur"        },
 ];
 
 const INITIAL_PHARMACISTS = [
-  { id:1, name:"Ramesh Kulkarni",  contact: CONTACTS(), hometown:"Pune"      },
-  { id:2, name:"Suresh Agarwal",   contact: CONTACTS(), hometown:"Lucknow"   },
-  { id:3, name:"Manish Tiwari",    contact: CONTACTS(), hometown:"Bhopal"    },
-  { id:4, name:"Harish Chaudhary", contact: CONTACTS(), hometown:"Jaipur"    },
+  { id:1, name:"Ramesh Kulkarni",  contact:"9654540123", hometown:"Pune"      },
+  { id:2, name:"Suresh Agarwal",   contact:"9543540123", hometown:"Lucknow"   },
+  { id:3, name:"Manish Tiwari",    contact:"9432540123", hometown:"Bhopal"    },
+  { id:4, name:"Harish Chaudhary", contact:"9321540123", hometown:"Jaipur"    },
 ];
 
 function StaffRow({ member, index, onUpdate, onRemove }) {
@@ -741,9 +739,82 @@ function StaffSection({ title, staff, setStaff }) {
 }
 
 
+const LAB_CATEGORIES = [
+  {
+    title: "Pathology",
+    color: "#1a5fa8", light: "#d6e6f7",
+    tests: [
+      { name: "Complete Blood Count (CBC)",       price: 250 },
+      { name: "Blood Sugar – Fasting / PP",       price: 80  },
+      { name: "Urine Routine & Microscopy",       price: 100 },
+      { name: "Stool Routine Examination",        price: 120 },
+      { name: "ESR",                              price: 60  },
+      { name: "Blood Grouping & Rh Typing",       price: 80  },
+    ],
+  },
+  {
+    title: "Radiology",
+    color: "#8e44ad", light: "#f3e8fd",
+    tests: [
+      { name: "X-Ray – Chest",                   price: 200  },
+      { name: "X-Ray – Other Parts",             price: 250  },
+      { name: "CT Scan – Head",                  price: 3500 },
+      { name: "CT Scan – Chest / Abdomen",       price: 5000 },
+      { name: "MRI – Brain",                     price: 6000 },
+      { name: "MRI – Spine",                     price: 7000 },
+      { name: "Ultrasound – Abdomen",            price: 800  },
+      { name: "Ultrasound – Pelvis",             price: 900  },
+    ],
+  },
+  {
+    title: "Microbiology",
+    color: "#e67e22", light: "#fef3e2",
+    tests: [
+      { name: "Blood Culture & Sensitivity",     price: 600 },
+      { name: "Urine Culture & Sensitivity",     price: 500 },
+      { name: "Throat Swab Culture",             price: 450 },
+      { name: "Stool Culture",                   price: 500 },
+      { name: "Sputum Culture & Sensitivity",    price: 550 },
+    ],
+  },
+  {
+    title: "Biochemistry",
+    color: "#16a085", light: "#e0f5f1",
+    tests: [
+      { name: "Liver Function Test (LFT)",       price: 700 },
+      { name: "Kidney Function Test (KFT)",      price: 650 },
+      { name: "Thyroid Profile – T3, T4, TSH",  price: 800 },
+      { name: "Lipid Profile",                   price: 600 },
+      { name: "Blood Glucose (Random)",          price: 70  },
+      { name: "HbA1c",                           price: 500 },
+    ],
+  },
+  {
+    title: "Cardiology",
+    color: "#e74c3c", light: "#fdecea",
+    tests: [
+      { name: "ECG – 12 Lead",                   price: 200  },
+      { name: "Echocardiography (Echo)",         price: 2500 },
+      { name: "Holter Monitoring (24 hr)",       price: 3000 },
+      { name: "Stress Test (TMT)",               price: 1500 },
+    ],
+  },
+  {
+    title: "Histopathology",
+    color: "#2c3e50", light: "#eaecee",
+    tests: [
+      { name: "Biopsy – Small Specimen",         price: 1500 },
+      { name: "Biopsy – Large Specimen",         price: 2500 },
+      { name: "FNAC",                            price: 800  },
+      { name: "Frozen Section",                  price: 3000 },
+      { name: "Immunohistochemistry (IHC)",      price: 3500 },
+    ],
+  },
+];
+
 export default function AdminDashboard() {
   const router = useRouter();
-  const [activeNav, setActiveNav]       = useState(() => (typeof window !== "undefined" ? localStorage.getItem("adminActiveNav") || "Dashboard" : "Dashboard"));
+  const [activeNav, setActiveNav]       = useState("Dashboard");
   const [sidebarOpen, setSidebarOpen]   = useState(false);
   const [isMobile, setIsMobile]         = useState(false);
   useEffect(() => {
@@ -773,11 +844,18 @@ export default function AdminDashboard() {
   const [adminLabPhone, setAdminLabPhone]     = useState("");
   const [adminLabSubmitting, setAdminLabSubmitting] = useState(false);
   const [adminLabSuccess, setAdminLabSuccess] = useState(false);
+  const [showAdminLabMobileForm, setShowAdminLabMobileForm] = useState(false);
+  const [showAdminAddMoreTests, setShowAdminAddMoreTests] = useState(false);
   const [nurses, setNurses]               = useState(INITIAL_NURSES);
   const [pharmacists, setPharmacists]     = useState(INITIAL_PHARMACISTS);
   const [showForm, setShowForm]         = useState(false);
   const [form, setForm]                 = useState(EMPTY_FORM);
   const [formError, setFormError]       = useState("");
+
+  useEffect(() => {
+    const saved = localStorage.getItem("adminActiveNav");
+    if (saved) setActiveNav(saved);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("adminActiveNav", activeNav);
@@ -999,15 +1077,16 @@ export default function AdminDashboard() {
     }
   };
 
-  const deleteLabRequest = async (id) => {
+  const denyLabRequest = async (id) => {
     try {
       const LabRequest = Parse.Object.extend("LabRequest");
       const obj = new LabRequest();
       obj.id = id;
-      await obj.destroy();
-      setLabRequests(prev => prev.filter(r => r.id !== id));
+      obj.set("status", "Denied");
+      await obj.save();
+      setLabRequests(prev => prev.map(r => r.id === id ? { ...r, status: "Denied" } : r));
     } catch (err) {
-      console.error("Failed to delete lab request:", err);
+      console.error("Failed to deny lab request:", err);
     }
   };
 
@@ -1479,79 +1558,6 @@ export default function AdminDashboard() {
 
         {/* Lab & Diagnostics */}
         {activeNav === "Lab & Diagnostics" && (() => {
-          const LAB_CATEGORIES = [
-            {
-              title: "Pathology",
-              color: "#1a5fa8", light: "#d6e6f7",
-              tests: [
-                { name: "Complete Blood Count (CBC)",       price: 250 },
-                { name: "Blood Sugar – Fasting / PP",       price: 80  },
-                { name: "Urine Routine & Microscopy",       price: 100 },
-                { name: "Stool Routine Examination",        price: 120 },
-                { name: "ESR",                              price: 60  },
-                { name: "Blood Grouping & Rh Typing",       price: 80  },
-              ],
-            },
-            {
-              title: "Radiology",
-              color: "#8e44ad", light: "#f3e8fd",
-              tests: [
-                { name: "X-Ray – Chest",                   price: 200  },
-                { name: "X-Ray – Other Parts",             price: 250  },
-                { name: "CT Scan – Head",                  price: 3500 },
-                { name: "CT Scan – Chest / Abdomen",       price: 5000 },
-                { name: "MRI – Brain",                     price: 6000 },
-                { name: "MRI – Spine",                     price: 7000 },
-                { name: "Ultrasound – Abdomen",            price: 800  },
-                { name: "Ultrasound – Pelvis",             price: 900  },
-              ],
-            },
-            {
-              title: "Microbiology",
-              color: "#e67e22", light: "#fef3e2",
-              tests: [
-                { name: "Blood Culture & Sensitivity",     price: 600 },
-                { name: "Urine Culture & Sensitivity",     price: 500 },
-                { name: "Throat Swab Culture",             price: 450 },
-                { name: "Stool Culture",                   price: 500 },
-                { name: "Sputum Culture & Sensitivity",    price: 550 },
-              ],
-            },
-            {
-              title: "Biochemistry",
-              color: "#16a085", light: "#e0f5f1",
-              tests: [
-                { name: "Liver Function Test (LFT)",       price: 700 },
-                { name: "Kidney Function Test (KFT)",      price: 650 },
-                { name: "Thyroid Profile – T3, T4, TSH",  price: 800 },
-                { name: "Lipid Profile",                   price: 600 },
-                { name: "Blood Glucose (Random)",          price: 70  },
-                { name: "HbA1c",                           price: 500 },
-              ],
-            },
-            {
-              title: "Cardiology",
-              color: "#e74c3c", light: "#fdecea",
-              tests: [
-                { name: "ECG – 12 Lead",                   price: 200  },
-                { name: "Echocardiography (Echo)",         price: 2500 },
-                { name: "Holter Monitoring (24 hr)",       price: 3000 },
-                { name: "Stress Test (TMT)",               price: 1500 },
-              ],
-            },
-            {
-              title: "Histopathology",
-              color: "#2c3e50", light: "#eaecee",
-              tests: [
-                { name: "Biopsy – Small Specimen",         price: 1500 },
-                { name: "Biopsy – Large Specimen",         price: 2500 },
-                { name: "FNAC",                            price: 800  },
-                { name: "Frozen Section",                  price: 3000 },
-                { name: "Immunohistochemistry (IHC)",      price: 3500 },
-              ],
-            },
-          ];
-
           return (
             <>
               <div style={{ marginBottom: "1rem" }}>
@@ -1560,7 +1566,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Summary panel */}
-              {adminSelectedTests.length > 0 && (
+              {adminSelectedTests.length > 0 && !isMobile && (
                 <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.12)", padding: "1.2rem 1.5rem", marginBottom: "1.5rem", border: "1.5px solid #1a5fa8" }}>
                   <div style={{ fontWeight: 700, fontSize: 15, color: "#1a5fa8", marginBottom: "0.75rem" }}>Selected Tests</div>
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem", marginBottom: "0.75rem" }}>
@@ -1600,7 +1606,7 @@ export default function AdminDashboard() {
 
               <div className={styles.labGrid}>
                 {LAB_CATEGORIES.map(cat => (
-                  <div key={cat.title} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                  <div key={cat.title} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden", border: `2px solid ${cat.color}` }}>
                     <div style={{ background: cat.color, padding: "0.9rem 1.2rem" }}>
                       <h3 style={{ margin: 0, color: "#fff", fontWeight: 700, fontSize: 15 }}>{cat.title}</h3>
                     </div>
@@ -1616,9 +1622,13 @@ export default function AdminDashboard() {
                           const selected = adminSelectedTests.some(x => x.name === t.name);
                           return (
                             <tr key={t.name}
-                              onClick={() => setAdminSelectedTests(prev =>
-                                selected ? prev.filter(x => x.name !== t.name) : [...prev, t]
-                              )}
+                              onClick={() => {
+                                setAdminSelectedTests(prev => {
+                                  const next = selected ? prev.filter(x => x.name !== t.name) : [...prev, t];
+                                  if (isMobile && next.length > 0) setShowAdminLabMobileForm(true);
+                                  return next;
+                                });
+                              }}
                               style={{ borderTop: "1px solid #f0f4f8", background: selected ? cat.light : i % 2 === 0 ? "#fff" : "#fafcff", cursor: "pointer", transition: "background 0.15s" }}>
                               <td style={{ padding: "0.65rem 1rem", fontSize: 13, color: selected ? cat.color : "#333", fontWeight: selected ? 700 : 400, display: "flex", alignItems: "center", gap: "0.5rem" }}>
                                 <span style={{ width: 14, height: 14, borderRadius: 4, border: `2px solid ${cat.color}`, background: selected ? cat.color : "transparent", display: "inline-block", flexShrink: 0 }} />
@@ -1657,6 +1667,7 @@ export default function AdminDashboard() {
               {[
                 { label: "Pending",  color: "#e67e22", bg: "#fff4e5", count: labRequests.filter(r => r.status === "Pending").length  },
                 { label: "Accepted", color: "#27ae60", bg: "#e6f9f0", count: labRequests.filter(r => r.status === "Accepted").length },
+                { label: "Denied",   color: "#e74c3c", bg: "#fdecea", count: labRequests.filter(r => r.status === "Denied").length   },
                 { label: "Total",    color: "#1a5fa8", bg: "#d6e6f7", count: labRequests.length },
               ].map(({ label, color, bg, count }) => (
                 <div key={label} style={{ background: bg, borderRadius: 10, padding: "0.5rem 1.2rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
@@ -1686,7 +1697,7 @@ export default function AdminDashboard() {
                             {req.patientPhone && <div style={{ fontSize: 13, color: "#888", marginTop: 1 }}>📞 {req.patientPhone}</div>}
                           </div>
                           <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
-                            <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 20, background: req.status === "Accepted" ? "#27ae60" : "#fff4e5", color: req.status === "Accepted" ? "#fff" : "#e67e22" }}>{req.status}</span>
+                            <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 20, background: req.status === "Accepted" ? "#27ae60" : req.status === "Denied" ? "#e74c3c" : "#fff4e5", color: req.status === "Accepted" || req.status === "Denied" ? "#fff" : "#e67e22" }}>{req.status}</span>
                             <button onClick={() => setExpandedSlots(prev => ({ ...prev, [req.id]: !prev[req.id] }))}
                               style={{ background: "none", border: "none", cursor: "pointer", color: "#1a5fa8", fontSize: 18, padding: 0 }}>
                               {expandedSlots[req.id] ? "▲" : "▼"}
@@ -1704,7 +1715,7 @@ export default function AdminDashboard() {
                             {req.status === "Pending" && (
                               <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
                                 <button onClick={() => acceptLabRequest(req.id)} style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Accept</button>
-                                <button onClick={() => deleteLabRequest(req.id)} style={{ background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Delete</button>
+                                <button onClick={() => denyLabRequest(req.id)} style={{ background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Deny</button>
                               </div>
                             )}
                           </div>
@@ -1725,13 +1736,13 @@ export default function AdminDashboard() {
                           <div style={{ marginTop: "0.5rem", fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>Total: ₹{req.totalAmount.toLocaleString()}</div>
                         </div>
                         <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
-                          <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 20, background: req.status === "Accepted" ? "#27ae60" : "#fff4e5", color: req.status === "Accepted" ? "#fff" : "#e67e22" }}>{req.status}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 20, background: req.status === "Accepted" ? "#27ae60" : req.status === "Denied" ? "#e74c3c" : "#fff4e5", color: req.status === "Accepted" || req.status === "Denied" ? "#fff" : "#e67e22" }}>{req.status}</span>
                           <div style={{ display: "flex", gap: "0.5rem", marginTop: 4 }}>
                             {req.status === "Pending" && (
                               <button onClick={() => acceptLabRequest(req.id)} style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Accept</button>
                             )}
                             {req.status === "Pending" && (
-                              <button onClick={() => deleteLabRequest(req.id)} style={{ background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Delete</button>
+                              <button onClick={() => denyLabRequest(req.id)} style={{ background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Deny</button>
                             )}
                           </div>
                         </div>
@@ -1931,6 +1942,88 @@ export default function AdminDashboard() {
                 Book Appointment
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Lab Request Form */}
+      {showAdminLabMobileForm && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 2000 }}>
+          <div style={{ background: "#fff", borderRadius: "18px 18px 0 0", padding: "1.5rem", width: "100%", maxHeight: "85vh", overflowY: "auto", boxShadow: "0 -8px 32px rgba(26,95,168,0.18)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>Submit Lab Request</h3>
+              <span onClick={() => { setShowAdminLabMobileForm(false); setShowAdminAddMoreTests(false); }} style={{ cursor: "pointer", fontSize: 22, color: "#888", lineHeight: 1 }}>×</span>
+            </div>
+
+            {/* Selected tests summary */}
+            <div style={{ background: "#f4f8fc", borderRadius: 10, padding: "0.75rem 1rem", marginBottom: "1rem" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                <div style={{ fontWeight: 600, fontSize: 13, color: "#1a5fa8" }}>Selected Tests ({adminSelectedTests.length})</div>
+                <button
+                  onClick={() => setShowAdminAddMoreTests(v => !v)}
+                  style={{ width: 24, height: 24, borderRadius: 6, border: "1.5px solid #1a5fa8", background: showAdminAddMoreTests ? "#1a5fa8" : "#fff", color: showAdminAddMoreTests ? "#fff" : "#1a5fa8", fontWeight: 700, fontSize: 18, lineHeight: 1, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, flexShrink: 0 }}
+                >+</button>
+              </div>
+              {adminSelectedTests.map(t => (
+                <div key={t.name} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#444", marginBottom: 3 }}>
+                  <span>{t.name}</span>
+                  <span style={{ fontWeight: 600 }}>₹{t.price.toLocaleString()}</span>
+                </div>
+              ))}
+              <div style={{ borderTop: "1px solid #d6e6f7", marginTop: "0.5rem", paddingTop: "0.5rem", display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>
+                <span>Total</span>
+                <span>₹{adminSelectedTests.reduce((s, t) => s + t.price, 0).toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* Inline test picker — shown when "+" is tapped */}
+            {showAdminAddMoreTests && (
+              <div style={{ marginBottom: "1rem", borderRadius: 10, border: "1px solid #d6e6f7", overflow: "hidden" }}>
+                {LAB_CATEGORIES.map(cat => (
+                  <div key={cat.title}>
+                    <div style={{ background: cat.color, padding: "0.4rem 0.8rem", fontWeight: 700, fontSize: 12, color: "#fff" }}>{cat.title}</div>
+                    {cat.tests.map(t => {
+                      const sel = adminSelectedTests.some(x => x.name === t.name);
+                      return (
+                        <div key={t.name}
+                          onClick={() => { setAdminSelectedTests(prev => sel ? prev.filter(x => x.name !== t.name) : [...prev, t]); setShowAdminAddMoreTests(false); }}
+                          style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 0.8rem", background: sel ? cat.light : "#fff", borderTop: "1px solid #f0f4f8", cursor: "pointer" }}>
+                          <span style={{ width: 12, height: 12, borderRadius: 3, border: `2px solid ${cat.color}`, background: sel ? cat.color : "transparent", flexShrink: 0, display: "inline-block" }} />
+                          <span style={{ flex: 1, fontSize: 13, color: sel ? cat.color : "#333", fontWeight: sel ? 600 : 400 }}>{t.name}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: cat.color }}>₹{t.price.toLocaleString()}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Name & Phone */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1rem" }}>
+              <input
+                type="text" placeholder="Patient Name"
+                value={adminLabName} onChange={e => setAdminLabName(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none" }}
+              />
+              <input
+                type="tel" placeholder="Phone Number"
+                value={adminLabPhone} onChange={e => setAdminLabPhone(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none" }}
+              />
+            </div>
+
+            {adminLabSuccess && (
+              <div style={{ color: "#27ae60", fontWeight: 700, fontSize: 13, marginBottom: "0.75rem" }}>✓ Submitted & Accepted — report generated</div>
+            )}
+
+            <button
+              onClick={async () => { await handleAdminLabSubmit(); setShowAdminLabMobileForm(false); setShowAdminAddMoreTests(false); }}
+              disabled={adminLabSubmitting || !adminLabName.trim() || !adminLabPhone.trim()}
+              style={{ width: "100%", background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 10, padding: "0.85rem", fontWeight: 700, fontSize: 15, cursor: adminLabSubmitting ? "not-allowed" : "pointer", opacity: adminLabSubmitting ? 0.7 : 1 }}
+            >
+              {adminLabSubmitting ? "Submitting…" : "Submit Request"}
+            </button>
           </div>
         </div>
       )}

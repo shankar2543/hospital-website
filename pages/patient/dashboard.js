@@ -114,9 +114,76 @@ function ProfileSection({ name, email, phone, setEmail, setPhone }) {
   );
 }
 
+const LAB_CATEGORIES = [
+  {
+    title: "Pathology", color: "#1a5fa8", light: "#d6e6f7",
+    tests: [
+      { name: "Complete Blood Count (CBC)",       price: 250 },
+      { name: "Blood Sugar – Fasting / PP",       price: 80  },
+      { name: "Urine Routine & Microscopy",       price: 100 },
+      { name: "Stool Routine Examination",        price: 120 },
+      { name: "ESR",                              price: 60  },
+      { name: "Blood Grouping & Rh Typing",       price: 80  },
+    ],
+  },
+  {
+    title: "Radiology", color: "#8e44ad", light: "#f3e8fd",
+    tests: [
+      { name: "X-Ray – Chest",                   price: 200  },
+      { name: "X-Ray – Other Parts",             price: 250  },
+      { name: "CT Scan – Head",                  price: 3500 },
+      { name: "CT Scan – Chest / Abdomen",       price: 5000 },
+      { name: "MRI – Brain",                     price: 6000 },
+      { name: "MRI – Spine",                     price: 7000 },
+      { name: "Ultrasound – Abdomen",            price: 800  },
+      { name: "Ultrasound – Pelvis",             price: 900  },
+    ],
+  },
+  {
+    title: "Microbiology", color: "#e67e22", light: "#fef3e2",
+    tests: [
+      { name: "Blood Culture & Sensitivity",     price: 600 },
+      { name: "Urine Culture & Sensitivity",     price: 500 },
+      { name: "Throat Swab Culture",             price: 450 },
+      { name: "Stool Culture",                   price: 500 },
+      { name: "Sputum Culture & Sensitivity",    price: 550 },
+    ],
+  },
+  {
+    title: "Biochemistry", color: "#16a085", light: "#e0f5f1",
+    tests: [
+      { name: "Liver Function Test (LFT)",       price: 700 },
+      { name: "Kidney Function Test (KFT)",      price: 650 },
+      { name: "Thyroid Profile – T3, T4, TSH",  price: 800 },
+      { name: "Lipid Profile",                   price: 600 },
+      { name: "Blood Glucose (Random)",          price: 70  },
+      { name: "HbA1c",                           price: 500 },
+    ],
+  },
+  {
+    title: "Cardiology", color: "#e74c3c", light: "#fdecea",
+    tests: [
+      { name: "ECG – 12 Lead",                   price: 200  },
+      { name: "Echocardiography (Echo)",         price: 2500 },
+      { name: "Holter Monitoring (24 hr)",       price: 3000 },
+      { name: "Stress Test (TMT)",               price: 1500 },
+    ],
+  },
+  {
+    title: "Histopathology", color: "#2c3e50", light: "#eaecee",
+    tests: [
+      { name: "Biopsy – Small Specimen",         price: 1500 },
+      { name: "Biopsy – Large Specimen",         price: 2500 },
+      { name: "FNAC",                            price: 800  },
+      { name: "Frozen Section",                  price: 3000 },
+      { name: "Immunohistochemistry (IHC)",      price: 3500 },
+    ],
+  },
+];
+
 export default function PatientDashboard() {
   const router = useRouter();
-  const [activeNav, setActiveNav]       = useState(() => (typeof window !== "undefined" ? localStorage.getItem("patientActiveNav") || "Dashboard" : "Dashboard"));
+  const [activeNav, setActiveNav]       = useState("Dashboard");
   const [name, setName]                 = useState("");
   const [email, setEmail]               = useState("");
   const [phone, setPhone]               = useState("");
@@ -131,6 +198,11 @@ export default function PatientDashboard() {
   const [reports, setReports]             = useState([]);
   const [reportsLoading, setReportsLoading] = useState(false);
   const [expandedReports, setExpandedReports] = useState({});
+
+  useEffect(() => {
+    const saved = localStorage.getItem("patientActiveNav");
+    if (saved) setActiveNav(saved);
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("patientActiveNav", activeNav);
@@ -221,6 +293,18 @@ export default function PatientDashboard() {
 
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [loggedOut, setLoggedOut] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const [showLabMobileForm, setShowLabMobileForm] = useState(false);
+  const [showLabAddMoreTests, setShowLabAddMoreTests] = useState(false);
+  const [labFormName, setLabFormName] = useState("");
+  const [labFormPhone, setLabFormPhone] = useState("");
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 900);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const handleLogout = () => setShowLogoutConfirm(true);
   const confirmLogout = () => { localStorage.clear(); setShowLogoutConfirm(false); setLoggedOut(true); };
@@ -228,19 +312,25 @@ export default function PatientDashboard() {
   const toggleTest = (test) => {
     setSelectedTests(prev => {
       const exists = prev.find(t => t.name === test.name);
-      return exists ? prev.filter(t => t.name !== test.name) : [...prev, test];
+      const next = exists ? prev.filter(t => t.name !== test.name) : [...prev, test];
+      if (isMobile && next.length > 0) {
+        setLabFormName(localStorage.getItem("name") || "");
+        setLabFormPhone(localStorage.getItem("phone") || "");
+        setShowLabMobileForm(true);
+      }
+      return next;
     });
   };
 
-  const handleLabSubmit = async () => {
+  const handleLabSubmit = async (overrideName, overridePhone) => {
     if (selectedTests.length === 0) return;
     setLabSubmitting(true);
     try {
       const LabRequest = Parse.Object.extend("LabRequest");
       const req = new LabRequest();
-      req.set("patientName",  localStorage.getItem("name")  || "");
+      req.set("patientName",  overrideName  || localStorage.getItem("name")  || "");
       req.set("patientEmail", localStorage.getItem("email") || "");
-      req.set("patientPhone", localStorage.getItem("phone") || "");
+      req.set("patientPhone", overridePhone || localStorage.getItem("phone") || "");
       req.set("tests",        JSON.stringify(selectedTests));
       req.set("totalAmount",  selectedTests.reduce((sum, t) => sum + t.price, 0));
       req.set("status",       "Pending");
@@ -469,72 +559,6 @@ export default function PatientDashboard() {
 
         {/* Lab & Diagnostics */}
         {activeNav === "Lab & Diagnostics" && (() => {
-          const LAB_CATEGORIES = [
-            {
-              title: "Pathology", color: "#1a5fa8", light: "#d6e6f7",
-              tests: [
-                { name: "Complete Blood Count (CBC)",       price: 250 },
-                { name: "Blood Sugar – Fasting / PP",       price: 80  },
-                { name: "Urine Routine & Microscopy",       price: 100 },
-                { name: "Stool Routine Examination",        price: 120 },
-                { name: "ESR",                              price: 60  },
-                { name: "Blood Grouping & Rh Typing",       price: 80  },
-              ],
-            },
-            {
-              title: "Radiology", color: "#8e44ad", light: "#f3e8fd",
-              tests: [
-                { name: "X-Ray – Chest",                   price: 200  },
-                { name: "X-Ray – Other Parts",             price: 250  },
-                { name: "CT Scan – Head",                  price: 3500 },
-                { name: "CT Scan – Chest / Abdomen",       price: 5000 },
-                { name: "MRI – Brain",                     price: 6000 },
-                { name: "MRI – Spine",                     price: 7000 },
-                { name: "Ultrasound – Abdomen",            price: 800  },
-                { name: "Ultrasound – Pelvis",             price: 900  },
-              ],
-            },
-            {
-              title: "Microbiology", color: "#e67e22", light: "#fef3e2",
-              tests: [
-                { name: "Blood Culture & Sensitivity",     price: 600 },
-                { name: "Urine Culture & Sensitivity",     price: 500 },
-                { name: "Throat Swab Culture",             price: 450 },
-                { name: "Stool Culture",                   price: 500 },
-                { name: "Sputum Culture & Sensitivity",    price: 550 },
-              ],
-            },
-            {
-              title: "Biochemistry", color: "#16a085", light: "#e0f5f1",
-              tests: [
-                { name: "Liver Function Test (LFT)",       price: 700 },
-                { name: "Kidney Function Test (KFT)",      price: 650 },
-                { name: "Thyroid Profile – T3, T4, TSH",  price: 800 },
-                { name: "Lipid Profile",                   price: 600 },
-                { name: "Blood Glucose (Random)",          price: 70  },
-                { name: "HbA1c",                           price: 500 },
-              ],
-            },
-            {
-              title: "Cardiology", color: "#e74c3c", light: "#fdecea",
-              tests: [
-                { name: "ECG – 12 Lead",                   price: 200  },
-                { name: "Echocardiography (Echo)",         price: 2500 },
-                { name: "Holter Monitoring (24 hr)",       price: 3000 },
-                { name: "Stress Test (TMT)",               price: 1500 },
-              ],
-            },
-            {
-              title: "Histopathology", color: "#2c3e50", light: "#eaecee",
-              tests: [
-                { name: "Biopsy – Small Specimen",         price: 1500 },
-                { name: "Biopsy – Large Specimen",         price: 2500 },
-                { name: "FNAC",                            price: 800  },
-                { name: "Frozen Section",                  price: 3000 },
-                { name: "Immunohistochemistry (IHC)",      price: 3500 },
-              ],
-            },
-          ];
           const total = selectedTests.reduce((s, t) => s + t.price, 0);
           return (
             <>
@@ -543,7 +567,7 @@ export default function PatientDashboard() {
                   <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>Lab & Diagnostics</h2>
                   <p style={{ color: "#888", fontSize: 13, marginTop: 4 }}>Click on any test to select it, then submit your request</p>
                 </div>
-                {selectedTests.length > 0 && (
+                {selectedTests.length > 0 && !isMobile && (
                   <div style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 12px rgba(26,95,168,0.12)", padding: "1rem 1.2rem", minWidth: 260 }}>
                     <div style={{ fontWeight: 700, fontSize: 14, color: "#1a5fa8", marginBottom: "0.5rem" }}>Selected ({selectedTests.length})</div>
                     {selectedTests.map(t => (
@@ -568,7 +592,7 @@ export default function PatientDashboard() {
               </div>
               <div className={styles.labGrid}>
                 {LAB_CATEGORIES.map(cat => (
-                  <div key={cat.title} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+                  <div key={cat.title} style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden", border: `2px solid ${cat.color}` }}>
                     <div style={{ background: cat.color, padding: "0.9rem 1.2rem" }}>
                       <h3 style={{ margin: 0, color: "#fff", fontWeight: 700, fontSize: 15 }}>{cat.title}</h3>
                     </div>
@@ -755,6 +779,87 @@ export default function PatientDashboard() {
                 Book Appointment
               </button>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Lab Request Form */}
+      {showLabMobileForm && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "flex-end", justifyContent: "center", zIndex: 2000, padding: "0" }}>
+          <div style={{ background: "#fff", borderRadius: "18px 18px 0 0", padding: "1.5rem", width: "100%", maxHeight: "85vh", overflowY: "auto", boxShadow: "0 -8px 32px rgba(26,95,168,0.18)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+              <h3 style={{ fontWeight: 700, fontSize: 18, color: "#1a5fa8", margin: 0 }}>Submit Lab Request</h3>
+              <span onClick={() => { setShowLabMobileForm(false); setShowLabAddMoreTests(false); }} style={{ cursor: "pointer", fontSize: 22, color: "#888", lineHeight: 1 }}>×</span>
+            </div>
+
+            {/* Selected tests */}
+            <div style={{ background: "#f4f8fc", borderRadius: 10, padding: "0.75rem 1rem", marginBottom: "1rem" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.5rem" }}>
+                <div style={{ fontWeight: 600, fontSize: 13, color: "#1a5fa8" }}>Selected Tests ({selectedTests.length})</div>
+                <button
+                  onClick={() => setShowLabAddMoreTests(v => !v)}
+                  style={{ width: 24, height: 24, borderRadius: 6, border: "1.5px solid #1a5fa8", background: showLabAddMoreTests ? "#1a5fa8" : "#fff", color: showLabAddMoreTests ? "#fff" : "#1a5fa8", fontWeight: 700, fontSize: 18, lineHeight: 1, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", padding: 0, flexShrink: 0 }}
+                >+</button>
+              </div>
+              {selectedTests.map(t => (
+                <div key={t.name} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#444", marginBottom: 3 }}>
+                  <span>{t.name}</span>
+                  <span style={{ fontWeight: 600 }}>₹{t.price.toLocaleString()}</span>
+                </div>
+              ))}
+              <div style={{ borderTop: "1px solid #d6e6f7", marginTop: "0.5rem", paddingTop: "0.5rem", display: "flex", justifyContent: "space-between", fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>
+                <span>Total</span>
+                <span>₹{selectedTests.reduce((s, t) => s + t.price, 0).toLocaleString()}</span>
+              </div>
+            </div>
+
+            {/* Inline test picker — shown when "+" is tapped */}
+            {showLabAddMoreTests && (
+              <div style={{ marginBottom: "1rem", borderRadius: 10, border: "1px solid #d6e6f7", overflow: "hidden" }}>
+                {LAB_CATEGORIES.map(cat => (
+                  <div key={cat.title}>
+                    <div style={{ background: cat.color, padding: "0.4rem 0.8rem", fontWeight: 700, fontSize: 12, color: "#fff" }}>{cat.title}</div>
+                    {cat.tests.map(t => {
+                      const sel = selectedTests.some(x => x.name === t.name);
+                      return (
+                        <div key={t.name}
+                          onClick={() => { toggleTest(t); setShowLabAddMoreTests(false); }}
+                          style={{ display: "flex", alignItems: "center", gap: "0.5rem", padding: "0.5rem 0.8rem", background: sel ? cat.light : "#fff", borderTop: "1px solid #f0f4f8", cursor: "pointer" }}>
+                          <span style={{ width: 12, height: 12, borderRadius: 3, border: `2px solid ${cat.color}`, background: sel ? cat.color : "transparent", flexShrink: 0, display: "inline-block" }} />
+                          <span style={{ flex: 1, fontSize: 13, color: sel ? cat.color : "#333", fontWeight: sel ? 600 : 400 }}>{t.name}</span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: cat.color }}>₹{t.price.toLocaleString()}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Name & Phone */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem", marginBottom: "1rem" }}>
+              <input
+                type="text" placeholder="Your Name"
+                value={labFormName} onChange={e => setLabFormName(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none" }}
+              />
+              <input
+                type="tel" placeholder="Phone Number"
+                value={labFormPhone} onChange={e => setLabFormPhone(e.target.value)}
+                style={{ padding: "0.7rem 1rem", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 14, outline: "none" }}
+              />
+            </div>
+
+            <button
+              onClick={async () => {
+                await handleLabSubmit(labFormName, labFormPhone);
+                setShowLabMobileForm(false); setShowLabAddMoreTests(false);
+              }}
+              disabled={labSubmitting || !labFormName.trim() || !labFormPhone.trim()}
+              style={{ width: "100%", background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 10, padding: "0.85rem", fontWeight: 700, fontSize: 15, cursor: labSubmitting ? "not-allowed" : "pointer", opacity: labSubmitting ? 0.7 : 1 }}
+            >
+              {labSubmitting ? "Submitting..." : "Submit Request"}
+            </button>
           </div>
         </div>
       )}
