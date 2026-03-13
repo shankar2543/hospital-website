@@ -9,6 +9,10 @@ export default function Home() {
   const router = useRouter();
 
   // shared
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showConsultForm, setShowConsultForm] = useState(false);
+  const [consultForm, setConsultForm] = useState({ name: '', phone: '', email: '', date: '', problem: '' });
+  const [consultSuccess, setConsultSuccess] = useState(false);
   const [isSignup, setIsSignup]   = useState(false);
   const [error, setError]         = useState('');
   const [success, setSuccess]     = useState('');
@@ -208,6 +212,7 @@ export default function Home() {
             <a href="#about" className={styles.navLink}>About Us</a>
             <a href="#" className={styles.navLink}>Doctors</a>
             <a href="#" className={styles.navLink}>Careers</a>
+            <a href="#" className={styles.navLink} onClick={e => { e.preventDefault(); document.getElementById('login-form').scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>Sign In</a>
             <div className={styles.navSearch}>
               <span className={styles.navSearchIcon}>&#128269;</span>
               <input type="text" placeholder="Search..." />
@@ -215,7 +220,27 @@ export default function Home() {
           </div>
 
           <button className={styles.contactBtn}>Contact Us</button>
+
+          {/* Hamburger — mobile only */}
+          <button className={styles.hamburger} onClick={() => setMobileMenuOpen(true)} aria-label="Open menu">
+            <span /><span /><span />
+          </button>
         </nav>
+
+        {/* Mobile sidebar overlay */}
+        {mobileMenuOpen && (
+          <div className={styles.mobileOverlay} onClick={() => setMobileMenuOpen(false)}>
+            <div className={styles.mobileSidebar} onClick={e => e.stopPropagation()}>
+              <button className={styles.mobileSidebarClose} onClick={() => setMobileMenuOpen(false)}>✕</button>
+              <a href="#" className={styles.mobileSidebarLink} onClick={() => setMobileMenuOpen(false)}>Home</a>
+              <a href="#about" className={styles.mobileSidebarLink} onClick={() => setMobileMenuOpen(false)}>Services</a>
+              <a href="#about" className={styles.mobileSidebarLink} onClick={() => setMobileMenuOpen(false)}>About Us</a>
+              <a href="#" className={styles.mobileSidebarLink} onClick={() => setMobileMenuOpen(false)}>Doctors</a>
+              <a href="#" className={styles.mobileSidebarLink} onClick={() => setMobileMenuOpen(false)}>Careers</a>
+              <a href="#" className={styles.mobileSidebarLink} onClick={e => { e.preventDefault(); setMobileMenuOpen(false); document.getElementById('login-form').scrollIntoView({ behavior: 'smooth', block: 'center' }); }}>Sign In</a>
+            </div>
+          </div>
+        )}
 
         {/* Hero Body */}
         <div className={styles.heroBody}>
@@ -241,7 +266,7 @@ export default function Home() {
             </p>
 
             <div className={styles.heroCtas}>
-              <button className={styles.primaryCta} onClick={() => switchMode(true)}>
+              <button className={styles.primaryCta} onClick={() => setShowConsultForm(true)}>
                 Book a Free Consultation
               </button>
               <button className={styles.secondaryCta}>
@@ -253,7 +278,7 @@ export default function Home() {
 
           {/* Right — card toggles between login & signup */}
           <div className={styles.heroRight}>
-            <div className={styles.loginCard}>
+            <div id="login-form" className={styles.loginCard}>
 
               {/* Card header */}
               <div className={styles.cardHeader}>
@@ -446,7 +471,7 @@ export default function Home() {
           <div className={homeStyles.logoContent}>
             <h2 className={homeStyles.logoText}>Medicover Hospital</h2>
             <p className={homeStyles.logoSubtext}>Your Health, Our Priority</p>
-            <button className={homeStyles.ctaButton} onClick={() => switchMode(true)}>
+            <button className={homeStyles.ctaButton} onClick={() => document.getElementById('login-form').scrollIntoView({ behavior: 'smooth', block: 'center' })}>
               Get Started Today
             </button>
 
@@ -470,23 +495,94 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Patients Speak */}
+        <section className={homeStyles.patientsSpeakSection}>
+          <h2 className={homeStyles.patientsSpeakTitle}>Happy Patients</h2>
+          <div className={homeStyles.marqueeWrapper}>
+            {/* Row 1 — scrolls right */}
+            <div className={homeStyles.marqueeRow + " " + homeStyles.right}>
+              {[
+                { src: "https://randomuser.me/api/portraits/men/11.jpg",   label: "Rajesh, Chennai"     },
+                { src: "https://randomuser.me/api/portraits/women/21.jpg", label: "Priya, Bangalore"    },
+                { src: "https://randomuser.me/api/portraits/men/32.jpg",   label: "Samuel, Mumbai"      },
+                { src: "https://randomuser.me/api/portraits/women/44.jpg", label: "Aisha, Hyderabad"    },
+                { src: "https://randomuser.me/api/portraits/men/55.jpg",   label: "Ravi, Delhi"         },
+                { src: "https://randomuser.me/api/portraits/women/63.jpg", label: "Meena, Kochi"        },
+                { src: "https://randomuser.me/api/portraits/men/76.jpg",   label: "James, Pune"         },
+                { src: "https://randomuser.me/api/portraits/women/85.jpg", label: "Nadia, Jaipur"       },
+                { src: "https://randomuser.me/api/portraits/men/91.jpg",   label: "Chen, Coimbatore"    },
+                { src: "https://randomuser.me/api/portraits/women/95.jpg", label: "Fatima, Lucknow"     },
+                { src: "https://randomuser.me/api/portraits/men/11.jpg",   label: "Rajesh, Chennai"     },
+                { src: "https://randomuser.me/api/portraits/women/21.jpg", label: "Priya, Bangalore"    },
+                { src: "https://randomuser.me/api/portraits/men/32.jpg",   label: "Samuel, Mumbai"      },
+                { src: "https://randomuser.me/api/portraits/women/44.jpg", label: "Aisha, Hyderabad"    },
+                { src: "https://randomuser.me/api/portraits/men/55.jpg",   label: "Ravi, Delhi"         },
+                { src: "https://randomuser.me/api/portraits/women/63.jpg", label: "Meena, Kochi"        },
+                { src: "https://randomuser.me/api/portraits/men/76.jpg",   label: "James, Pune"         },
+                { src: "https://randomuser.me/api/portraits/women/85.jpg", label: "Nadia, Jaipur"       },
+                { src: "https://randomuser.me/api/portraits/men/91.jpg",   label: "Chen, Coimbatore"    },
+                { src: "https://randomuser.me/api/portraits/women/95.jpg", label: "Fatima, Lucknow"     },
+              ].map((p, i) => (
+                <div key={i} className={homeStyles.patientCard}>
+                  <img src={p.src} alt={p.label} />
+                  <div className={homeStyles.patientCardOverlay}>{p.label}</div>
+                </div>
+              ))}
+            </div>
+            {/* Row 2 — scrolls left */}
+            <div className={homeStyles.marqueeRow + " " + homeStyles.left}>
+              {[
+                { src: "https://randomuser.me/api/portraits/women/12.jpg", label: "Kavitha, Patna"      },
+                { src: "https://randomuser.me/api/portraits/men/23.jpg",   label: "Suresh, Ahmedabad"   },
+                { src: "https://randomuser.me/api/portraits/women/34.jpg", label: "Deepa, Nagpur"       },
+                { src: "https://randomuser.me/api/portraits/men/45.jpg",   label: "Harish, Surat"       },
+                { src: "https://randomuser.me/api/portraits/women/56.jpg", label: "Lakshmi, Vadodara"   },
+                { src: "https://randomuser.me/api/portraits/men/67.jpg",   label: "Manish, Chandigarh"  },
+                { src: "https://randomuser.me/api/portraits/women/78.jpg", label: "Rekha, Indore"       },
+                { src: "https://randomuser.me/api/portraits/men/89.jpg",   label: "Arjun, Bhopal"       },
+                { src: "https://randomuser.me/api/portraits/women/90.jpg", label: "Sindhu, Visakhapatnam"},
+                { src: "https://randomuser.me/api/portraits/men/14.jpg",   label: "Ganesh, Kolkata"     },
+                { src: "https://randomuser.me/api/portraits/women/12.jpg", label: "Kavitha, Patna"      },
+                { src: "https://randomuser.me/api/portraits/men/23.jpg",   label: "Suresh, Ahmedabad"   },
+                { src: "https://randomuser.me/api/portraits/women/34.jpg", label: "Deepa, Nagpur"       },
+                { src: "https://randomuser.me/api/portraits/men/45.jpg",   label: "Harish, Surat"       },
+                { src: "https://randomuser.me/api/portraits/women/56.jpg", label: "Lakshmi, Vadodara"   },
+                { src: "https://randomuser.me/api/portraits/men/67.jpg",   label: "Manish, Chandigarh"  },
+                { src: "https://randomuser.me/api/portraits/women/78.jpg", label: "Rekha, Indore"       },
+                { src: "https://randomuser.me/api/portraits/men/89.jpg",   label: "Arjun, Bhopal"       },
+                { src: "https://randomuser.me/api/portraits/women/90.jpg", label: "Sindhu, Visakhapatnam"},
+                { src: "https://randomuser.me/api/portraits/men/14.jpg",   label: "Ganesh, Kolkata"     },
+              ].map((p, i) => (
+                <div key={i} className={homeStyles.patientCard}>
+                  <img src={p.src} alt={p.label} />
+                  <div className={homeStyles.patientCardOverlay}>{p.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className={homeStyles.statsSection}>
           <div className={homeStyles.statsContainer}>
             <h2 className={homeStyles.statsTitle}>Why Choose Us</h2>
             <div className={homeStyles.statsGrid}>
               <div className={homeStyles.statCard}>
+                <div className={homeStyles.statIcon}>🏆</div>
                 <div className={homeStyles.statNumber}>20+</div>
                 <div className={homeStyles.statLabel}>Years of Experience</div>
               </div>
               <div className={homeStyles.statCard}>
+                <div className={homeStyles.statIcon}>👨‍⚕️</div>
                 <div className={homeStyles.statNumber}>500+</div>
                 <div className={homeStyles.statLabel}>Expert Doctors</div>
               </div>
               <div className={homeStyles.statCard}>
+                <div className={homeStyles.statIcon}>❤️</div>
                 <div className={homeStyles.statNumber}>100K+</div>
                 <div className={homeStyles.statLabel}>Happy Patients</div>
               </div>
               <div className={homeStyles.statCard}>
+                <div className={homeStyles.statIcon}>⭐</div>
                 <div className={homeStyles.statNumber}>99%</div>
                 <div className={homeStyles.statLabel}>Satisfaction Rate</div>
               </div>
@@ -519,6 +615,72 @@ export default function Home() {
           </div>
         </footer>
       </div>
+
+      {/* Consultation Form Modal */}
+      {showConsultForm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.55)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>
+          <div style={{ background: '#fff', borderRadius: 20, padding: '2rem', width: '100%', maxWidth: 480, maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 8px 40px rgba(0,0,0,0.2)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
+              <h2 style={{ fontWeight: 700, fontSize: 22, color: '#1a3a5c', margin: 0 }}>Book a Free Consultation</h2>
+              <span onClick={() => { setShowConsultForm(false); setConsultSuccess(false); setConsultForm({ name: '', phone: '', email: '', date: '', problem: '' }); }} style={{ cursor: 'pointer', fontSize: 22, color: '#888', lineHeight: 1 }}>×</span>
+            </div>
+
+            {consultSuccess ? (
+              <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+                <div style={{ fontSize: 48, marginBottom: '1rem' }}>✅</div>
+                <h3 style={{ fontWeight: 700, fontSize: 20, color: '#27ae60', marginBottom: '0.5rem' }}>Consultation Booked!</h3>
+                <p style={{ color: '#666', fontSize: 14 }}>We'll get in touch with you shortly.</p>
+                <button onClick={() => { setShowConsultForm(false); setConsultSuccess(false); setConsultForm({ name: '', phone: '', email: '', date: '', problem: '' }); }} style={{ marginTop: '1.5rem', background: '#1a5fa8', color: '#fff', border: 'none', borderRadius: 10, padding: '0.75rem 2rem', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}>Close</button>
+              </div>
+            ) : (
+              <form onSubmit={async e => {
+                e.preventDefault();
+                try {
+                  const Consultation = Parse.Object.extend("Consultation");
+                  const obj = new Consultation();
+                  obj.set("name",    consultForm.name.trim());
+                  obj.set("phone",   consultForm.phone.trim());
+                  obj.set("email",   consultForm.email.trim());
+                  obj.set("date",    consultForm.date);
+                  obj.set("problem", consultForm.problem.trim());
+                  obj.set("status",  "Pending");
+                  await obj.save();
+                } catch(err) { console.error(err); }
+                setConsultSuccess(true);
+              }} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <input
+                  type="text" placeholder="Full Name *" required
+                  value={consultForm.name} onChange={e => setConsultForm(p => ({ ...p, name: e.target.value }))}
+                  style={{ padding: '0.75rem 1rem', borderRadius: 10, border: '1px solid #d6e6f7', fontSize: 14, outline: 'none' }}
+                />
+                <input
+                  type="tel" placeholder="Phone Number *" required
+                  value={consultForm.phone} onChange={e => setConsultForm(p => ({ ...p, phone: e.target.value }))}
+                  style={{ padding: '0.75rem 1rem', borderRadius: 10, border: '1px solid #d6e6f7', fontSize: 14, outline: 'none' }}
+                />
+                <input
+                  type="email" placeholder="Email Address *" required
+                  value={consultForm.email} onChange={e => setConsultForm(p => ({ ...p, email: e.target.value }))}
+                  style={{ padding: '0.75rem 1rem', borderRadius: 10, border: '1px solid #d6e6f7', fontSize: 14, outline: 'none' }}
+                />
+                <input
+                  type="date" required
+                  value={consultForm.date} onChange={e => setConsultForm(p => ({ ...p, date: e.target.value }))}
+                  style={{ padding: '0.75rem 1rem', borderRadius: 10, border: '1px solid #d6e6f7', fontSize: 14, outline: 'none', color: consultForm.date ? '#222' : '#999' }}
+                />
+                <textarea
+                  placeholder="Describe your problem *" required rows={4}
+                  value={consultForm.problem} onChange={e => setConsultForm(p => ({ ...p, problem: e.target.value }))}
+                  style={{ padding: '0.75rem 1rem', borderRadius: 10, border: '1px solid #d6e6f7', fontSize: 14, outline: 'none', resize: 'vertical' }}
+                />
+                <button type="submit" style={{ background: '#1a5fa8', color: '#fff', border: 'none', borderRadius: 10, padding: '0.85rem', fontWeight: 700, fontSize: 15, cursor: 'pointer' }}>
+                  Submit
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

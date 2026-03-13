@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useRouter } from "next/router";
-import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu, FiChevronDown, FiChevronUp, FiHome, FiUsers, FiClock, FiGrid, FiActivity, FiCalendar, FiCreditCard, FiFileText, FiLayers } from "react-icons/fi";
+import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu, FiChevronDown, FiChevronUp, FiHome, FiUsers, FiClock, FiGrid, FiActivity, FiCalendar, FiCreditCard, FiFileText, FiLayers, FiMessageSquare } from "react-icons/fi";
 import Parse from '@/lib/parseConfig';
 import styles from '@/styles/patientDashboard.module.css';
 
@@ -68,6 +68,7 @@ function DoctorCard({ doctor, onNameChange, onImageChange }) {
   const [editing, setEditing]   = useState(false);
   const [tempName, setTempName] = useState(doctor.name);
   const [hoverImg, setHoverImg] = useState(false);
+  const [hoverCard, setHoverCard] = useState(false);
   const fileRef = useRef();
 
   const confirmName = () => {
@@ -88,7 +89,10 @@ function DoctorCard({ doctor, onNameChange, onImageChange }) {
   };
 
   return (
-    <div style={{ background: "#fff", borderRadius: 16, padding: "1.5rem 1rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", textAlign: "center" }}>
+    <div
+      onMouseEnter={() => setHoverCard(true)}
+      onMouseLeave={() => setHoverCard(false)}
+      style={{ background: "#fff", borderRadius: 16, padding: "1.5rem 1rem", boxShadow: hoverCard ? "0 4px 18px rgba(26,95,168,0.18)" : "0 2px 8px rgba(26,95,168,0.08)", textAlign: "center", border: hoverCard ? "1.5px solid #b0c8e8" : "1px solid #e0e0e0", transition: "box-shadow 0.2s, border-color 0.2s" }}>
 
       {/* Editable Image */}
       <div
@@ -306,7 +310,7 @@ function HistoryRow({ h, i, styles }) {
   );
 }
 
-function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loading, error, labRequests }) {
+function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loading, error, labRequests, onBack }) {
   const roomCounts = patients.reduce((acc, p) => { acc[p.room] = (acc[p.room] || 0) + 1; return acc; }, {});
   const occupiedBeds = patients.length;
   const freeRooms = ALL_ROOMS.filter(r => !roomCounts[r]).length;
@@ -369,10 +373,9 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
         {/* Title + subtitle */}
         <div>
-          <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: "0 0 4px 0" }}>
-            Admitted Patients
-          </h2>
+          <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: "0 0 4px 0" }}>Admitted Patients</h2>
           <p style={{ fontSize: 12, color: "#888", margin: 0 }}>Click Edit to modify name, room or status</p>
+          <button onClick={onBack} style={{ background: "none", border: "none", color: "#1a5fa8", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>‹ Back</button>
         </div>
 
         {/* Stats + Add button — pushed to right on desktop, wraps below on mobile */}
@@ -672,12 +675,21 @@ function StaffRow({ member, index, onUpdate, onRemove }) {
   );
 }
 
-function StaffSection({ title, staff, setStaff }) {
-  const [showAdd,  setShowAdd]  = useState(false);
-  const [newName,  setNewName]  = useState("");
-  const [newPhone, setNewPhone] = useState("");
-  const [newTown,  setNewTown]  = useState("");
-  const [addError, setAddError] = useState("");
+function StaffSection({ title, staff, setStaff, onBack }) {
+  const [showAdd,    setShowAdd]    = useState(false);
+  const [newName,    setNewName]    = useState("");
+  const [newPhone,   setNewPhone]   = useState("");
+  const [newTown,    setNewTown]    = useState("");
+  const [addError,   setAddError]   = useState("");
+  const [isMobile,   setIsMobile]   = useState(false);
+  const [expanded,   setExpanded]   = useState({});
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth <= 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const handleAdd    = (e) => {
     e.preventDefault();
@@ -691,7 +703,10 @@ function StaffSection({ title, staff, setStaff }) {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-        <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>{title} ({staff.length})</h2>
+        <div>
+          <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>{title}</h2>
+          <button onClick={onBack} style={{ background: "none", border: "none", color: "#1a5fa8", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>‹ Back</button>
+        </div>
         <button onClick={() => setShowAdd(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>+ Add Member</button>
       </div>
 
@@ -718,22 +733,54 @@ function StaffSection({ title, staff, setStaff }) {
         </div>
       )}
 
-      <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ background: "#d6e6f7" }}>
-              {["#", "Name", "Contact Number", "Hometown", "Actions"].map(h => (
-                <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>{h}</th>
+      {isMobile ? (
+        <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+          {staff.map((s, i) => (
+            <div key={s.id} style={{ background: "#fff", borderRadius: 12, padding: "0.9rem 1rem", border: "1px solid #e0e0e0", boxShadow: "0 2px 6px rgba(26,95,168,0.07)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>{s.name}</div>
+                  <div style={{ fontSize: 13, color: "#555", marginTop: 2 }}>📞 {s.contact}</div>
+                </div>
+                <button onClick={() => setExpanded(prev => ({ ...prev, [s.id]: !prev[s.id] }))}
+                  style={{ background: "none", border: "none", cursor: "pointer", color: "#1a5fa8", fontSize: 18, padding: 0 }}>
+                  {expanded[s.id] ? "▲" : "▼"}
+                </button>
+              </div>
+              {expanded[s.id] && (
+                <div style={{ marginTop: "0.75rem", paddingTop: "0.75rem", borderTop: "1px solid #f0f4f8" }}>
+                  <div style={{ fontSize: 13, color: "#555", marginBottom: 8 }}>🏠 {s.hometown}</div>
+                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                    <button onClick={() => { const name = prompt("Edit name:", s.name); if (name?.trim()) handleUpdate(s.id, { ...s, name: name.trim() }); }} style={{ flex: 1, background: "#f4f8fc", color: "#1a5fa8", border: "1px solid #d6e6f7", borderRadius: 7, padding: "5px 0", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                      Edit
+                    </button>
+                    <button onClick={() => handleRemove(s.id)} style={{ flex: 1, background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 0", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "#d6e6f7" }}>
+                {["#", "Name", "Contact Number", "Hometown", "Actions"].map(h => (
+                  <th key={h} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {staff.map((s, i) => (
+                <StaffRow key={s.id} index={i} member={s} onUpdate={handleUpdate} onRemove={handleRemove} />
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {staff.map((s, i) => (
-              <StaffRow key={s.id} index={i} member={s} onUpdate={handleUpdate} onRemove={handleRemove} />
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 }
@@ -833,6 +880,8 @@ export default function AdminDashboard() {
   const [historySearch, setHistorySearch] = useState("");
   const [labRequests, setLabRequests]     = useState([]);
   const [labRequestsLoading, setLabRequestsLoading] = useState(false);
+  const [consultations, setConsultations] = useState([]);
+  const [consultLoading, setConsultLoading] = useState(false);
   const [reports, setReports]             = useState([]);
   const [reportsLoading, setReportsLoading] = useState(false);
   const [expandedReports, setExpandedReports] = useState({});
@@ -871,6 +920,7 @@ export default function AdminDashboard() {
     fetchPatientHistory();
     fetchLabRequests();
     fetchReports();
+    fetchConsultations();
 
     // LiveQuery — only re-fetch when Back4App actually has new/changed data
     let apptSub, labSub, admittedSub;
@@ -979,6 +1029,29 @@ export default function AdminDashboard() {
       console.error("Failed to fetch lab requests:", err);
     } finally {
       setLabRequestsLoading(false);
+    }
+  };
+
+  const fetchConsultations = async () => {
+    setConsultLoading(true);
+    try {
+      const query = new Parse.Query("Consultation");
+      query.descending("createdAt");
+      query.limit(1000);
+      const results = await query.find();
+      setConsultations(results.map(r => ({
+        id:      r.id,
+        name:    r.get("name")    || "",
+        phone:   r.get("phone")   || "",
+        email:   r.get("email")   || "",
+        date:    r.get("date")    || "",
+        problem: r.get("problem") || "",
+        status:  r.get("status")  || "Pending",
+      })));
+    } catch (err) {
+      console.error("Failed to fetch consultations:", err);
+    } finally {
+      setConsultLoading(false);
     }
   };
 
@@ -1255,6 +1328,7 @@ export default function AdminDashboard() {
             { label: 'Lab & Diagnostics',icon: <FiActivity size={16} /> },
             { label: 'Slots',            icon: <FiGrid size={16} /> },
             { label: 'Appointments',     icon: <FiCalendar size={16} /> },
+            { label: 'Consultations',     icon: <FiMessageSquare size={16} /> },
             { label: 'Payment',          icon: <FiCreditCard size={16} /> },
             { label: 'Reports',          icon: <FiFileText size={16} /> },
           ].map(({ label, icon }) => (
@@ -1283,7 +1357,7 @@ export default function AdminDashboard() {
             <img src="/Logo-medicover.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 53, height: 53, objectFit: "contain", flexShrink: 0 }} />
             <div style={{ fontWeight: 800, fontSize: "clamp(13px, 3vw, 24px)", color: "#1a5fa8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>Medicover Management</div>
           </div>
-          {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Reports", "Appointments"].includes(activeNav) && (
+          {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Reports", "Appointments", "Consultations"].includes(activeNav) && (
             <button onClick={() => setShowForm(true)} className={styles.topbarBtn}>
               Make an appointment
             </button>
@@ -1301,7 +1375,7 @@ export default function AdminDashboard() {
             </section>
             <section className={styles.dashSecondGrid}>
               <div onClick={() => setActiveNav("Appointments")} className={styles.dashCard}>Appointments<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{appointments.length}</span></div>
-              <div onClick={() => setActiveNav("Lab & Diagnostics")} className={styles.dashCard}>Labs<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{labRequests.length}</span></div>
+              <div onClick={() => setActiveNav("Consultations")} className={styles.dashCard}>Consultations<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{consultations.length}</span></div>
               <div onClick={() => setActiveNav("Patient History")} className={styles.dashCard}>Patient History<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{history.length}</span></div>
               <div onClick={() => setActiveNav("Slots")} className={styles.dashCard}>
                 Slots<br />
@@ -1429,10 +1503,11 @@ export default function AdminDashboard() {
         {/* Doctors */}
         {activeNav === "Doctor" && (
           <>
-            <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", marginBottom: "1.5rem" }}>
-              Our Doctors ({doctors.length})
-              <span style={{ fontSize: 13, color: "#888", fontWeight: 400, marginLeft: 12 }}>Click a name to edit · Click photo to change image</span>
-            </h2>
+            <div style={{ marginBottom: "1.5rem" }}>
+              <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>Our Doctors</h2>
+              <p style={{ fontSize: 13, color: "#888", margin: "4px 0 0" }}>Click a name to edit · Click photo to change image</p>
+              <button onClick={() => setActiveNav("Dashboard")} style={{ background: "none", border: "none", color: "#1a5fa8", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>‹ Back</button>
+            </div>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "1.5rem" }}>
               {doctors.map(doc => (
                 <DoctorCard
@@ -1457,6 +1532,7 @@ export default function AdminDashboard() {
             loading={patientsLoading}
             error={patientsError}
             labRequests={labRequests}
+            onBack={() => setActiveNav("Dashboard")}
           />
         )}
 
@@ -1464,7 +1540,10 @@ export default function AdminDashboard() {
         {activeNav === "Appointments" && (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8" }}>Appointments</h2>
+              <div>
+                <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>Appointments</h2>
+                <button onClick={() => setActiveNav("Dashboard")} style={{ background: "none", border: "none", color: "#1a5fa8", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>‹ Back</button>
+              </div>
               <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer" }}>+ New Appointment</button>
             </div>
             {appointments.length === 0 ? (
@@ -1495,12 +1574,12 @@ export default function AdminDashboard() {
 
         {/* Nurses */}
         {activeNav === "Nurses" && (
-          <StaffSection title="Our Nurses" staff={nurses} setStaff={setNurses} />
+          <StaffSection title="Our Nurses" staff={nurses} setStaff={setNurses} onBack={() => setActiveNav("Dashboard")} />
         )}
 
         {/* Pharmacists */}
         {activeNav === "Pharmacists" && (
-          <StaffSection title="Our Pharmacists" staff={pharmacists} setStaff={setPharmacists} />
+          <StaffSection title="Our Pharmacists" staff={pharmacists} setStaff={setPharmacists} onBack={() => setActiveNav("Dashboard")} />
         )}
 
         {/* Patient History */}
@@ -1510,6 +1589,7 @@ export default function AdminDashboard() {
               <div>
                 <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: "0 0 2px 0" }}>Patient History</h2>
                 <p style={{ fontSize: 13, color: "#888", margin: 0 }}>Patients automatically move here when discharged</p>
+                <button onClick={() => setActiveNav("Dashboard")} style={{ background: "none", border: "none", color: "#1a5fa8", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>‹ Back</button>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "1rem", flexWrap: "wrap" }}>
                 <input
@@ -1654,6 +1734,7 @@ export default function AdminDashboard() {
               <div style={{ minWidth: 0, flex: 1 }}>
                 <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>Slots</h2>
                 <span className={styles.slotsSubText}>Lab & diagnostic test requests from patients</span>
+                <button onClick={() => setActiveNav("Dashboard")} style={{ background: "none", border: "none", color: "#1a5fa8", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>‹ Back</button>
               </div>
               <input
                 type="text"
@@ -1876,7 +1957,81 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {!["Dashboard", "Patient", "Patient History", "Appointments", "Nurses", "Pharmacists", "Lab & Diagnostics", "Slots", "Reports"].includes(activeNav) && (
+        {/* Consultation */}
+        {activeNav === "Consultations" && (
+          <>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem", flexWrap: "wrap", gap: "0.75rem" }}>
+              <div>
+                <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>Consultations</h2>
+                <button onClick={() => setActiveNav("Dashboard")} style={{ background: "none", border: "none", color: "#1a5fa8", fontSize: 13, fontWeight: 600, cursor: "pointer", padding: "4px 0", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>‹ Back</button>
+              </div>
+              <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+                {[
+                  { label: "Pending",   color: "#e67e22", bg: "#fff4e5", count: consultations.filter(c => c.status === "Pending").length   },
+                  { label: "Confirmed", color: "#27ae60", bg: "#e6f9f0", count: consultations.filter(c => c.status === "Confirmed").length },
+                  { label: "Denied",    color: "#e74c3c", bg: "#fdecea", count: consultations.filter(c => c.status === "Denied").length    },
+                  { label: "Total",     color: "#1a5fa8", bg: "#d6e6f7", count: consultations.length },
+                ].map(({ label, color, bg, count }) => (
+                  <div key={label} style={{ background: bg, borderRadius: 10, padding: "0.4rem 1rem", display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <span style={{ fontWeight: 700, fontSize: 18, color }}>{count}</span>
+                    <span style={{ fontWeight: 600, fontSize: 12, color }}>{label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {consultLoading ? (
+              <div style={{ textAlign: "center", padding: "3rem", color: "#888" }}>Loading...</div>
+            ) : consultations.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "3rem", color: "#aaa", fontSize: 16 }}>No consultations yet.</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                {consultations.map(c => (
+                  <div key={c.id} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "1.2rem 1.5rem", border: "1px solid #e0e0e0", transition: "box-shadow 0.2s, border-color 0.2s" }}
+                    onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 18px rgba(26,95,168,0.18)"; e.currentTarget.style.borderColor = "#b0c8e8"; }}
+                    onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 2px 8px rgba(26,95,168,0.08)"; e.currentTarget.style.borderColor = "#e0e0e0"; }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontWeight: 700, fontSize: 15, color: "#1a5fa8" }}>{c.name}</div>
+                        <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>{c.email}</div>
+                        {c.phone && <div style={{ fontSize: 13, color: "#888", marginTop: 1 }}>📞 {c.phone}</div>}
+                        {c.date  && <div style={{ fontSize: 13, color: "#555", marginTop: 4 }}>📅 {c.date}</div>}
+                        {c.problem && <div style={{ fontSize: 13, color: "#444", marginTop: 6, background: "#f4f8fc", borderRadius: 8, padding: "0.5rem 0.75rem" }}>{c.problem}</div>}
+                      </div>
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
+                        <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 0", borderRadius: 20, width: 80, textAlign: "center", display: "inline-block",
+                          background: c.status === "Confirmed" ? "#27ae60" : c.status === "Denied" ? "#e74c3c" : "#fff4e5",
+                          color:      c.status === "Confirmed" || c.status === "Denied" ? "#fff" : "#e67e22" }}>
+                          {c.status}
+                        </span>
+                        {c.status === "Pending" && (
+                          <div style={{ display: "flex", gap: "0.5rem" }}>
+                            <button onClick={async () => {
+                              const obj = new (Parse.Object.extend("Consultation"))();
+                              obj.id = c.id; obj.set("status", "Confirmed"); await obj.save();
+                              setConsultations(prev => prev.map(x => x.id === c.id ? { ...x, status: "Confirmed" } : x));
+                            }} style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 7, padding: "5px 0", fontSize: 13, fontWeight: 600, cursor: "pointer", width: 80, textAlign: "center" }}>
+                              Confirm
+                            </button>
+                            <button onClick={async () => {
+                              const obj = new (Parse.Object.extend("Consultation"))();
+                              obj.id = c.id; obj.set("status", "Denied"); await obj.save();
+                              setConsultations(prev => prev.map(x => x.id === c.id ? { ...x, status: "Denied" } : x));
+                            }} style={{ background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 0", fontSize: 13, fontWeight: 600, cursor: "pointer", width: 80, textAlign: "center" }}>
+                              Deny
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {!["Dashboard", "Patient", "Patient History", "Appointments", "Nurses", "Pharmacists", "Lab & Diagnostics", "Slots", "Reports", "Consultations"].includes(activeNav) && (
           <div style={{ textAlign: "center", marginTop: "5rem", color: "#aaa", fontSize: 22 }}>
             📋 {activeNav} — Coming Soon
           </div>
