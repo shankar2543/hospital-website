@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { useRouter } from "next/router";
-import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu, FiChevronDown, FiChevronUp } from "react-icons/fi";
+import { FiSettings, FiLogOut, FiEdit2, FiCheck, FiX, FiTrash2, FiMenu, FiChevronDown, FiChevronUp, FiHome, FiUsers, FiClock, FiGrid, FiActivity, FiCalendar, FiCreditCard, FiFileText, FiLayers } from "react-icons/fi";
 import Parse from '@/lib/parseConfig';
 import styles from '@/styles/patientDashboard.module.css';
 
@@ -24,7 +24,7 @@ const STATUS_COLORS = {
   "On Leave":  { bg: "#fdecea", color: "#e74c3c" },
 };
 
-function NavItem({ label, active, onClick }) {
+function NavItem({ label, icon, active, onClick }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
@@ -33,12 +33,13 @@ function NavItem({ label, active, onClick }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         padding: "0.75rem 2rem", cursor: "pointer", fontWeight: 500, fontSize: 16,
+        display: "flex", alignItems: "center", gap: 10,
         borderLeft: active ? "4px solid #fff" : "4px solid transparent",
         background: active || hovered ? "rgba(255,255,255,0.18)" : "none",
         transition: "background 0.2s",
       }}
     >
-      {label}
+      {icon}{label}
     </div>
   );
 }
@@ -174,7 +175,7 @@ function PatientRow({ patient, index, onDelete, onRoomClick, onEdit }) {
     <tr style={{ borderTop: "1px solid #f0f4f8" }}>
       <td className={styles.patientIdx} style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{index + 1}</td>
 
-      <td data-label="Name" style={{ padding: "0.8rem 1rem", fontSize: 14 }}>
+      <td data-label="Name" style={{ padding: "0.8rem 1rem", fontSize: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
         <span className={styles.mobileIdx}>{index + 1}.</span>
         <span style={{ fontWeight: 600 }}>{patient.name}</span>
       </td>
@@ -191,33 +192,34 @@ function PatientRow({ patient, index, onDelete, onRoomClick, onEdit }) {
           <span className={styles.statusBadge} style={{ background: sc.bg, color: sc.color, fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 130, textAlign: "center" }}>
             {patient.status}
           </span>
-          <div style={{ width: 1, height: 22, background: "#dde3ea", borderRadius: 2, flexShrink: 0 }} />
-          <button
-            onClick={() => onEdit(patient)} title="Edit"
-            onMouseEnter={() => setHoverEdit(true)}
-            onMouseLeave={() => setHoverEdit(false)}
-            style={{
-              background: hoverEdit ? "#e8fdf0" : "#f4f6f8",
-              border: "none", cursor: "pointer", borderRadius: "50%",
-              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
-              color: hoverEdit ? "#27ae60" : "#9aa5b4",
-              boxShadow: hoverEdit ? "0 0 0 3px #b6f0ce, 0 2px 8px rgba(39,174,96,0.25)" : "none",
-              transition: "all 0.18s ease",
-            }}>
+          {/* Mobile only — edit/delete inside Status cell */}
+          <div className={styles.actionsInStatus} style={{ alignItems: "center", gap: 10 }}>
+            <div style={{ width: 1, height: 22, background: "#dde3ea", borderRadius: 2, flexShrink: 0 }} />
+            <button onClick={() => onEdit(patient)} title="Edit"
+              onMouseEnter={() => setHoverEdit(true)} onMouseLeave={() => setHoverEdit(false)}
+              style={{ background: hoverEdit ? "#e8fdf0" : "#f4f6f8", border: "none", cursor: "pointer", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", color: hoverEdit ? "#27ae60" : "#9aa5b4", transition: "all 0.18s ease" }}>
+              <FiEdit2 size={15} />
+            </button>
+            <button onClick={() => onDelete(patient.id)} title="Delete"
+              onMouseEnter={() => setHoverDelete(true)} onMouseLeave={() => setHoverDelete(false)}
+              style={{ background: hoverDelete ? "#fff0f0" : "#f4f6f8", border: "none", cursor: "pointer", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", color: hoverDelete ? "#e74c3c" : "#9aa5b4", transition: "all 0.18s ease" }}>
+              <FiTrash2 size={15} />
+            </button>
+          </div>
+        </div>
+      </td>
+
+      {/* Desktop only — Actions column on the far right */}
+      <td className={styles.actionsDesktop}>
+        <div style={{ display: "inline-flex", alignItems: "center", gap: 8, justifyContent: "flex-end" }}>
+          <button onClick={() => onEdit(patient)} title="Edit"
+            onMouseEnter={() => setHoverEdit(true)} onMouseLeave={() => setHoverEdit(false)}
+            style={{ background: hoverEdit ? "#e8fdf0" : "#f4f6f8", border: "none", cursor: "pointer", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", color: hoverEdit ? "#27ae60" : "#9aa5b4", boxShadow: hoverEdit ? "0 0 0 3px #b6f0ce, 0 2px 8px rgba(39,174,96,0.25)" : "none", transition: "all 0.18s ease" }}>
             <FiEdit2 size={15} />
           </button>
-          <button
-            onClick={() => onDelete(patient.id)} title="Delete"
-            onMouseEnter={() => setHoverDelete(true)}
-            onMouseLeave={() => setHoverDelete(false)}
-            style={{
-              background: hoverDelete ? "#fff0f0" : "#f4f6f8",
-              border: "none", cursor: "pointer", borderRadius: "50%",
-              width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center",
-              color: hoverDelete ? "#e74c3c" : "#9aa5b4",
-              boxShadow: hoverDelete ? "0 0 0 3px #ffc2c2, 0 2px 8px rgba(231,76,60,0.25)" : "none",
-              transition: "all 0.18s ease",
-            }}>
+          <button onClick={() => onDelete(patient.id)} title="Delete"
+            onMouseEnter={() => setHoverDelete(true)} onMouseLeave={() => setHoverDelete(false)}
+            style={{ background: hoverDelete ? "#fff0f0" : "#f4f6f8", border: "none", cursor: "pointer", borderRadius: "50%", width: 32, height: 32, display: "flex", alignItems: "center", justifyContent: "center", color: hoverDelete ? "#e74c3c" : "#9aa5b4", boxShadow: hoverDelete ? "0 0 0 3px #ffc2c2, 0 2px 8px rgba(231,76,60,0.25)" : "none", transition: "all 0.18s ease" }}>
             <FiTrash2 size={15} />
           </button>
         </div>
@@ -237,7 +239,7 @@ function AppointmentRow({ apt, i, onStatusChange, styles }) {
       <td style={{ padding: "0.8rem 1rem", color: "#888", fontSize: 14 }}>{i + 1}</td>
       <td data-label="Name" style={{ padding: "0.8rem 1rem", fontWeight: 600, fontSize: 14 }}>{apt.name}</td>
       <td data-label="Status" style={{ padding: "0.8rem 1rem" }}>
-        <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 12px", borderRadius: 20, ...statusStyle }}>{apt.status}</span>
+        <span style={{ fontSize: 12, fontWeight: 600, padding: "3px 0", borderRadius: 20, display: "inline-block", minWidth: 72, textAlign: "center", ...statusStyle }}>{apt.status}</span>
       </td>
       <td data-label="Age"    className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.age}</td>
       <td data-label="Gender" className={`${styles.aptExtra} ${expanded ? styles.aptExtraVisible : ""}`} style={{ padding: "0.8rem 1rem", fontSize: 14 }}>{apt.gender}</td>
@@ -367,7 +369,7 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "0.75rem", marginBottom: "1.5rem" }}>
         {/* Title + subtitle */}
         <div>
-          <h2 style={{ fontWeight: 700, fontSize: "clamp(16px, 4vw, 22px)", color: "#1a5fa8", margin: "0 0 4px 0" }}>
+          <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: "0 0 4px 0" }}>
             Admitted Patients
           </h2>
           <p style={{ fontSize: 12, color: "#888", margin: 0 }}>Click Edit to modify name, room or status</p>
@@ -492,21 +494,15 @@ function PatientSection({ patients, onAdd, onUpdate, onDelete, onRefresh, loadin
       )}
 
       <div style={{ background: "#fff", borderRadius: 16, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", overflow: "hidden" }}>
-        <table className={styles.patientTable} style={{ borderCollapse: "collapse" }}>
+        <table className={styles.patientTable} style={{ borderCollapse: "collapse", tableLayout: "fixed" }}>
           <thead>
             <tr style={{ background: "#d6e6f7" }}>
-              <th style={{ padding: "0.9rem 1rem", textAlign: "center", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: 40 }}>#</th>
-              {[
-                { full: "Name",     short: "Name" },
-                { full: "Room",     short: "Rm"   },
-                { full: "Admitted", short: "Date" },
-                { full: "Status",   short: "Status" },
-              ].map(h => (
-                <th key={h.full} style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14 }}>
-                  <span className={styles.thFull}>{h.full}</span>
-                  <span className={styles.thShort}>{h.short}</span>
-                </th>
-              ))}
+              <th style={{ padding: "0.9rem 1rem", textAlign: "center", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: "5%" }}>#</th>
+              <th style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: "28%" }}>Name</th>
+              <th style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: "15%" }}>Room</th>
+              <th style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: "18%" }}>Admitted</th>
+              <th style={{ padding: "0.9rem 1rem", textAlign: "left", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: "22%" }}>Status</th>
+              <th style={{ padding: "0.9rem 1rem", textAlign: "right", fontWeight: 700, color: "#1a5fa8", fontSize: 14, width: "12%" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -769,6 +765,7 @@ export default function AdminDashboard() {
   const [reports, setReports]             = useState([]);
   const [reportsLoading, setReportsLoading] = useState(false);
   const [expandedReports, setExpandedReports] = useState({});
+  const [expandedSlots,   setExpandedSlots]   = useState({});
   const [reportSearch, setReportSearch]       = useState("");
   const [slotsSearch, setSlotsSearch]         = useState("");
   const [adminSelectedTests, setAdminSelectedTests] = useState([]);
@@ -1089,7 +1086,11 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => { localStorage.clear(); router.push("/"); };
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [loggedOut, setLoggedOut] = useState(false);
+
+  const handleLogout = () => setShowLogoutConfirm(true);
+  const confirmLogout = () => { localStorage.clear(); setShowLogoutConfirm(false); setLoggedOut(true); };
 
   const handleNameChange  = (id, name) => setDoctors(prev => prev.map(d => d.id === id ? { ...d, name } : d));
   const handleImageChange = (id, img)  => setDoctors(prev => prev.map(d => d.id === id ? { ...d, img }  : d));
@@ -1128,7 +1129,7 @@ export default function AdminDashboard() {
       setForm(EMPTY_FORM);
       setFormError("");
       setShowForm(false);
-      setActiveNav("Appointment");
+      setActiveNav("Appointments");
       await fetchAppointments();
     } catch (err) {
       setFormError("Failed to save appointment. Please try again.");
@@ -1148,9 +1149,6 @@ export default function AdminDashboard() {
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
-        {/* X close button — mobile only */}
-        <button className={styles.sidebarCloseBtn} onClick={() => setSidebarOpen(false)} aria-label="Close menu">✕</button>
-
         <div style={{ marginBottom: 32, width: "100%", padding: "0.5rem 1.5rem 0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
             <div style={{
@@ -1165,16 +1163,28 @@ export default function AdminDashboard() {
               <div style={{ fontWeight: 700, fontSize: 16, lineHeight: 1.2 }}>DUkEY</div>
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>Admin</div>
             </div>
+            {/* X close button — mobile only */}
+            <button className={styles.sidebarCloseBtn} onClick={() => setSidebarOpen(false)} aria-label="Close menu">‹</button>
           </div>
         </div>
         <nav style={{ width: "100%", flex: 1 }}>
-          {['Dashboard','Patient','Patient History','Department','Lab & Diagnostics','Slots','Appointment','Payment','Report'].map((item) => (
-            <NavItem key={item} label={item} active={activeNav === item} onClick={() => { setActiveNav(item); setSidebarOpen(false); }} />
+          {[
+            { label: 'Dashboard',        icon: <FiHome size={16} /> },
+            { label: 'Patient',          icon: <FiUsers size={16} /> },
+            { label: 'Patient History',  icon: <FiClock size={16} /> },
+            { label: 'Department',       icon: <FiLayers size={16} /> },
+            { label: 'Lab & Diagnostics',icon: <FiActivity size={16} /> },
+            { label: 'Slots',            icon: <FiGrid size={16} /> },
+            { label: 'Appointments',     icon: <FiCalendar size={16} /> },
+            { label: 'Payment',          icon: <FiCreditCard size={16} /> },
+            { label: 'Reports',          icon: <FiFileText size={16} /> },
+          ].map(({ label, icon }) => (
+            <NavItem key={label} label={label} icon={icon} active={activeNav === label} onClick={() => { setActiveNav(label); setSidebarOpen(false); }} />
           ))}
         </nav>
         <div style={{ width: "100%", borderTop: "1px solid rgba(255,255,255,0.2)", paddingTop: "1rem" }}>
           <BottomItem icon={<FiSettings size={18} />} label="Settings" onClick={() => alert('Settings clicked!')} />
-          <BottomItem icon={<FiLogOut size={18} />}   label="Logout"   onClick={handleLogout} color="#ffd6d6" />
+          <BottomItem icon={<FiLogOut size={18} />}   label="Logout"   onClick={handleLogout} color="#e74c3c" />
         </div>
       </aside>
 
@@ -1194,7 +1204,7 @@ export default function AdminDashboard() {
             <img src="/Logo-medicover.png" alt="Medicover Logo" className={styles.topbarLogo} style={{ width: 53, height: 53, objectFit: "contain", flexShrink: 0 }} />
             <div style={{ fontWeight: 800, fontSize: "clamp(13px, 3vw, 24px)", color: "#1a5fa8", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", minWidth: 0 }}>Medicover Management</div>
           </div>
-          {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Report", "Appointment"].includes(activeNav) && (
+          {!["Slots", "Lab & Diagnostics", "Patient", "Patient History", "Payment", "Reports", "Appointments"].includes(activeNav) && (
             <button onClick={() => setShowForm(true)} className={styles.topbarBtn}>
               Make an appointment
             </button>
@@ -1205,15 +1215,16 @@ export default function AdminDashboard() {
         {activeNav === "Dashboard" && (
           <>
             <section className={styles.statsRow}>
-              <div className={styles.statCard} onClick={() => setActiveNav("Doctor")}>Doctors<br /><span style={{ fontSize: 24, fontWeight: 700 }}>10</span></div>
-              <div className={styles.statCard} onClick={() => setActiveNav("Nurses")}>Nurses<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{nurses.length}</span></div>
-              <div className={styles.statCard} onClick={() => setActiveNav("Patient")}>Patients<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{patients.length}</span></div>
-              <div className={styles.statCard} onClick={() => setActiveNav("Pharmacists")}>Pharmacists<br /><span style={{ fontSize: 24, fontWeight: 700 }}>{pharmacists.length}</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Doctor")}>Doctors<br /><span style={{ fontSize: 20, fontWeight: 700 }}>10</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Nurses")}>Nurses<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{nurses.length}</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Patient")}>Patients<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{patients.length}</span></div>
+              <div className={styles.statCard} onClick={() => setActiveNav("Pharmacists")}>Pharmacists<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{pharmacists.length}</span></div>
             </section>
-            <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "1.5rem", marginBottom: "2rem" }}>
-              <div onClick={() => setActiveNav("Appointment")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>Appointments<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{appointments.length}</span></div>
-              <div onClick={() => setActiveNav("Patient History")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>Patient History<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{history.length}</span></div>
-              <div onClick={() => setActiveNav("Slots")} style={{ background: "#fff", borderRadius: 16, padding: "1.2rem", boxShadow: "0 2px 8px rgba(26,95,168,0.08)", fontWeight: 600, cursor: "pointer" }}>
+            <section className={styles.dashSecondGrid}>
+              <div onClick={() => setActiveNav("Appointments")} className={styles.dashCard}>Appointments<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{appointments.length}</span></div>
+              <div onClick={() => setActiveNav("Lab & Diagnostics")} className={styles.dashCard}>Labs<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{labRequests.length}</span></div>
+              <div onClick={() => setActiveNav("Patient History")} className={styles.dashCard}>Patient History<br /><span style={{ fontSize: 20, fontWeight: 700 }}>{history.length}</span></div>
+              <div onClick={() => setActiveNav("Slots")} className={styles.dashCard}>
                 Slots<br />
                 <span style={{ fontSize: 20, fontWeight: 700 }}>{labRequests.length}</span>
                 <span style={{ fontSize: 12, color: "#888", marginLeft: 8 }}>({labRequests.filter(r => r.status === "Pending").length} pending)</span>
@@ -1371,10 +1382,10 @@ export default function AdminDashboard() {
         )}
 
         {/* Appointments */}
-        {activeNav === "Appointment" && (
+        {activeNav === "Appointments" && (
           <>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8" }}>Appointments ({appointments.length})</h2>
+              <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8" }}>Appointments</h2>
               <button onClick={() => setShowForm(true)} style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 8, padding: "0.5rem 1.2rem", fontWeight: 600, cursor: "pointer" }}>+ New Appointment</button>
             </div>
             {appointments.length === 0 ? (
@@ -1629,17 +1640,17 @@ export default function AdminDashboard() {
         {/* Slots */}
         {activeNav === "Slots" && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>
-                Slots
-                <span style={{ fontSize: 13, color: "#888", fontWeight: 400, marginLeft: 12 }}>Lab & diagnostic test requests from patients</span>
-              </h2>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem", gap: "1rem", flexWrap: "wrap" }}>
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <h2 style={{ fontWeight: 700, fontSize: 22, color: "#1a5fa8", margin: 0 }}>Slots</h2>
+                <span className={styles.slotsSubText}>Lab & diagnostic test requests from patients</span>
+              </div>
               <input
                 type="text"
                 placeholder="Search by name or phone…"
                 value={slotsSearch}
                 onChange={e => setSlotsSearch(e.target.value)}
-                style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 13, outline: "none", width: 220 }}
+                style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 13, outline: "none", width: 220, maxWidth: "100%", boxSizing: "border-box" }}
               />
             </div>
             <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1.5rem", flexWrap: "wrap" }}>
@@ -1665,44 +1676,67 @@ export default function AdminDashboard() {
                   r.patientPhone.toLowerCase().includes(slotsSearch.toLowerCase())
                 ).map((req) => (
                   <div key={req.id} className={styles.slotCard} style={{ background: "#fff", borderRadius: 14, boxShadow: "0 2px 8px rgba(26,95,168,0.08)", padding: "1.2rem 1.5rem" }}>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
-                      <div>
-                        <div style={{ fontWeight: 700, fontSize: 15, color: "#1a5fa8" }}>{req.patientName}</div>
-                        <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>{req.patientEmail}</div>
-                        {req.patientPhone && <div style={{ fontSize: 13, color: "#888", marginTop: 1 }}>📞 {req.patientPhone}</div>}
-                        <div style={{ marginTop: "0.75rem", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
-                          {req.tests.map(t => (
-                            <span key={t.name} style={{ background: "#d6e6f7", color: "#1a5fa8", fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 20 }}>
-                              {t.name} — ₹{t.price.toLocaleString()}
-                            </span>
-                          ))}
+                    {isMobile ? (
+                      /* ── Mobile: name/email/phone + status + expand ── */
+                      <>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.75rem" }}>
+                          <div>
+                            <div style={{ fontWeight: 700, fontSize: 15, color: "#1a5fa8" }}>{req.patientName}</div>
+                            <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>{req.patientEmail}</div>
+                            {req.patientPhone && <div style={{ fontSize: 13, color: "#888", marginTop: 1 }}>📞 {req.patientPhone}</div>}
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
+                            <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 20, background: req.status === "Accepted" ? "#27ae60" : "#fff4e5", color: req.status === "Accepted" ? "#fff" : "#e67e22" }}>{req.status}</span>
+                            <button onClick={() => setExpandedSlots(prev => ({ ...prev, [req.id]: !prev[req.id] }))}
+                              style={{ background: "none", border: "none", cursor: "pointer", color: "#1a5fa8", fontSize: 18, padding: 0 }}>
+                              {expandedSlots[req.id] ? "▲" : "▼"}
+                            </button>
+                          </div>
                         </div>
-                        <div style={{ marginTop: "0.5rem", fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>
-                          Total: ₹{req.totalAmount.toLocaleString()}
+                        {expandedSlots[req.id] && (
+                          <div style={{ marginTop: "0.75rem" }}>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                              {req.tests.map(t => (
+                                <span key={t.name} style={{ background: "#d6e6f7", color: "#1a5fa8", fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 20 }}>{t.name} — ₹{t.price.toLocaleString()}</span>
+                              ))}
+                            </div>
+                            <div style={{ marginTop: "0.5rem", fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>Total: ₹{req.totalAmount.toLocaleString()}</div>
+                            {req.status === "Pending" && (
+                              <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
+                                <button onClick={() => acceptLabRequest(req.id)} style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Accept</button>
+                                <button onClick={() => deleteLabRequest(req.id)} style={{ background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Delete</button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      /* ── Desktop: original full layout ── */
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", flexWrap: "wrap", gap: "0.75rem" }}>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 15, color: "#1a5fa8" }}>{req.patientName}</div>
+                          <div style={{ fontSize: 13, color: "#888", marginTop: 2 }}>{req.patientEmail}</div>
+                          {req.patientPhone && <div style={{ fontSize: 13, color: "#888", marginTop: 1 }}>📞 {req.patientPhone}</div>}
+                          <div style={{ marginTop: "0.75rem", display: "flex", flexWrap: "wrap", gap: "0.4rem" }}>
+                            {req.tests.map(t => (
+                              <span key={t.name} style={{ background: "#d6e6f7", color: "#1a5fa8", fontSize: 12, fontWeight: 600, padding: "3px 10px", borderRadius: 20 }}>{t.name} — ₹{t.price.toLocaleString()}</span>
+                            ))}
+                          </div>
+                          <div style={{ marginTop: "0.5rem", fontWeight: 700, fontSize: 14, color: "#1a5fa8" }}>Total: ₹{req.totalAmount.toLocaleString()}</div>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
+                          <span style={{ fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 20, background: req.status === "Accepted" ? "#27ae60" : "#fff4e5", color: req.status === "Accepted" ? "#fff" : "#e67e22" }}>{req.status}</span>
+                          <div style={{ display: "flex", gap: "0.5rem", marginTop: 4 }}>
+                            {req.status === "Pending" && (
+                              <button onClick={() => acceptLabRequest(req.id)} style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Accept</button>
+                            )}
+                            {req.status === "Pending" && (
+                              <button onClick={() => deleteLabRequest(req.id)} style={{ background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>Delete</button>
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "0.5rem" }}>
-                        <span style={{
-                          fontSize: 12, fontWeight: 700, padding: "4px 14px", borderRadius: 20,
-                          background: req.status === "Accepted" ? "#27ae60" : "#fff4e5",
-                          color:      req.status === "Accepted" ? "#fff"     : "#e67e22",
-                        }}>{req.status}</span>
-                        <div style={{ display: "flex", gap: "0.5rem", marginTop: 4 }}>
-                          {req.status === "Pending" && (
-                            <button onClick={() => acceptLabRequest(req.id)}
-                              style={{ background: "#27ae60", color: "#fff", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                              Accept
-                            </button>
-                          )}
-                          {req.status === "Pending" && (
-                            <button onClick={() => deleteLabRequest(req.id)}
-                              style={{ background: "#fdecea", color: "#e74c3c", border: "none", borderRadius: 7, padding: "5px 14px", fontSize: 13, fontWeight: 600, cursor: "pointer" }}>
-                              Delete
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1710,23 +1744,43 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {activeNav === "Report" && (
+        {activeNav === "Reports" && (
           <>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
-              <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1a5fa8", margin: 0 }}>Lab Reports</h2>
-              <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                <input
-                  type="text"
-                  placeholder="Search by name…"
-                  value={reportSearch}
-                  onChange={e => setReportSearch(e.target.value)}
-                  style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 13, outline: "none", width: 180 }}
-                />
-                <span style={{ background: "#d6e6f7", color: "#1a5fa8", fontWeight: 700, fontSize: 13, padding: "4px 14px", borderRadius: 20 }}>
+            {isMobile ? (
+              /* ── Mobile: title + search on one line, total below ── */
+              <div style={{ marginBottom: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "0.5rem" }}>
+                  <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1a5fa8", margin: 0, whiteSpace: "nowrap" }}>Lab Reports</h2>
+                  <input
+                    type="text"
+                    placeholder="Search…"
+                    value={reportSearch}
+                    onChange={e => setReportSearch(e.target.value)}
+                    style={{ padding: "6px 10px", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 13, outline: "none", flex: 1, minWidth: 0, maxWidth: 160 }}
+                  />
+                </div>
+                <span style={{ display: "inline-block", marginTop: 8, background: "#d6e6f7", color: "#1a5fa8", fontWeight: 700, fontSize: 13, padding: "4px 14px", borderRadius: 20 }}>
                   Total: {reports.length}
                 </span>
               </div>
-            </div>
+            ) : (
+              /* ── Desktop: original layout ── */
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+                <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1a5fa8", margin: 0 }}>Lab Reports</h2>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                  <input
+                    type="text"
+                    placeholder="Search by name…"
+                    value={reportSearch}
+                    onChange={e => setReportSearch(e.target.value)}
+                    style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid #d6e6f7", fontSize: 13, outline: "none", width: 180 }}
+                  />
+                  <span style={{ background: "#d6e6f7", color: "#1a5fa8", fontWeight: 700, fontSize: 13, padding: "4px 14px", borderRadius: 20 }}>
+                    Total: {reports.length}
+                  </span>
+                </div>
+              </div>
+            )}
             {reportsLoading ? (
               <div style={{ textAlign: "center", padding: "3rem", color: "#aaa" }}>Loading reports…</div>
             ) : reports.length === 0 ? (
@@ -1811,7 +1865,7 @@ export default function AdminDashboard() {
           </>
         )}
 
-        {!["Dashboard", "Patient", "Patient History", "Appointment", "Nurses", "Pharmacists", "Lab & Diagnostics", "Slots", "Report"].includes(activeNav) && (
+        {!["Dashboard", "Patient", "Patient History", "Appointments", "Nurses", "Pharmacists", "Lab & Diagnostics", "Slots", "Reports"].includes(activeNav) && (
           <div style={{ textAlign: "center", marginTop: "5rem", color: "#aaa", fontSize: 22 }}>
             📋 {activeNav} — Coming Soon
           </div>
@@ -1878,6 +1932,41 @@ export default function AdminDashboard() {
               </button>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Logout Confirm Modal */}
+      {showLogoutConfirm && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 3000, padding: "1rem" }}>
+          <div className={styles.logoutModal}>
+            <div style={{ fontSize: 40, marginBottom: "0.75rem" }}>🚪</div>
+            <h3 style={{ fontWeight: 700, fontSize: 20, color: "#1a3a5c", margin: "0 0 0.5rem" }}>Confirm Logout</h3>
+            <p style={{ color: "#666", fontSize: 14, margin: "0 0 1.75rem" }}>Are you sure you want to log out?</p>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+              <button onClick={() => setShowLogoutConfirm(false)}
+                style={{ flex: 1, padding: "0.7rem", borderRadius: 10, border: "1.5px solid #d6e6f7", background: "#f4f8fc", color: "#1a5fa8", fontWeight: 600, fontSize: 15, cursor: "pointer" }}>
+                Cancel
+              </button>
+              <button onClick={confirmLogout}
+                style={{ flex: 1, padding: "0.7rem", borderRadius: 10, border: "none", background: "#e74c3c", color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logged Out Success Screen */}
+      {loggedOut && (
+        <div style={{ position: "fixed", inset: 0, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4000, flexDirection: "column", padding: "1rem" }}>
+          <h2 style={{ fontWeight: 800, fontSize: 22, color: "#1a3a5c", margin: "0 0 1.25rem" }}>Logged Out</h2>
+          <div style={{ background: "#a8e6c1", borderRadius: 14, padding: "1.1rem 3rem", maxWidth: 460, width: "100%", textAlign: "center", boxShadow: "0 8px 32px rgba(39,174,96,0.15)", marginBottom: "1.5rem" }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: 15, color: "#1a5c35" }}>You have been successfully logged out.</p>
+          </div>
+          <button onClick={() => router.push("/")}
+            style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 12, padding: "0.85rem 2.5rem", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 4px 16px rgba(26,95,168,0.2)" }}>
+            ← Back to Main Menu
+          </button>
         </div>
       )}
     </div>

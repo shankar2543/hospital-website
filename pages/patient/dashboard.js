@@ -219,7 +219,11 @@ export default function PatientDashboard() {
     }
   };
 
-  const handleLogout = () => { localStorage.clear(); router.push("/"); };
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [loggedOut, setLoggedOut] = useState(false);
+
+  const handleLogout = () => setShowLogoutConfirm(true);
+  const confirmLogout = () => { localStorage.clear(); setShowLogoutConfirm(false); setLoggedOut(true); };
 
   const toggleTest = (test) => {
     setSelectedTests(prev => {
@@ -296,9 +300,6 @@ export default function PatientDashboard() {
 
       {/* Sidebar */}
       <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarOpen : ""}`}>
-        {/* X close button — mobile only */}
-        <button className={styles.sidebarCloseBtn} onClick={() => setSidebarOpen(false)} aria-label="Close menu">✕</button>
-
         <div style={{ marginBottom: 32, width: "100%", padding: "0.5rem 1.5rem 0" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
             <div style={{ width: 52, height: 52, borderRadius: "50%", background: "#fff", flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -308,6 +309,8 @@ export default function PatientDashboard() {
               <div style={{ fontWeight: 700, fontSize: 16, lineHeight: 1.2 }}>{name || "Patient"}</div>
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3 }}>Patient</div>
             </div>
+            {/* X close button — mobile only */}
+            <button className={styles.sidebarCloseBtn} onClick={() => setSidebarOpen(false)} aria-label="Close menu">‹</button>
           </div>
         </div>
 
@@ -324,7 +327,7 @@ export default function PatientDashboard() {
             onClick={handleLogout}
             onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.18)"}
             onMouseLeave={e => e.currentTarget.style.background = "none"}
-            style={{ padding: "0.75rem 2rem", cursor: "pointer", fontWeight: 500, fontSize: 16, display: "flex", alignItems: "center", gap: 10, color: "#ffd6d6", transition: "background 0.2s" }}
+            style={{ padding: "0.75rem 2rem", cursor: "pointer", fontWeight: 500, fontSize: 16, display: "flex", alignItems: "center", gap: 10, color: "#e74c3c", transition: "background 0.2s" }}
           >
             <FiLogOut size={18} /> Logout
           </div>
@@ -367,6 +370,9 @@ export default function PatientDashboard() {
             <section className={styles.statsRow}>
               <div onClick={() => setActiveNav("Appointments")} className={styles.statCard}>
                 Total Appointments<br /><span style={{ fontSize: 28, fontWeight: 700 }}>{appointments.length}</span>
+              </div>
+              <div onClick={() => setActiveNav("Lab & Diagnostics")} className={styles.statCard}>
+                Labs<br /><span style={{ fontSize: 28, fontWeight: 700 }}>{reports.length}</span>
               </div>
               <div className={styles.statCard}>
                 Pending<br /><span style={{ fontSize: 28, fontWeight: 700 }}>{upcoming}</span>
@@ -750,6 +756,41 @@ export default function PatientDashboard() {
               </button>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* Logout Confirm Modal */}
+      {showLogoutConfirm && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 3000, padding: "1rem" }}>
+          <div className={styles.logoutModal}>
+            <div style={{ fontSize: 40, marginBottom: "0.75rem" }}>🚪</div>
+            <h3 style={{ fontWeight: 700, fontSize: 20, color: "#1a3a5c", margin: "0 0 0.5rem" }}>Confirm Logout</h3>
+            <p style={{ color: "#666", fontSize: 14, margin: "0 0 1.75rem" }}>Are you sure you want to log out?</p>
+            <div style={{ display: "flex", gap: "1rem", justifyContent: "center" }}>
+              <button onClick={() => setShowLogoutConfirm(false)}
+                style={{ flex: 1, padding: "0.7rem", borderRadius: 10, border: "1.5px solid #d6e6f7", background: "#f4f8fc", color: "#1a5fa8", fontWeight: 600, fontSize: 15, cursor: "pointer" }}>
+                Cancel
+              </button>
+              <button onClick={confirmLogout}
+                style={{ flex: 1, padding: "0.7rem", borderRadius: 10, border: "none", background: "#e74c3c", color: "#fff", fontWeight: 700, fontSize: 15, cursor: "pointer" }}>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Logged Out Success Screen */}
+      {loggedOut && (
+        <div style={{ position: "fixed", inset: 0, background: "linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 4000, flexDirection: "column", padding: "1rem" }}>
+          <h2 style={{ fontWeight: 800, fontSize: 22, color: "#1a3a5c", margin: "0 0 1.25rem" }}>Logged Out</h2>
+          <div style={{ background: "#a8e6c1", borderRadius: 14, padding: "1.1rem 3rem", maxWidth: 460, width: "100%", textAlign: "center", boxShadow: "0 8px 32px rgba(39,174,96,0.15)", marginBottom: "1.5rem" }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: 15, color: "#1a5c35" }}>You have been successfully logged out.</p>
+          </div>
+          <button onClick={() => router.push("/")}
+            style={{ background: "#1a5fa8", color: "#fff", border: "none", borderRadius: 12, padding: "0.85rem 2.5rem", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 4px 16px rgba(26,95,168,0.2)" }}>
+            ← Back to Main Menu
+          </button>
         </div>
       )}
     </div>
