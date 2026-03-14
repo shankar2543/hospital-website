@@ -42,31 +42,64 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.4rem 5vw;
+  padding: 0.6rem 5vw;
   gap: 0.8rem;
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(6, 13, 31, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255,255,255,0.07);
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  box-shadow: none;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.navbar:hover {
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.navbarScrolled {
+  background: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 .navBrand {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
   flex-shrink: 0;
   text-decoration: none;
 }
 
 .navLogo {
-  width: 40px;
-  height: 40px;
+  height: 64px;
+  width: auto;
   object-fit: contain;
+  opacity: 0.75;
+  transition: opacity 0.2s, filter 0.2s;
+  display: block;
+}
+
+.navLogo:hover {
+  opacity: 1;
+  filter: brightness(0) invert(1);
+}
+
+.navLogoMob {
+  display: none;
+  height: 96px;
+  width: auto;
+  object-fit: contain;
+  opacity: 0.75;
+  transition: opacity 0.2s, filter 0.2s;
+}
+
+.navLogoMob:hover {
+  opacity: 1;
+  filter: brightness(0) invert(1);
 }
 
 .headerLogo {
@@ -75,88 +108,53 @@
   object-fit: contain;
 }
 
-.navBrandName {
-  font-size: 1.3rem;
-  font-weight: 800;
-  color: #fff;
-  letter-spacing: -0.03em;
-}
-
-.navPill {
+.navLinks {
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 50px;
-  padding: 0.3rem 1rem;
-  flex: 1;
+}
+
+.mobileRight {
+  display: none;
 }
 
 .navLink {
-  color: rgba(255, 255, 255, 0.78);
+  color: #333;
   text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.88rem;
+  font-weight: 700;
   white-space: nowrap;
-  padding: 0.3rem 0.75rem;
-  border-radius: 50px;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
   transition: color 0.2s, background 0.2s;
 }
 
 .navLink:hover {
+  color: #3d3d8f;
+  background: #eeeef8;
+}
+
+.signInBtn {
+  background: #3d3d8f;
   color: #fff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.navSearch {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 50px;
-  padding: 0.35rem 1rem;
-  margin-left: auto;
-}
-
-.navSearch input {
-  background: transparent;
   border: none;
-  outline: none;
-  color: rgba(255, 255, 255, 0.65);
-  font-size: 0.8rem;
-  width: 110px;
-}
-
-.navSearch input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-}
-
-.navSearchIcon {
-  color: rgba(255, 255, 255, 0.45);
-  font-size: 0.8rem;
-}
-
-.contactBtn {
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: 50px;
-  color: #fff;
-  font-size: 0.85rem;
+  border-radius: 6px;
+  font-size: 0.88rem;
   font-weight: 600;
-  padding: 0.65rem 1.5rem;
+  padding: 0.25rem 0.6rem;
   cursor: pointer;
   white-space: nowrap;
+  margin-left: 0;
+  line-height: 1;
+  vertical-align: middle;
+  display: inline-flex;
+  align-items: center;
   transition: background 0.2s;
-  flex-shrink: 0;
+  font-family: inherit;
 }
 
-.contactBtn:hover {
-  background: rgba(255, 255, 255, 0.22);
+.signInBtn:hover {
+  background: #2e2e6e;
 }
 
 /* Hamburger button — hidden on desktop */
@@ -165,9 +163,8 @@
   flex-direction: column;
   justify-content: center;
   gap: 5px;
-  background: rgba(255,255,255,0.12);
-  border: 1px solid rgba(255,255,255,0.2);
-  border-radius: 8px;
+  background: transparent;
+  border: none;
   padding: 8px 10px;
   cursor: pointer;
   flex-shrink: 0;
@@ -177,7 +174,7 @@
   display: block;
   width: 22px;
   height: 2px;
-  background: #fff;
+  background: #333;
   border-radius: 2px;
 }
 
@@ -185,43 +182,75 @@
 .mobileOverlay {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(0,0,0,0.5);
   z-index: 9999;
   display: flex;
   justify-content: flex-end;
 }
 
 .mobileSidebar {
-  width: 72vw;
-  max-width: 280px;
+  width: 78vw;
+  max-width: 300px;
   height: 100%;
-  background: #1a3a5c;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem 1.2rem;
-  gap: 0.25rem;
-  box-shadow: -4px 0 24px rgba(0,0,0,0.25);
+  box-shadow: -6px 0 32px rgba(0,0,0,0.18);
+  overflow: hidden;
+}
+
+/* Sidebar header */
+.sidebarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid #eee;
+  background: #f8f9ff;
+}
+
+.sidebarLogo {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
 }
 
 .mobileSidebarClose {
-  align-self: flex-end;
-  background: none;
+  background: #f0f0f0;
   border: none;
-  color: #fff;
-  font-size: 1.4rem;
+  color: #333;
+  font-size: 1rem;
   cursor: pointer;
-  margin-bottom: 1rem;
-  padding: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+/* Nav links */
+.sidebarNav {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0.75rem 0;
+  overflow-y: auto;
 }
 
 .mobileSidebarLink {
-  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  color: #222;
   text-decoration: none;
-  font-size: 1rem;
-  font-weight: 500;
-  padding: 0.75rem 0.5rem;
-  border-bottom: 1px solid rgba(255,255,255,0.1);
-  transition: color 0.2s;
+  font-size: 0.97rem;
+  font-weight: 600;
+  padding: 0.9rem 1.4rem;
+  border-bottom: 1px solid #f2f2f2;
+  transition: background 0.15s, color 0.15s;
 }
 
 .mobileSidebarLink:last-child {
@@ -229,7 +258,40 @@
 }
 
 .mobileSidebarLink:hover {
-  color: #a8d4f5;
+  background: #eef4ff;
+  color: #3d3d8f;
+}
+
+.sidebarLinkIcon {
+  font-size: 1.15rem;
+  width: 24px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* Sidebar footer */
+.sidebarFooter {
+  padding: 1.2rem;
+  border-top: 1px solid #eee;
+  background: #f8f9ff;
+}
+
+.sidebarSignInBtn {
+  width: 100%;
+  background: #3d3d8f;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.85rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.sidebarSignInBtn:hover {
+  background: #2a2a7a;
 }
 
 /* ===== HERO BODY ===== */
@@ -500,7 +562,7 @@
   padding: 0.92rem;
   border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, #2563eb 0%, #1a4ec9 100%);
+  background: linear-gradient(135deg, #3d3d8f 0%, #2e2e6e 100%);
   color: #fff;
   font-size: 0.95rem;
   font-weight: 600;
@@ -597,16 +659,71 @@
     max-width: 100%;
   }
 
-  .navPill {
+  .navLinks {
     display: none;
+  }
+
+  .navbar {
+    align-items: center;
+    background: transparent !important;
+    border-bottom: 1px solid transparent !important;
+    box-shadow: none !important;
+    padding: 0.5rem 4vw !important;
+  }
+
+  .navbarScrolled {
+    background: #ffffff !important;
+    border-bottom: 1px solid #e8e8e8 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06) !important;
+  }
+
+  .navbarScrolled .hamburger span {
+    background: #333 !important;
+  }
+
+  .navbarScrolled .navLogoMob {
+    opacity: 1;
+    filter: none;
+  }
+
+  .navLogo {
+    display: none;
+  }
+
+  .navLogoMob {
+    display: block;
+    height: 48px;
+    opacity: 1;
+    filter: none;
+  }
+
+  .mobileRight {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .mobileRight .signInBtn {
+    font-size: 0.78rem;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    line-height: 1;
   }
 
   .hamburger {
     display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0.4rem 0.5rem;
+    gap: 4px;
   }
 
-  .contactBtn {
-    display: none;
+  .hamburger span {
+    width: 20px;
+    height: 2.5px;
+    background: #333;
   }
 
   .statsStrip {
@@ -642,11 +759,6 @@
     height: 48px;
   }
 
-  .contactBtn {
-    padding: 0.55rem 1rem;
-    font-size: 0.8rem;
-  }
-
   .heroCtas {
     flex-direction: column;
     align-items: flex-start;
@@ -665,10 +777,6 @@
 
   .navbar {
     padding: 0.4rem 4vw;
-  }
-
-  .navBrandName {
-    font-size: 1.3rem;
   }
 
   .statItem {
