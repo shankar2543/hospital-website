@@ -3,7 +3,17 @@ import { useRouter } from 'next/router';
 import styles from '../styles/LoginSignup.module.css';
 import homeStyles from '../styles/home.module.css';
 import Parse from '@/lib/parseConfig';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import {
+  FiEye, FiEyeOff,
+  FiHome, FiInfo, FiUsers, FiStar, FiPhone,
+  FiGrid, FiClock, FiHeart, FiDollarSign, FiShield,
+  FiFileText, FiAward, FiActivity, FiDroplet, FiAlertCircle,
+} from 'react-icons/fi';
+import {
+  TbStethoscope, TbBrain, TbBone, TbHeartbeat, TbDna,
+  TbAmbulance, TbRadioactive, TbDental, TbFlask, TbPill,
+  TbLungs, TbYoga, TbMicroscope, TbBabyBottle,
+} from 'react-icons/tb';
 
 const TESTIMONIALS = [
   { img: 'https://randomuser.me/api/portraits/women/44.jpg', name: 'Priya Sharma',     location: 'Bangalore',     quote: 'The care I received at Medicover was outstanding. The doctors were thorough and genuinely cared about my recovery.' },
@@ -26,7 +36,8 @@ function TestimonialCarousel({ homeStyles }) {
   const total = Math.ceil(TESTIMONIALS.length / PER_PAGE);
   const [slide, setSlide] = useState(0);
   const [animating, setAnimating] = useState(false);
-  const [selected, setSelected] = useState(null);
+  const [mobileSlide, setMobileSlide] = useState(0);
+  const [mobileAnimating, setMobileAnimating] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -41,39 +52,47 @@ function TestimonialCarousel({ homeStyles }) {
     setTimeout(() => { setSlide(idx); setAnimating(false); }, 350);
   };
 
+  const mobileGoTo = (idx) => {
+    setMobileAnimating(true);
+    setTimeout(() => { setMobileSlide(idx); setMobileAnimating(false); }, 350);
+  };
+
   useEffect(() => {
     if (isMobile) return;
     const t = setInterval(() => goTo((slide + 1) % total), 4000);
     return () => clearInterval(t);
   }, [slide, total, isMobile]);
 
+  useEffect(() => {
+    if (!isMobile) return;
+    const t = setInterval(() => mobileGoTo((mobileSlide + 1) % TESTIMONIALS.length), 3000);
+    return () => clearInterval(t);
+  }, [mobileSlide, isMobile]);
+
   const visible = TESTIMONIALS.slice(slide * PER_PAGE, slide * PER_PAGE + PER_PAGE);
+  const current = TESTIMONIALS[mobileSlide];
 
   if (isMobile) return (
-    <>
-      <div className={homeStyles.storiesRow}>
-        {TESTIMONIALS.map((t, i) => (
-          <button key={i} className={homeStyles.storyBtn} onClick={() => setSelected(t)} aria-label={t.name}>
-            <div className={homeStyles.storyRing}>
-              <img src={t.img} alt={t.name} className={homeStyles.storyImg} />
-            </div>
-            <span className={homeStyles.storyName}>{t.name.split(' ')[0]}</span>
-          </button>
-        ))}
-      </div>
-
-      {selected && (
-        <div className={homeStyles.storyModal} onClick={() => setSelected(null)}>
-          <div className={homeStyles.storyModalCard} onClick={e => e.stopPropagation()}>
-            <img src={selected.img} alt={selected.name} className={homeStyles.storyModalImg} />
-            <p className={homeStyles.storyModalQuote}>&ldquo;{selected.quote}&rdquo;</p>
-            <p className={homeStyles.storyModalName}>{selected.name}</p>
-            <p className={homeStyles.storyModalLocation}>{selected.location}</p>
-            <button className={homeStyles.storyModalClose} onClick={() => setSelected(null)}>✕</button>
+    <div className={homeStyles.mobileTestimonialWrap}>
+      <div
+        className={homeStyles.mobileTestimonialCard}
+        style={{ opacity: mobileAnimating ? 0 : 1, transform: mobileAnimating ? 'translateX(30px)' : 'translateX(0)', transition: 'opacity 0.35s ease, transform 0.35s ease' }}
+      >
+        <p className={homeStyles.mobileTestimonialQuote}>&ldquo;{current.quote}&rdquo;</p>
+        <div className={homeStyles.mobileTestimonialAuthor}>
+          <img src={current.img} alt={current.name} className={homeStyles.mobileTestimonialAvatar} />
+          <div>
+            <p className={homeStyles.mobileTestimonialName}>{current.name}</p>
+            <p className={homeStyles.mobileTestimonialLocation}>{current.location}</p>
           </div>
         </div>
-      )}
-    </>
+      </div>
+      <div className={homeStyles.mobileTestimonialDots}>
+        {TESTIMONIALS.map((_, i) => (
+          <button key={i} className={`${homeStyles.mobileTestimonialDot}${i === mobileSlide ? ' ' + homeStyles.mobileTestimonialDotActive : ''}`} onClick={() => mobileGoTo(i)} aria-label={`Slide ${i + 1}`} />
+        ))}
+      </div>
+    </div>
   );
 
   return (
@@ -161,7 +180,7 @@ function InfraCarousel({ services, perPage, totalSlides, homeStyles }) {
         setSlide(s => (s + 1) % totalSlides);
         setAnimating(false);
       }, 400);
-    }, 1000);
+    }, 3000);
     return () => clearInterval(timer);
   }, [totalSlides]);
 
@@ -175,7 +194,7 @@ function InfraCarousel({ services, perPage, totalSlides, homeStyles }) {
       >
         {visible.map((s, i) => (
           <div key={i} className={homeStyles.infraServiceItem}>
-            <span className={homeStyles.infraServiceIcon}>{s.icon}</span>
+            <span className={homeStyles.infraServiceIcon}>{React.createElement(s.icon, { size: 26 })}</span>
             <div>
               <div className={homeStyles.infraServiceLabel}>{s.label}</div>
               <div className={homeStyles.infraServiceDesc}>{s.desc}</div>
@@ -205,6 +224,12 @@ export default function Home() {
   const [showConsultForm, setShowConsultForm] = useState(false);
   const [consultForm, setConsultForm] = useState({ name: '', phone: '', email: '', date: '', problem: '' });
   const [consultSuccess, setConsultSuccess] = useState(false);
+  const [apptForm, setApptForm] = useState({ name: '', phone: '', city: '', captcha: '' });
+  const [apptSuccess, setApptSuccess] = useState(false);
+  const [captchaCode, setCaptchaCode] = useState('LOAD1');
+  useEffect(() => {
+    setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase());
+  }, []);
   const [isSignup, setIsSignup]   = useState(false);
   const [error, setError]         = useState('');
   const [success, setSuccess]     = useState('');
@@ -222,6 +247,19 @@ export default function Home() {
   const [scrolled, setScrolled] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [buildingKey, setBuildingKey] = useState(0);
+  const buildingRef = useRef(null);
+  useEffect(() => {
+    const el = buildingRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setBuildingKey(k => k + 1);
+        obs.disconnect();
+      }
+    }, { threshold: 0.2 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
   useEffect(() => {
     if (typeof window !== 'undefined') {
       history.scrollRestoration = 'manual';
@@ -247,6 +285,7 @@ export default function Home() {
 
   const [doctorIdx, setDoctorIdx] = useState(0);
   const [selectedDoctor, setSelectedDoctor] = useState(null);
+  const [selectedService, setSelectedService] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
   const FAQ_ANSWERS = [
     'Our specialists use the latest technology to deliver accurate diagnoses and effective treatments tailored to each patient. We ensure every visit is comfortable, efficient, and results-driven.',
@@ -266,12 +305,11 @@ export default function Home() {
   ];
   const toggleFaq = (i) => setOpenFaq(prev => prev === i ? null : i);
   const DOCTORS = [
-    { name: 'Dr. Dikkala Srikanth',     qual: 'MBBS, DrNB (Medical Oncology), DNB (Radiation Oncology)', spec: 'Medical Oncology',   img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/_DSC8454.jpg'  },
-    { name: 'Dr. Gunturu Indira',       qual: 'MBBS, DNB (Radiation Oncology)',                           spec: 'Radiation Oncology', img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/_DSC8427.jpg' },
-    { name: 'Dr. Harish Dara',          qual: 'MBBS, MS (General Surgery), DNB (Surgical Oncology), FMAS',spec: 'Surgical Oncology',  img: 'https://www.vaidam.com/sites/default/files/dr.harish_d.jpg'  },
-    { name: 'Dr. Vijay Aditya Yadaraju',qual: 'MBBS, MD (Radiation Oncology)',                           spec: 'Radiation Oncology', img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/_DSC8413.jpg'  },
-    { name: 'Dr. Viswanth Kottakota',   qual: 'MBBS, MS (General Surgery), MCh (Surgical Oncology)',     spec: 'Surgical Oncology',  img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/_DSC8596.jpg'  },
-    { name: 'Dr. VVS Prabhakar Rao',    qual: 'MBBS, DNB (Nuclear Medicine), MD (Radiodiagnosis)',       spec: 'Nuclear Medicine',   img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/Dr. V.V.S Prabhakar Rao.jpg'  },
+    { name: 'Dr. Dikkala Srikanth',     qual: 'MBBS, DrNB (Medical Oncology), DNB (Radiation Oncology)', spec: 'Medical Oncology',   imgPos: 'center center', img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/_DSC8454.jpg'  },
+    { name: 'Dr. Gunturu Indira',       qual: 'MBBS, DNB (Radiation Oncology)',                           spec: 'Radiation Oncology', imgPos: 'center center', img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/_DSC8427.jpg' },
+    { name: 'Dr. Vijay Aditya Yadaraju',qual: 'MBBS, MD (Radiation Oncology)',                           spec: 'Radiation Oncology', imgPos: 'center top',    img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/_DSC8413.jpg'  },
+    { name: 'Dr. Viswanth Kottakota',   qual: 'MBBS, MS (General Surgery), MCh (Surgical Oncology)',     spec: 'Surgical Oncology',  imgPos: 'center top',    img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/_DSC8596.jpg'  },
+    { name: 'Dr. VVS Prabhakar Rao',    qual: 'MBBS, DNB (Nuclear Medicine), MD (Radiodiagnosis)',       spec: 'Nuclear Medicine',   imgPos: 'center top',    img: 'https://service360.hcgel.com/uploads/7d385d66-26a2-4299-ac31-fdf9d6b1a663_210723113951/picture/Dr. V.V.S Prabhakar Rao.jpg'  },
   ];
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => {
@@ -285,6 +323,14 @@ export default function Home() {
   }, []);
   const docsPerSlide = isMobile ? 1 : 3;
   const DOCTOR_SLIDES = Math.ceil(DOCTORS.length / docsPerSlide);
+
+  useEffect(() => {
+    if (!isMobile) return;
+    const timer = setInterval(() => {
+      setDoctorIdx(i => (i + 1) % DOCTOR_SLIDES);
+    }, 2500);
+    return () => clearInterval(timer);
+  }, [isMobile, DOCTOR_SLIDES]);
 
   const handleCarouselScroll = () => {
     if (!carouselRef.current) return;
@@ -445,6 +491,20 @@ export default function Home() {
     }
   };
 
+  const handleApptSubmit = (e) => {
+    e.preventDefault();
+    if (!apptForm.name || !apptForm.phone || !apptForm.city) return;
+    if (apptForm.captcha.toUpperCase() !== captchaCode) {
+      setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase());
+      setApptForm(f => ({ ...f, captcha: '' }));
+      return;
+    }
+    setApptSuccess(true);
+    setApptForm({ name: '', phone: '', city: '', captcha: '' });
+    setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase());
+    setTimeout(() => setApptSuccess(false), 4000);
+  };
+
   return (
     <div className={homeStyles.mainContainer}>
 
@@ -460,7 +520,7 @@ export default function Home() {
           <div className={styles.navLinks}>
             <a href="#" className={styles.navLink}>Home</a>
             <a href="#about" className={styles.navLink}>About Us</a>
-            <a href="#about" className={styles.navLink}>Services</a>
+            <a href="#services" className={styles.navLink}>Services</a>
             <a href="#doctors" className={styles.navLink}>Doctors</a>
             <a href="#reviews" className={styles.navLink}>Reviews</a>
             <a href="#" className={styles.navLink}>Contact Us</a>
@@ -486,23 +546,12 @@ export default function Home() {
               Trusted by 100,000+ patients across India
             </div>
             <h1 className={homeStyles.landingTitle}>Welcome to Medicover</h1>
-            <p className={homeStyles.landingSubtitle}>Your health, in expert hands.</p>
+            <p className={homeStyles.landingSubtitle}>You are in safe hands.</p>
             <p className={homeStyles.landingDesc}>
               Medicover combines world-class specialists with AI-powered tools to give you seamless access to care — from booking to recovery, all in one place.
             </p>
-            <a
-              href="https://www.google.com/maps/search/Medicover+Hospital+Kakinada"
-              target="_blank"
-              rel="noopener noreferrer"
-              className={homeStyles.locationRow}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#8b5cf6" style={{flexShrink:0}}>
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-              </svg>
-              <span className={homeStyles.locationText}>Kakinada</span>
-            </a>
             <div className={homeStyles.landingCtas}>
-              <button className={homeStyles.bookBtn} onClick={() => setShowConsultForm(true)}>
+              <button className={homeStyles.bookBtn} onClick={() => document.getElementById('book-appointment')?.scrollIntoView({ behavior: 'smooth' })}>
                 Book a Free Consultation
               </button>
               <div className={homeStyles.videoWrapper}>
@@ -514,10 +563,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right — animated building */}
+          {/* Right — Building animation */}
           <div className={homeStyles.landingRight}>
-            <div className={homeStyles.buildingCircle} onMouseEnter={() => setBuildingKey(k => k + 1)}>
-              <svg key={buildingKey} viewBox="0 0 480 400" className={homeStyles.buildingSvg} xmlns="http://www.w3.org/2000/svg">
+            <div ref={buildingRef} style={{width:'100%', maxWidth:'380px', cursor:'pointer'}} onMouseEnter={() => setBuildingKey(k => k + 1)}>
+              <svg key={buildingKey} viewBox="0 0 480 400" width="100%" height="375" xmlns="http://www.w3.org/2000/svg">
                 <line x1="10" y1="368" x2="470" y2="368" className={homeStyles.bp} style={{animationDelay:'0s'}}/>
                 <line x1="20" y1="368" x2="20" y2="168" className={homeStyles.bp} style={{animationDelay:'0.15s'}}/>
                 <line x1="20" y1="168" x2="78" y2="168" className={homeStyles.bp} style={{animationDelay:'0.25s'}}/>
@@ -609,64 +658,32 @@ export default function Home() {
               </svg>
             </div>
 
-            {/* Stats strip below animation */}
-            <div className={homeStyles.rightStatsStrip}>
-
-              {/* Circular progress stat */}
-              <div className={homeStyles.rStatCircle}>
-                <svg width="64" height="64" viewBox="0 0 64 64">
-                  <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(139,92,246,0.15)" strokeWidth="5"/>
-                  <circle cx="32" cy="32" r="26" fill="none" stroke="#8b5cf6" strokeWidth="5"
-                    strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 26}`}
-                    strokeDashoffset={`${2 * Math.PI * 26 * 0.01}`}
-                    style={{transform:'rotate(-90deg)',transformOrigin:'center'}}
-                  />
-                  <text x="32" y="36" textAnchor="middle" fill="#c4b5fd" fontSize="13" fontWeight="800" fontFamily="inherit">99%</text>
-                </svg>
-                <span className={homeStyles.rStatCircleLabel}>Success Rate</span>
+            {/* Stats below animation */}
+            <div className={homeStyles.heroStatsGrid}>
+              <div className={homeStyles.heroStatCard}>
+                <div className={homeStyles.heroStatIcon}><FiAward size={28} /></div>
+                <div className={homeStyles.heroStatNumber}>20+</div>
+                <div className={homeStyles.heroStatLabel}>Years of Experience</div>
               </div>
-
-              {/* Divider */}
-              <div className={homeStyles.rStatDivider}/>
-
-              {/* Icon + number stat */}
-              <div className={homeStyles.rStatIcon}>
-                <div className={homeStyles.rStatIconBox}>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#c4b5fd" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                  </svg>
-                </div>
-                <div>
-                  <div className={homeStyles.rStatNum}>500+</div>
-                  <div className={homeStyles.rStatLabel}>Specialists</div>
-                </div>
+              <div className={homeStyles.heroStatCard}>
+                <div className={homeStyles.heroStatIcon}><FiUsers size={28} /></div>
+                <div className={homeStyles.heroStatNumber}>500+</div>
+                <div className={homeStyles.heroStatLabel}>Expert Doctors</div>
               </div>
-
-              {/* Divider */}
-              <div className={homeStyles.rStatDivider}/>
-
-              {/* Badge stat */}
-              <div className={homeStyles.rStatBadge}>
-                <div className={homeStyles.rStatBadgePill}>24/7</div>
-                <div className={homeStyles.rStatLabel}>Emergency</div>
+              <div className={homeStyles.heroStatCard}>
+                <div className={homeStyles.heroStatIcon}><FiHeart size={28} /></div>
+                <div className={homeStyles.heroStatNumber}>100K+</div>
+                <div className={homeStyles.heroStatLabel}>Happy Patients</div>
               </div>
-
-              {/* Divider */}
-              <div className={homeStyles.rStatDivider}/>
-
-              {/* Bar stat */}
-              <div className={homeStyles.rStatBar}>
-                <div className={homeStyles.rStatNum}>150+</div>
-                <div className={homeStyles.rStatLabel}>Beds</div>
-                <div className={homeStyles.rStatBarTrack}>
-                  <div className={homeStyles.rStatBarFill}/>
-                </div>
+              <div className={homeStyles.heroStatCard}>
+                <div className={homeStyles.heroStatIcon}><FiStar size={28} /></div>
+                <div className={homeStyles.heroStatNumber}>99%</div>
+                <div className={homeStyles.heroStatLabel}>Satisfaction Rate</div>
               </div>
-
             </div>
+
           </div>
+
 
         </div>
 
@@ -686,12 +703,12 @@ export default function Home() {
             {/* Nav links */}
             <nav className={styles.sidebarNav}>
               {[
-                { icon: '🏠', label: 'Home',       href: '#' },
-                { icon: '🩺', label: 'Services',   href: '#about' },
-                { icon: 'ℹ️',  label: 'About Us',  href: '#about' },
-                { icon: '👨‍⚕️', label: 'Doctors',   href: '#doctors' },
-                { icon: '⭐', label: 'Reviews',    href: '#reviews' },
-                { icon: '📞', label: 'Contact Us', href: '#' },
+                { icon: FiHome,          label: 'Home',       href: '#' },
+                { icon: TbStethoscope,   label: 'Services',   href: '#services' },
+                { icon: FiInfo,          label: 'About Us',   href: '#about' },
+                { icon: FiUsers,         label: 'Doctors',    href: '#doctors' },
+                { icon: FiStar,          label: 'Reviews',    href: '#reviews' },
+                { icon: FiPhone,         label: 'Contact Us', href: '#' },
               ].map((item, i) => (
                 <a
                   key={i}
@@ -699,7 +716,7 @@ export default function Home() {
                   className={styles.mobileSidebarLink}
                   onClick={() => setMobileMenuOpen(false)}
                 >
-                  <span className={styles.sidebarLinkIcon}>{item.icon}</span>
+                  <span className={styles.sidebarLinkIcon}>{React.createElement(item.icon, { size: 18 })}</span>
                   {item.label}
                 </a>
               ))}
@@ -709,7 +726,7 @@ export default function Home() {
             <div className={styles.sidebarFooter}>
               <button
                 className={styles.sidebarSignInBtn}
-                onClick={() => { setMobileMenuOpen(false); setShowConsultForm(true); }}
+                onClick={() => { setMobileMenuOpen(false); setTimeout(() => document.getElementById('book-appointment')?.scrollIntoView({ behavior: 'smooth' }), 300); }}
               >
                 Book a Consultation
               </button>
@@ -734,22 +751,19 @@ export default function Home() {
 
             <div className={homeStyles.aboutGrid} ref={carouselRef} onScroll={handleCarouselScroll}>
               {[
-                { title: 'Expert Doctors',    desc: 'Our team consists of experienced specialists across multiple disciplines, dedicated to your health and well-being.',        bg: 'rgba(7,7,26,0.96)',  circuit: '#3b2a6e', accent: '#a78bfa', icon: '👨‍⚕️' },
-                { title: 'Modern Facilities', desc: 'State-of-the-art medical equipment and technology for accurate diagnosis and effective treatment.',                         bg: 'rgba(4,18,14,0.96)', circuit: '#0f3d28', accent: '#34d399', icon: '🏥' },
-                { title: '24/7 Support',      desc: 'Round-the-clock medical support and emergency services to ensure you\'re never alone in your healthcare journey.',          bg: 'rgba(18,10,4,0.96)', circuit: '#3d2000', accent: '#fb923c', icon: '🕐' },
-                { title: 'Patient Care',      desc: 'Personalized treatment plans and compassionate care that puts your health and comfort first.',                              bg: 'rgba(18,5,5,0.96)',  circuit: '#3d0a0a', accent: '#f87171', icon: '❤️' },
-                { title: 'Affordable Pricing',desc: 'Transparent and competitive pricing, making quality healthcare accessible to everyone.',                                   bg: 'rgba(10,7,22,0.96)', circuit: '#2d1a5e', accent: '#c084fc', icon: '💰' },
-                { title: 'Cleanliness',       desc: 'Strict hygiene standards and infection control protocols to ensure a safe environment.',                                   bg: 'rgba(15,13,4,0.96)', circuit: '#3d3200', accent: '#fbbf24', icon: '✨' },
-                { title: 'Digital Records',   desc: 'Seamless access to your medical history, prescriptions, and lab reports — all in one secure digital platform.',            bg: 'rgba(4,15,6,0.96)',  circuit: '#0a3316', accent: '#4ade80', icon: '📋' },
-                { title: 'Emergency Care',    desc: 'Rapid-response emergency units equipped to handle critical conditions with speed, precision, and expert medical teams.',    bg: 'rgba(18,4,8,0.96)',  circuit: '#3d0a14', accent: '#fb7185', icon: '🚑' },
+                { title: 'Expert Doctors',    desc: 'Our team consists of experienced specialists across multiple disciplines, dedicated to your health and well-being.',     icon: FiUsers },
+                { title: 'Modern Facilities', desc: 'State-of-the-art medical equipment and technology for accurate diagnosis and effective treatment.',                      icon: FiGrid },
+                { title: '24/7 Support',      desc: "Round-the-clock medical support and emergency services to ensure you're never alone in your healthcare journey.",        icon: FiClock },
+                { title: 'Patient Care',      desc: 'Personalized treatment plans and compassionate care that puts your health and comfort first.',                           icon: FiHeart },
+                { title: 'Affordable Pricing',desc: 'Transparent and competitive pricing, making quality healthcare accessible to everyone.',                                icon: FiDollarSign },
+                { title: 'Cleanliness',       desc: 'Strict hygiene standards and infection control protocols to ensure a safe environment.',                                icon: FiShield },
+                { title: 'Digital Records',   desc: 'Seamless access to your medical history, prescriptions, and lab reports — all in one secure digital platform.',         icon: FiFileText },
+                { title: 'Emergency Care',    desc: 'Rapid-response emergency units equipped to handle critical conditions with speed, precision, and expert medical teams.', icon: TbAmbulance },
               ].map((card, i) => (
                 <div key={i} className={homeStyles.carouselSlide}>
-                  <div
-                    className={homeStyles.featureCard}
-                    style={{ '--card-bg': card.bg, '--card-color': card.circuit }}
-                  >
-                    <div style={{ fontSize: '2rem', marginBottom: '0.75rem' }}>{card.icon}</div>
-                    <h3 className={homeStyles.featureTitle} style={{ color: card.accent }}>{card.title}</h3>
+                  <div className={homeStyles.featureCard}>
+                    <div style={{ marginBottom: '0.75rem' }}>{React.createElement(card.icon, { size: 28, color: '#1a5fa8' })}</div>
+                    <h3 className={homeStyles.featureTitle}>{card.title}</h3>
                     <p className={homeStyles.featureDescription}>{card.desc}</p>
                   </div>
                 </div>
@@ -805,12 +819,14 @@ export default function Home() {
                     {DOCTORS.slice(slideIdx * docsPerSlide, slideIdx * docsPerSlide + docsPerSlide).map((doc, i) => (
                       <div key={i} className={homeStyles.doctorCard} onClick={() => setSelectedDoctor(doc)} style={{ cursor: 'pointer' }}>
                         <div className={homeStyles.doctorImgWrap}>
-                          <img src={doc.img} alt={doc.name} className={homeStyles.doctorImg} />
+                          <img src={doc.img} alt={doc.name} className={homeStyles.doctorImg} style={{ objectPosition: doc.imgPos || 'center top' }} />
                         </div>
-                        <h3 className={homeStyles.doctorName}>{doc.name}</h3>
-                        <p className={homeStyles.doctorQual}>{doc.qual}</p>
-                        <p className={homeStyles.doctorSpec}>{doc.spec}</p>
-                        <p className={homeStyles.doctorViewProfile}>View Profile →</p>
+                        <div className={homeStyles.doctorInfo}>
+                          <h3 className={homeStyles.doctorName}>{doc.name}</h3>
+                          <p className={homeStyles.doctorQual}>{doc.qual}</p>
+                          <p className={homeStyles.doctorSpec}>{doc.spec}</p>
+                          <p className={homeStyles.doctorViewProfile}>View Profile →</p>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -834,30 +850,86 @@ export default function Home() {
         </section>
 
         {/* ===== SERVICES SECTION ===== */}
-        <section className={homeStyles.servicesSection}>
-          <div className={homeStyles.servicesContainer}>
-            <p className={homeStyles.servicesEyebrow}>What We Offer</p>
-            <h2 className={homeStyles.servicesTitle}>Our Medical Specialities</h2>
-            <p className={homeStyles.servicesSubtitle}>World-class care across a wide range of specialities</p>
-            <div className={homeStyles.servicesGrid}>
-              {[
-                { icon: '❤️', title: 'Cardiology',       desc: 'Expert heart care from diagnosis to surgery and rehabilitation.',                      color: '#e74c3c' },
-                { icon: '🧠', title: 'Neurology',        desc: 'Advanced treatment for brain, spine, and nervous system disorders.',                    color: '#8e44ad' },
-                { icon: '🦴', title: 'Orthopedics',      desc: 'Comprehensive bone, joint, and muscle care including joint replacement.',               color: '#2980b9' },
-                { icon: '👁️', title: 'Ophthalmology',    desc: 'Complete eye care, from routine exams to advanced retinal surgery.',                   color: '#27ae60' },
-                { icon: '🩺', title: 'General Medicine', desc: 'Primary healthcare and management of chronic conditions.',                              color: '#e67e22' },
-                { icon: '🧬', title: 'Oncology',         desc: 'Compassionate cancer care with the latest treatment protocols.',                        color: '#16a085' },
-              ].map((s, i) => (
-                <div key={i} className={homeStyles.serviceCard} style={{ '--card-color': s.color }}>
-                  <div className={homeStyles.serviceIcon}>{s.icon}</div>
-                  <h3 className={homeStyles.serviceCardTitle} style={{ color: s.color }}>{s.title}</h3>
-                  <p className={homeStyles.serviceCardDesc}>{s.desc}</p>
-                  <span className={homeStyles.serviceCardLink} style={{ color: s.color }}>Learn more →</span>
+        {(() => {
+          const SERVICES = [
+            {
+              illus: 'https://img.icons8.com/color/96/heart-with-pulse.png',
+              title: 'Cardiology', desc: 'Expert heart care from diagnosis to surgery and rehabilitation.',
+              img: '/cardiology.png',
+              detail1: 'Medicover is one of India\'s top heart care centers, conducting successful cardiac and cardiothoracic surgeries. Our experienced surgeons specialize in complex procedures like coronary artery bypass, valvular heart disease treatment, paediatric heart surgery, and heart transplants, with outcomes on par with global standards.',
+              detail2: 'Finding the right care is simple at Medicover. Whether you need to book an appointment with a top cardiac surgeon or consult a leading cardiologist, our team is ready to provide expert guidance and personalized treatment. Experience world-class cardiac care at a hospital trusted by thousands.',
+            },
+            {
+              illus: 'https://img.icons8.com/color/96/brain.png',
+              title: 'Neurology', desc: 'Advanced treatment for brain, spine, and nervous system disorders.',
+              img: 'https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=600&q=80',
+              detail1: 'Our Neurology department offers comprehensive care for conditions affecting the brain, spinal cord, and peripheral nervous system. From stroke management to epilepsy, Parkinson\'s disease, and multiple sclerosis, our neurologists deliver cutting-edge diagnosis and treatment.',
+              detail2: 'With state-of-the-art neuro-imaging and a multidisciplinary team, Medicover ensures rapid and precise neurological care. Our neuro-rehabilitation unit helps patients regain function and quality of life after complex neurological events.',
+            },
+            {
+              illus: 'https://img.icons8.com/color/96/cancer-ribbon.png',
+              title: 'Oncology', desc: 'Compassionate cancer care with the latest treatment protocols.',
+              img: 'https://images.unsplash.com/photo-1576671081837-49000212a370?w=600&q=80',
+              detail1: 'Medicover\'s Oncology centre provides comprehensive cancer care with a multidisciplinary approach. Our oncologists offer medical, surgical, and radiation oncology services for all types of cancers, using the most advanced treatment protocols available.',
+              detail2: 'From early detection and diagnosis to chemotherapy, immunotherapy, and post-treatment care, we support patients at every step of their cancer journey. Our counselling and palliative care teams ensure emotional and physical well-being throughout treatment.',
+            },
+            {
+              illus: 'https://img.icons8.com/color/96/kidney.png',
+              title: 'Nephrology', desc: 'Expert diagnosis and treatment of kidney diseases and disorders.',
+              img: '/nephrology.png',
+              detail1: 'Medicover\'s Nephrology department offers expert diagnosis and treatment of kidney diseases, including chronic kidney disease, acute renal failure, and nephrotic syndrome. Our nephrologists work closely with dietitians and other specialists for holistic kidney care.',
+              detail2: 'We provide advanced dialysis services and pre- and post-renal transplant care. Our kidney wellness programs focus on early detection, lifestyle modification, and long-term disease management to preserve kidney health.',
+            },
+            {
+              illus: 'https://img.icons8.com/color/96/stomach.png',
+              title: 'Gastroenterology', desc: 'Comprehensive care for digestive system and liver disorders.',
+              img: 'https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=600&q=80',
+              detail1: 'Medicover\'s Gastroenterology department provides expert care for all digestive system disorders including GERD, IBS, Crohn\'s disease, liver disorders, and colorectal conditions. Our gastroenterologists use advanced endoscopic procedures for diagnosis and treatment.',
+              detail2: 'From routine colonoscopies to complex hepatobiliary surgeries, our team ensures comprehensive digestive healthcare. Our liver clinic and IBD centre provide specialized long-term management for complex gastrointestinal conditions.',
+            },
+            {
+              illus: 'https://img.icons8.com/color/96/robot.png',
+              title: 'Robotic Surgery', desc: 'Minimally invasive precision surgery using advanced robotic systems.',
+              img: '/robotic-surgery.png',
+              detail1: 'Medicover\'s Robotic Surgery program offers cutting-edge minimally invasive procedures using the latest robotic-assisted surgical systems. Our surgeons are trained in robotic techniques across multiple specialties including urology, gynecology, colorectal, and cardiac surgery.',
+              detail2: 'Robotic surgery at Medicover ensures greater precision, smaller incisions, reduced blood loss, and faster recovery times. Patients benefit from shorter hospital stays and quicker return to daily activities, with outcomes that match or exceed traditional open surgery.',
+            },
+          ];
+          return (
+            <section id="services" className={homeStyles.servicesSection}>
+              <div className={homeStyles.servicesContainer}>
+                <p className={homeStyles.servicesEyebrow}>What We Offer</p>
+                <h2 className={homeStyles.servicesTitle}>Our Medical Specialities</h2>
+                <p className={homeStyles.servicesSubtitle}>World-class care across a wide range of specialities</p>
+                <div className={`${homeStyles.servicesLayout}${selectedService ? ' ' + homeStyles.servicesLayoutActive : ''}`}>
+                  <div className={`${homeStyles.servicesGrid}${selectedService ? ' ' + homeStyles.servicesGridCompact : ''}`}>
+                    {SERVICES.map((s, i) => (
+                      <div
+                        key={i}
+                        className={`${homeStyles.serviceCard}${selectedService?.title === s.title ? ' ' + homeStyles.serviceCardActive : ''}`}
+                        onClick={() => setSelectedService(selectedService?.title === s.title ? null : s)}
+                        style={{ cursor: 'pointer' }}
+                      >
+                        <img src={s.illus} alt={s.title} className={homeStyles.serviceIllus} />
+                        <h3 className={homeStyles.serviceCardTitle}>{s.title}</h3>
+                        {!selectedService && <p className={homeStyles.serviceCardDesc}>{s.desc}</p>}
+                        {!selectedService && <span className={homeStyles.serviceCardLink}>Learn more →</span>}
+                      </div>
+                    ))}
+                  </div>
+                  {selectedService && (
+                    <div className={homeStyles.serviceDetail}>
+                      <img src={selectedService.img} alt={selectedService.title} className={homeStyles.serviceDetailImg} />
+                      <h3 className={homeStyles.serviceDetailTitle}>{selectedService.title}</h3>
+                      <p className={homeStyles.serviceDetailText}>{selectedService.detail1}</p>
+                      <p className={homeStyles.serviceDetailText}>{selectedService.detail2}</p>
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
+              </div>
+            </section>
+          );
+        })()}
 
         {/* ===== HOW IT WORKS SECTION ===== */}
         <section className={homeStyles.howSection}>
@@ -907,24 +979,24 @@ export default function Home() {
             {/* Services carousel below infra cards */}
             {(() => {
               const infraServices = [
-                { icon: '🏥', label: 'Emergency Care',       desc: '24/7 critical & trauma care' },
-                { icon: '🧬', label: 'Advanced Diagnostics', desc: 'PET, CT, MRI & 4D Echo' },
-                { icon: '🫀', label: 'Cardiac Sciences',     desc: 'Cath labs & ECMO support' },
-                { icon: '🧠', label: 'Neuro Surgery',        desc: 'Navigation-guided precision' },
-                { icon: '🚑', label: 'Ambulance Services',   desc: 'Round-the-clock response' },
-                { icon: '🩻', label: 'Radiology',            desc: 'HEPA-filtered imaging suites' },
-                { icon: '🦷', label: 'Dental Care',          desc: 'Full oral & maxillofacial care' },
-                { icon: '👁️', label: 'Ophthalmology',        desc: 'Laser & cataract surgeries' },
-                { icon: '🤱', label: 'Maternity',            desc: 'High-risk & normal deliveries' },
-                { icon: '🦴', label: 'Orthopaedics',         desc: 'Joint replacement & spine care' },
-                { icon: '🩸', label: 'Blood Bank',           desc: '24/7 component therapy' },
-                { icon: '🧪', label: 'Pathology Lab',        desc: 'NABL-accredited diagnostics' },
-                { icon: '💊', label: 'Pharmacy',             desc: 'Round-the-clock dispensing' },
-                { icon: '🫁', label: 'Pulmonology',          desc: 'Bronchoscopy & sleep studies' },
-                { icon: '🧘', label: 'Rehabilitation',       desc: 'Physio & occupational therapy' },
-                { icon: '🔬', label: 'Oncology',             desc: 'Chemo, radio & surgical oncology' },
-                { icon: '🩺', label: 'General Medicine',     desc: 'Outpatient & preventive care' },
-                { icon: '👶', label: 'Paediatrics',          desc: 'NICU & child wellness clinics' },
+                { icon: FiAlertCircle,  label: 'Emergency Care',       desc: '24/7 critical & trauma care' },
+                { icon: TbDna,          label: 'Advanced Diagnostics', desc: 'PET, CT, MRI & 4D Echo' },
+                { icon: TbHeartbeat,    label: 'Cardiac Sciences',     desc: 'Cath labs & ECMO support' },
+                { icon: TbBrain,        label: 'Neuro Surgery',        desc: 'Navigation-guided precision' },
+                { icon: TbAmbulance,    label: 'Ambulance Services',   desc: 'Round-the-clock response' },
+                { icon: TbRadioactive,   label: 'Radiology',            desc: 'HEPA-filtered imaging suites' },
+                { icon: TbDental,       label: 'Dental Care',          desc: 'Full oral & maxillofacial care' },
+                { icon: FiEye,          label: 'Ophthalmology',        desc: 'Laser & cataract surgeries' },
+                { icon: FiHeart,        label: 'Maternity',            desc: 'High-risk & normal deliveries' },
+                { icon: TbBone,         label: 'Orthopaedics',         desc: 'Joint replacement & spine care' },
+                { icon: FiDroplet,      label: 'Blood Bank',           desc: '24/7 component therapy' },
+                { icon: TbFlask,        label: 'Pathology Lab',        desc: 'NABL-accredited diagnostics' },
+                { icon: TbPill,         label: 'Pharmacy',             desc: 'Round-the-clock dispensing' },
+                { icon: TbLungs,        label: 'Pulmonology',          desc: 'Bronchoscopy & sleep studies' },
+                { icon: TbYoga,         label: 'Rehabilitation',       desc: 'Physio & occupational therapy' },
+                { icon: TbMicroscope,   label: 'Oncology',             desc: 'Chemo, radio & surgical oncology' },
+                { icon: TbStethoscope,  label: 'General Medicine',     desc: 'Outpatient & preventive care' },
+                { icon: TbBabyBottle,   label: 'Paediatrics',          desc: 'NICU & child wellness clinics' },
               ];
               const PER_PAGE = 6;
               const totalSlides = Math.ceil(infraServices.length / PER_PAGE);
@@ -946,8 +1018,8 @@ export default function Home() {
         </section>
 
 
-        {/* Patients Speak */}
-        <section className={homeStyles.patientsSpeakSection}>
+        {/* Patients Speak - removed */}
+        {false && <section className={homeStyles.patientsSpeakSection}>
           <h2 className={homeStyles.patientsSpeakTitle}>Happy Patients</h2>
           <div className={homeStyles.marqueeWrapper}>
             {/* Row 1 — scrolls right */}
@@ -1011,6 +1083,56 @@ export default function Home() {
               ))}
             </div>
           </div>
+        </section>}
+
+        {/* ===== BOOK AN APPOINTMENT FORM ===== */}
+        <section id="book-appointment" className={homeStyles.bookApptSection}>
+          <div className={homeStyles.bookApptCard}>
+            <h2 className={homeStyles.bookApptTitle}>Book an Appointment</h2>
+            <form className={homeStyles.bookApptForm} onSubmit={handleApptSubmit}>
+              <input
+                className={homeStyles.bookApptInput}
+                type="text"
+                placeholder="Enter Name"
+                value={apptForm.name}
+                onChange={e => setApptForm(f => ({ ...f, name: e.target.value }))}
+              />
+              <select
+                className={homeStyles.bookApptSelect}
+                value={apptForm.city}
+                onChange={e => setApptForm(f => ({ ...f, city: e.target.value }))}
+              >
+                <option value="">Select City</option>
+                {['Hyderabad','Chennai','Mumbai','Bangalore','Delhi','Pune','Kolkata','Jaipur','Ahmedabad','Kochi'].map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+              <input
+                className={homeStyles.bookApptInput}
+                type="tel"
+                placeholder="Enter Phone Number"
+                value={apptForm.phone}
+                onChange={e => setApptForm(f => ({ ...f, phone: e.target.value }))}
+              />
+              <input
+                className={homeStyles.bookApptInput}
+                type="text"
+                placeholder="Enter Captcha*"
+                value={apptForm.captcha}
+                onChange={e => setApptForm(f => ({ ...f, captcha: e.target.value }))}
+              />
+              <div className={homeStyles.bookApptCaptchaWrap}>
+                <span className={homeStyles.bookApptCaptchaImg}>{captchaCode}</span>
+                <button
+                  type="button"
+                  className={homeStyles.bookApptRefresh}
+                  onClick={() => { setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase()); setApptForm(f => ({ ...f, captcha: '' })); }}
+                >Refresh Captcha</button>
+              </div>
+              <button className={homeStyles.bookApptSubmitBtn} type="submit">Submit</button>
+            </form>
+            {apptSuccess && <p className={homeStyles.bookApptSuccess}>Thank you! We&apos;ll contact you shortly.</p>}
+          </div>
         </section>
 
         {/* ===== FAQ SECTION ===== */}
@@ -1043,22 +1165,22 @@ export default function Home() {
             <h2 className={homeStyles.statsTitle}>Why Choose Us</h2>
             <div className={homeStyles.statsGrid}>
               <div className={homeStyles.statCard}>
-                <div className={homeStyles.statIcon}>🏆</div>
+                <div className={homeStyles.statIcon}><FiAward size={36} /></div>
                 <div className={homeStyles.statNumber}>20+</div>
                 <div className={homeStyles.statLabel}>Years of Experience</div>
               </div>
               <div className={homeStyles.statCard}>
-                <div className={homeStyles.statIcon}>👨‍⚕️</div>
+                <div className={homeStyles.statIcon}><FiUsers size={36} /></div>
                 <div className={homeStyles.statNumber}>500+</div>
                 <div className={homeStyles.statLabel}>Expert Doctors</div>
               </div>
               <div className={homeStyles.statCard}>
-                <div className={homeStyles.statIcon}>❤️</div>
+                <div className={homeStyles.statIcon}><FiHeart size={36} /></div>
                 <div className={homeStyles.statNumber}>100K+</div>
                 <div className={homeStyles.statLabel}>Happy Patients</div>
               </div>
               <div className={homeStyles.statCard}>
-                <div className={homeStyles.statIcon}>⭐</div>
+                <div className={homeStyles.statIcon}><FiStar size={36} /></div>
                 <div className={homeStyles.statNumber}>99%</div>
                 <div className={homeStyles.statLabel}>Satisfaction Rate</div>
               </div>
@@ -1071,7 +1193,6 @@ export default function Home() {
             </p>
           </div>
         </section>
-
         <footer className={homeStyles.footer}>
           <div className={homeStyles.footerContent}>
             <h3 className={homeStyles.footerTitle}>Medicover Hospital</h3>
@@ -1090,20 +1211,19 @@ export default function Home() {
             <div className={homeStyles.footerVisit}>
               <p className={homeStyles.footerVisitLabel}>Also visit our</p>
               <div className={homeStyles.footerVisitIcons}>
-                <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer" className={homeStyles.footerVisitBtn} aria-label="Play Store">
-                  <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
-                    <polygon points="5,3 19,12 5,21" fill="#34a853" />
+                <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer" className={homeStyles.footerVisitBtn} aria-label="Google Play Store">
+                  {/* Google Play Store icon */}
+                  <svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3.18 23.76c.3.17.64.24.98.2l12.2-11.96-3.29-3.29L3.18 23.76z" fill="#EA4335"/>
+                    <path d="M20.65 10.27L17.9 8.7l-3.66 3.3 3.66 3.66 2.78-1.6a1.97 1.97 0 0 0 0-3.79z" fill="#FBBC04"/>
+                    <path d="M3.18.24A1.97 1.97 0 0 0 2 2v20c0 .75.41 1.4 1.02 1.76L14.24 12 3.18.24z" fill="#4285F4"/>
+                    <path d="M4.16.04L14.24 12 17.9 8.7 5.14.24A1.97 1.97 0 0 0 4.16.04z" fill="#34A853"/>
                   </svg>
                 </a>
-                <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer" className={homeStyles.footerVisitBtn} aria-label="App Store">
-                  <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22">
+                <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer" className={homeStyles.footerVisitBtn} aria-label="Apple App Store">
+                  {/* Apple App Store icon */}
+                  <svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
                     <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-                  </svg>
-                </a>
-                <a href="https://www.medicover.in" target="_blank" rel="noopener noreferrer" className={homeStyles.footerVisitBtn} aria-label="Website">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                   </svg>
                 </a>
               </div>

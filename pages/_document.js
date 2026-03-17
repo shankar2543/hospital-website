@@ -7,6 +7,11 @@ export default function Document() {
         <link rel="icon" href="/favicon.png" type="image/png" />
         <link rel="apple-touch-icon" href="/favicon.png" />
 
+        {/* Google Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
         {/* Primary meta */}
         <meta name="description" content="Medicover Hospital offers expert doctors, 24/7 support, and modern facilities. Book appointments, track your health, and manage your care — all in one platform." />
 
@@ -16,15 +21,15 @@ export default function Document() {
         <meta property="og:title" content="Medicover Hospital | Advanced Healthcare Management Platform" />
         <meta property="og:description" content="Medicover Hospital offers expert doctors, 24/7 support, and modern facilities. Book appointments, track your health, and manage your care — all in one platform." />
         <meta property="og:url" content="https://hospital-website-delta-eight.vercel.app" />
-        <meta property="og:image" content="https://hospital-website-delta-eight.vercel.app/logo.jpg" />
-        <meta property="og:image:type" content="image/jpeg" />
+        <meta property="og:image" content="https://hospital-website-delta-eight.vercel.app/favicon.png" />
+        <meta property="og:image:type" content="image/png" />
         <meta property="og:image:alt" content="Medicover Hospital — Your Health, Our Priority" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content="Medicover Hospital | Advanced Healthcare Management Platform" />
         <meta name="twitter:description" content="Medicover Hospital offers expert doctors, 24/7 support, and modern facilities. Book appointments, track your health, and manage your care — all in one platform." />
-        <meta name="twitter:image" content="https://hospital-website-delta-eight.vercel.app/logo.jpg" />
+        <meta name="twitter:image" content="https://hospital-website-delta-eight.vercel.app/favicon.png" />
       </Head>
       <body className="antialiased">
         <Main />
