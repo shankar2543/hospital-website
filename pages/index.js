@@ -224,8 +224,32 @@ export default function Home() {
   const [showConsultForm, setShowConsultForm] = useState(false);
   const [consultForm, setConsultForm] = useState({ name: '', phone: '', email: '', date: '', problem: '' });
   const [consultSuccess, setConsultSuccess] = useState(false);
-  const [apptForm, setApptForm] = useState({ name: '', phone: '', city: '', captcha: '' });
+  const [activeSection, setActiveSection] = useState('');
+  useEffect(() => {
+    const sectionIds = ['about', 'doctors', 'services', 'reviews', 'book-appointment'];
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      if (scrollY < 50) {
+        setActiveSection('');
+        return;
+      }
+      let current = 'home';
+      for (const id of sectionIds) {
+        const el = document.getElementById(id);
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (rect.top <= window.innerHeight / 2) current = id;
+      }
+      setActiveSection(current);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const [apptForm, setApptForm] = useState({ name: '', phone: '', captcha: '' });
   const [apptSuccess, setApptSuccess] = useState(false);
+  const [apptPopup, setApptPopup] = useState(false);
   const [captchaCode, setCaptchaCode] = useState('LOAD1');
   useEffect(() => {
     setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase());
@@ -493,16 +517,15 @@ export default function Home() {
 
   const handleApptSubmit = (e) => {
     e.preventDefault();
-    if (!apptForm.name || !apptForm.phone || !apptForm.city) return;
+    if (!apptForm.name || !apptForm.phone) return;
     if (apptForm.captcha.toUpperCase() !== captchaCode) {
       setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase());
       setApptForm(f => ({ ...f, captcha: '' }));
       return;
     }
-    setApptSuccess(true);
-    setApptForm({ name: '', phone: '', city: '', captcha: '' });
+    setApptPopup(true);
+    setApptForm({ name: '', phone: '', captcha: '' });
     setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase());
-    setTimeout(() => setApptSuccess(false), 4000);
   };
 
   return (
@@ -518,11 +541,11 @@ export default function Home() {
           </div>
 
           <div className={styles.navLinks}>
-            <a href="#" className={styles.navLink}>Home</a>
-            <a href="#about" className={styles.navLink}>About Us</a>
-            <a href="#services" className={styles.navLink}>Services</a>
-            <a href="#doctors" className={styles.navLink}>Doctors</a>
-            <a href="#reviews" className={styles.navLink}>Reviews</a>
+            <a href="#" className={`${styles.navLink}${activeSection === 'home' ? ' ' + styles.navLinkActive : ''}`}>Home</a>
+            <a href="#about" className={`${styles.navLink}${activeSection === 'about' ? ' ' + styles.navLinkActive : ''}`}>About Us</a>
+            <a href="#doctors" className={`${styles.navLink}${activeSection === 'doctors' ? ' ' + styles.navLinkActive : ''}`}>Doctors</a>
+            <a href="#services" className={`${styles.navLink}${activeSection === 'services' ? ' ' + styles.navLinkActive : ''}`}>Services</a>
+            <a href="#reviews" className={`${styles.navLink}${activeSection === 'reviews' ? ' ' + styles.navLinkActive : ''}`}>Reviews</a>
             <a href="#" className={styles.navLink}>Contact Us</a>
             <button className={styles.signInBtn} onClick={() => router.push('/login')}>Sign In</button>
           </div>
@@ -1087,53 +1110,59 @@ export default function Home() {
 
         {/* ===== BOOK AN APPOINTMENT FORM ===== */}
         <section id="book-appointment" className={homeStyles.bookApptSection}>
-          <div className={homeStyles.bookApptCard}>
-            <h2 className={homeStyles.bookApptTitle}>Book an Appointment</h2>
-            <form className={homeStyles.bookApptForm} onSubmit={handleApptSubmit}>
-              <input
-                className={homeStyles.bookApptInput}
-                type="text"
-                placeholder="Enter Name"
-                value={apptForm.name}
-                onChange={e => setApptForm(f => ({ ...f, name: e.target.value }))}
-              />
-              <select
-                className={homeStyles.bookApptSelect}
-                value={apptForm.city}
-                onChange={e => setApptForm(f => ({ ...f, city: e.target.value }))}
-              >
-                <option value="">Select City</option>
-                {['Hyderabad','Chennai','Mumbai','Bangalore','Delhi','Pune','Kolkata','Jaipur','Ahmedabad','Kochi'].map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
-              <input
-                className={homeStyles.bookApptInput}
-                type="tel"
-                placeholder="Enter Phone Number"
-                value={apptForm.phone}
-                onChange={e => setApptForm(f => ({ ...f, phone: e.target.value }))}
-              />
-              <input
-                className={homeStyles.bookApptInput}
-                type="text"
-                placeholder="Enter Captcha*"
-                value={apptForm.captcha}
-                onChange={e => setApptForm(f => ({ ...f, captcha: e.target.value }))}
-              />
-              <div className={homeStyles.bookApptCaptchaWrap}>
-                <span className={homeStyles.bookApptCaptchaImg}>{captchaCode}</span>
-                <button
-                  type="button"
-                  className={homeStyles.bookApptRefresh}
-                  onClick={() => { setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase()); setApptForm(f => ({ ...f, captcha: '' })); }}
-                >Refresh Captcha</button>
-              </div>
-              <button className={homeStyles.bookApptSubmitBtn} type="submit">Submit</button>
-            </form>
-            {apptSuccess && <p className={homeStyles.bookApptSuccess}>Thank you! We&apos;ll contact you shortly.</p>}
+          <div className={homeStyles.bookApptWrapper}>
+            <div className={homeStyles.bookApptCard}>
+              <h2 className={homeStyles.bookApptTitle}>Book an Appointment</h2>
+              <form className={homeStyles.bookApptForm} onSubmit={handleApptSubmit}>
+                <input
+                  className={homeStyles.bookApptInput}
+                  type="text"
+                  placeholder="Enter Name"
+                  value={apptForm.name}
+                  onChange={e => setApptForm(f => ({ ...f, name: e.target.value }))}
+                />
+                <input
+                  className={homeStyles.bookApptInput}
+                  type="tel"
+                  placeholder="Enter Phone Number"
+                  value={apptForm.phone}
+                  onChange={e => setApptForm(f => ({ ...f, phone: e.target.value }))}
+                />
+                <input
+                  className={homeStyles.bookApptInput}
+                  type="text"
+                  placeholder="Enter Captcha*"
+                  value={apptForm.captcha}
+                  onChange={e => setApptForm(f => ({ ...f, captcha: e.target.value }))}
+                />
+                <div className={homeStyles.bookApptCaptchaWrap}>
+                  <span className={homeStyles.bookApptCaptchaImg}>{captchaCode}</span>
+                  <button
+                    type="button"
+                    className={homeStyles.bookApptRefresh}
+                    onClick={() => { setCaptchaCode(Math.random().toString(36).substring(2, 7).toUpperCase()); setApptForm(f => ({ ...f, captcha: '' })); }}
+                  >Refresh</button>
+                </div>
+                <button className={homeStyles.bookApptSubmitBtn} type="submit">Submit</button>
+              </form>
+            </div>
+            <div className={homeStyles.bookApptImgWrap}>
+              <img src="/patient1.jpg" alt="Patient" className={homeStyles.bookApptImg} />
+            </div>
           </div>
         </section>
+
+        {/* ===== BOOK APPOINTMENT POPUP ===== */}
+        {apptPopup && (
+          <div className={homeStyles.apptPopupOverlay} onClick={() => setApptPopup(false)}>
+            <div className={homeStyles.apptPopupCard} onClick={e => e.stopPropagation()}>
+              <div className={homeStyles.apptPopupIcon}>✓</div>
+              <h3 className={homeStyles.apptPopupTitle}>Thank you for submitting!!</h3>
+              <p className={homeStyles.apptPopupMsg}>We&apos;ll get back to you shortly.</p>
+              <button className={homeStyles.apptPopupClose} onClick={() => setApptPopup(false)}>Close</button>
+            </div>
+          </div>
+        )}
 
         {/* ===== FAQ SECTION ===== */}
         <section className={homeStyles.faqSection}>
@@ -1212,13 +1241,7 @@ export default function Home() {
               <p className={homeStyles.footerVisitLabel}>Also visit our</p>
               <div className={homeStyles.footerVisitIcons}>
                 <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer" className={homeStyles.footerVisitBtn} aria-label="Google Play Store">
-                  {/* Google Play Store icon */}
-                  <svg viewBox="0 0 24 24" width="22" height="22" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3.18 23.76c.3.17.64.24.98.2l12.2-11.96-3.29-3.29L3.18 23.76z" fill="#EA4335"/>
-                    <path d="M20.65 10.27L17.9 8.7l-3.66 3.3 3.66 3.66 2.78-1.6a1.97 1.97 0 0 0 0-3.79z" fill="#FBBC04"/>
-                    <path d="M3.18.24A1.97 1.97 0 0 0 2 2v20c0 .75.41 1.4 1.02 1.76L14.24 12 3.18.24z" fill="#4285F4"/>
-                    <path d="M4.16.04L14.24 12 17.9 8.7 5.14.24A1.97 1.97 0 0 0 4.16.04z" fill="#34A853"/>
-                  </svg>
+                  <img src="/google-play.png" alt="Google Play Store" width="26" height="26" style={{ objectFit: 'contain' }} />
                 </a>
                 <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer" className={homeStyles.footerVisitBtn} aria-label="Apple App Store">
                   {/* Apple App Store icon */}
@@ -1362,14 +1385,13 @@ export default function Home() {
           style={{
             position: 'fixed', bottom: '2rem', right: '2rem', zIndex: 9999,
             width: 48, height: 48, borderRadius: '50%',
-            background: 'rgba(10,6,30,0.85)', border: 'none', cursor: 'pointer',
+            background: 'transparent', border: 'none', cursor: 'pointer',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            backdropFilter: 'blur(10px)', WebkitBackdropFilter: 'blur(10px)',
-            boxShadow: '0 4px 20px rgba(139,92,246,0.35)',
+            boxShadow: 'none',
             transition: 'transform 0.2s, box-shadow 0.2s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; e.currentTarget.style.boxShadow = '0 6px 28px rgba(139,92,246,0.55)'; }}
-          onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.boxShadow = '0 4px 20px rgba(139,92,246,0.35)'; }}
+          onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.1)'; }}
+          onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; }}
           aria-label="Scroll to top"
         >
           {/* Circular progress ring */}

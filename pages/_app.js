@@ -1,8 +1,5 @@
 import "@/styles/globals.css";
 import Head from "next/head";
-import dynamic from "next/dynamic";
-
-const LiquidCursor = dynamic(() => import("@/components/LiquidCursor"), { ssr: false });
 
 export default function App({ Component, pageProps }) {
   return (
@@ -12,7 +9,6 @@ export default function App({ Component, pageProps }) {
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </Head>
-      <LiquidCursor />
       <Component {...pageProps} />
     </>
   );

@@ -169,6 +169,14 @@
   transform: translateX(-50%) scaleX(1);
 }
 
+.navLinkActive {
+  color: #1a5fa8;
+}
+
+.navLinkActive::after {
+  transform: translateX(-50%) scaleX(1);
+}
+
 .navLinks .signInBtn {
   background: transparent;
   border: 1.5px solid rgba(26,95,168,0.7);
@@ -713,6 +721,12 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 900px) {
+  .navbar:not(.navbarScrolled) {
+    background: transparent !important;
+    border-bottom: 1px solid transparent !important;
+    box-shadow: none !important;
+  }
+
   .heroBody {
     flex-direction: column;
     padding: 2rem 0 1.5rem;
@@ -763,6 +777,9 @@
     line-height: 1;
     width: auto;
     margin-top: 0;
+    background: #1a5fa8;
+    color: #ffffff;
+    border-color: #1a5fa8;
   }
 
   .hamburger {

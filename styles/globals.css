@@ -58,36 +58,6 @@ body {
   color: #0f172a;
 }
 
-/* ── Liquid Cursor ───────────────────────────────────────── */
-.cursor-dot {
-  position: fixed;
-  pointer-events: none;
-  z-index: 99999;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent-cyan);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 10px var(--accent-cyan), 0 0 20px rgba(26,95,168,0.6);
-  transition: width 0.15s ease, height 0.15s ease;
-  will-change: left, top;
-}
-
-.cursor-blob {
-  position: fixed;
-  pointer-events: none;
-  z-index: 99998;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(26,95,168,0.12);
-  border: 1.5px solid rgba(26,95,168,0.45);
-  transform: translate(-50%, -50%);
-  box-shadow: 0 0 22px rgba(26,95,168,0.25), 0 0 44px rgba(26,95,168,0.10);
-  transition: width 0.2s ease, height 0.2s ease, opacity 0.2s ease;
-  will-change: left, top, transform;
-}
-
 /* ── Mesh gradient background animation ─────────────────── */
 @keyframes meshShift {
   0%   { background-position: 0% 50%; }
@@ -99,8 +69,3 @@ body {
 .glow-teal { box-shadow: 0 0 32px var(--glow-teal); }
 .glow-cyan { box-shadow: 0 0 32px var(--glow-cyan); }
 
-/* ── Hide cursor on touch devices ───────────────────────── */
-@media (hover: none) and (pointer: coarse) {
-  .cursor-dot, .cursor-blob { display: none !important; }
-  *, *::before, *::after    { cursor: auto !important; }
-}
